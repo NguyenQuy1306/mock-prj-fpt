@@ -8,14 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Student {
+public class Instructor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="Student_id")
-    private Long student_id;
+    @Column(name= "Instructor_id")
+    private Long instructor_id;
     
     @OneToOne
     @MapsId
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "instructor_id")
     private User user;
 }
