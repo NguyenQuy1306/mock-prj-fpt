@@ -1,5 +1,7 @@
 package com.curcus.lms.model.entity;
 
+import com.curcus.lms.model.entity.UserRole.Role;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,14 +10,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Instructor {
+@DiscriminatorValue(value=Role.INSTRUCTOR)
+public class Instructor extends User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Instructor_id")
     private Long instructor_id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "instructor_id")
-    private User user;
 }

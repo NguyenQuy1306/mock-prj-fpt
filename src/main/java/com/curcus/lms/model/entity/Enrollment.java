@@ -22,7 +22,7 @@ public class Enrollment {
     private long enrollmentId;
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "userId")
-    private User studentId;
+    private Student studentId;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course CourseId;

@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="user_role",
+    discriminatorType=DiscriminatorType.STRING
+)  
 public class User {
     @Id
     @GeneratedValue
@@ -27,6 +31,6 @@ public class User {
     private String lastName;
     @Column(nullable = false, unique = true)
     private String phoneNumber;
-    @Column (nullable = false)
-    private Boolean role;
+    // @Column (nullable = false)
+//     private Boolean role;
 }
