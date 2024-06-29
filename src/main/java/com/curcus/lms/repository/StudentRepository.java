@@ -1,7 +1,11 @@
 package com.curcus.lms.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface StudentRepository {
+import com.curcus.lms.model.entity.Student;
+
+@Repository
+public interface StudentRepository extends JpaRepository<Student, Long> {
 
 }

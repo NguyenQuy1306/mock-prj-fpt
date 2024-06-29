@@ -1,4 +1,4 @@
-package com.curcus.lms.model;
+package com.curcus.lms.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,9 +11,9 @@ import lombok.*;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="Student_id")
+    @Column(name = "Student_id")
     private Long student_id;
-    
+
     @OneToOne
     @MapsId
     @JoinColumn(name = "student_id")
