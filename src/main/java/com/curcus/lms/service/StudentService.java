@@ -1,5 +1,5 @@
 package com.curcus.lms.service;
 
-public class StudentService {
-    
+public interface StudentService {
+
 }
