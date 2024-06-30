@@ -16,19 +16,18 @@ import java.util.Date;
 @Table(name = "enrollments")
 public class Enrollment {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long enrollmentId;
     @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "userId")
-    private Student studentId;
+    @JoinColumn(name = "student_id", referencedColumnName = "user_Id")
+    private Student student;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course CourseId;
+    private Course course;
     @Column(nullable = false)
     private Date enrollmentDate;
     @Column(nullable = false)
-    private Boolean isComplete ;
+    private Boolean isComplete;
 
 }

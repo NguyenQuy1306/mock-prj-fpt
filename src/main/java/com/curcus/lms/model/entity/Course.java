@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,9 +32,11 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
-    private User instructorId;
+    private User instructor;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
-    private Category categoryId;
+    private Category category;
+    @OneToMany(mappedBy = "course")
+    Set<Enrollment> enrollment;
 }

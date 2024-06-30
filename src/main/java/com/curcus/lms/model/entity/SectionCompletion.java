@@ -18,11 +18,11 @@ public class SectionCompletion {
     private int sectionCompletionId;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User userId;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course CourseId;
+    private Course course;
     @ManyToOne
     @JoinColumn(name = "section_id", referencedColumnName = "sectionId")
-    private Section sectionId;
+    private Section section;
 }

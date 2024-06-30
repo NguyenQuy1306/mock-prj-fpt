@@ -1,6 +1,5 @@
 package com.curcus.lms.model.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,15 +17,13 @@ public class PaymentInfo {
     @GeneratedValue
     private Long paymentId;
 
-
-
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "userId")
-    private User studentId;
+    private User student;
 
     @OneToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "cartId")
-    private Cart cartId;
+    private Cart cart;
 
     @Column(nullable = false)
     private String paymentMethod;

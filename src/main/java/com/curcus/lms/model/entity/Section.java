@@ -19,7 +19,7 @@ public class Section {
 
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course courseId;
+    private Course course;
     @Column(nullable = false)
     private String sectionName;
 }

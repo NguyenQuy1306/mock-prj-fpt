@@ -19,11 +19,11 @@ public class DocumentContent {
 
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course courseId;
+    private Course course;
 
     @ManyToOne
     @JoinColumn(name = "section_id", referencedColumnName = "sectionId")
-    private Section sectionId;
+    private Section section;
     @Column(nullable = false)
     private String documentType;
     @Column(nullable = false)

@@ -16,9 +16,9 @@ public class CartItems {
     @Id
     @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "cartId")
-    private Cart cartId;
+    private Cart cart;
     @Id
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course CourseId;
+    private Course course;
 }
