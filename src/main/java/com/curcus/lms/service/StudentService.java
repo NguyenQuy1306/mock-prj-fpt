@@ -1,5 +1,9 @@
 package com.curcus.lms.service;
 
-public interface StudentService {
+import com.curcus.lms.model.response.StudentResponse;
 
+import java.util.List;
+
+public interface StudentService {
+    List<StudentResponse> findAll();
 }
