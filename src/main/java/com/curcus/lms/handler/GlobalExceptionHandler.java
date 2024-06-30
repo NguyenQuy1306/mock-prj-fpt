@@ -1,4 +1,4 @@
-package com.curcus.lms.exception;
+package com.curcus.lms.handler;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
