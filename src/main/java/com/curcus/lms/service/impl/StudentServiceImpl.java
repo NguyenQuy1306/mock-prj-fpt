@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
+import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.response.StudentResponse;
 
@@ -19,6 +20,11 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentResponse> findAll() {
-        return userMapper.toResponseList(studentRepository.findAll());
+        try {
+            return userMapper.toResponseList(studentRepository.findAll());
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+
     }
 }

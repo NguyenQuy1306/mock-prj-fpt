@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.service.StudentService;
@@ -19,10 +21,13 @@ public class StudentController {
 
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.ok(studentService.findAll());
-        System.out.println("day la result " + studentService.findAll());
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        try {
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.ok(studentService.findAll());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
     }
 
 }
