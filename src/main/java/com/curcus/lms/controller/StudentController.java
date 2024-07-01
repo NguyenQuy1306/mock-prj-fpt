@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
@@ -13,7 +14,7 @@ import com.curcus.lms.service.StudentService;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/students")
 public class StudentController {
     @Autowired

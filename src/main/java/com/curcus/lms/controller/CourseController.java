@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Course;
@@ -15,7 +17,7 @@ import com.curcus.lms.service.CourseService;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/courses")
 
 public class CourseController {
