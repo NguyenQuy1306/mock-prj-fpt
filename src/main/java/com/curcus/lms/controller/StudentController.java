@@ -31,4 +31,25 @@ public class StudentController {
         }
     }
 
+//    @GetMapping("/{id}")
+//    public Optional<Student> getStudentById(@PathVariable Long id) {
+//    }
+//
+//    @PostMapping
+//    public Student saveStudent(@RequestBody Student student) {
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public void deleteStudent(@PathVariable Long id) {
+//    }
+//
+//    @GetMapping("/{id}/courses")
+//    public List<Course> getCoursesByStudentId(@PathVariable Long id){
+//    }
+//
+//    @PostMapping("/{studentId}/courses/{courseId}")
+//    public Student studentEnrollCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
+//
+//    }
+
 }
