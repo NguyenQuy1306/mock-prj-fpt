@@ -11,12 +11,12 @@ import java.util.List;
 public interface UserMapper {
 
     // Map Student Entity to StudentResponse
-    @Mapping(source = "userId", target = "studentId")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "firstName", target = "firstName")
-    @Mapping(source = "lastName", target = "lastName")
-    @Mapping(source = "phoneNumber", target = "phoneNumber")
+//    @Mapping(source = "userId", target = "studentId")
+//    @Mapping(source = "name", target = "name")
+//    @Mapping(source = "email", target = "email")
+//    @Mapping(source = "firstName", target = "firstName")
+//    @Mapping(source = "lastName", target = "lastName")
+//    @Mapping(source = "phoneNumber", target = "phoneNumber")
     StudentResponse toResponse(Student student);
 
     List<StudentResponse> toResponseList(List<Student> studentList);

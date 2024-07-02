@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,4 +31,7 @@ public class User {
     private String lastName;
     @Column(nullable = false, unique = true)
     private String phoneNumber;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 }
