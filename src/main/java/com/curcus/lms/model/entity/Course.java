@@ -37,6 +37,6 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private Category category;
-    @OneToMany(mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     Set<Enrollment> enrollment;
 }
