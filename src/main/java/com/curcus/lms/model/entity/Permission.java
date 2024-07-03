@@ -16,7 +16,11 @@ public enum Permission {
     INSTRUCTOR_CREATE("instructor:create"),
     INSTRUCTOR_READ("instructor:read"),
     INSTRUCTOR_UPDATE("instructor:update"),
-    INSTRUCTOR_DELETE("instructor:delete")
+    INSTRUCTOR_DELETE("instructor:delete"),
+    COURSE_CREATE("course:create"),
+    COURSE_READ("course:read"),
+    COURSE_UPDATE("course:update"),
+    COURSE_DELETE("course:delete"),
     ;
 
     @Getter
