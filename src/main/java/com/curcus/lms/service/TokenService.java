@@ -6,6 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TokenService {
-    List<Token> findAllValidTokenByUser(Integer id);
+    List<Token> findAllValidTokenByUser(Long id);
     Optional<Token> findByToken(String token);
 }

@@ -16,8 +16,8 @@ public class TokenServiceImpl implements TokenService {
     private TokenRepository tokenRepository;
 
     @Override
-    public List<Token> findAllValidTokenByUser(Integer id) {
-        return tokenRepository.findAllValidTokenByUser(id);
+    public List<Token> findAllValidTokenByUser(Long id) {
+        return List.of();
     }
 
     @Override
