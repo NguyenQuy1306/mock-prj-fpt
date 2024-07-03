@@ -9,18 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.curcus.lms.model.entity.Permission.ADMIN_CREATE;
-import static com.curcus.lms.model.entity.Permission.ADMIN_DELETE;
-import static com.curcus.lms.model.entity.Permission.ADMIN_READ;
-import static com.curcus.lms.model.entity.Permission.ADMIN_UPDATE;
-import static com.curcus.lms.model.entity.Permission.STUDENT_CREATE;
-import static com.curcus.lms.model.entity.Permission.STUDENT_DELETE;
-import static com.curcus.lms.model.entity.Permission.STUDENT_READ;
-import static com.curcus.lms.model.entity.Permission.STUDENT_UPDATE;
-import static com.curcus.lms.model.entity.Permission.INSTRUCTOR_CREATE;
-import static com.curcus.lms.model.entity.Permission.INSTRUCTOR_DELETE;
-import static com.curcus.lms.model.entity.Permission.INSTRUCTOR_READ;
-import static com.curcus.lms.model.entity.Permission.INSTRUCTOR_UPDATE;
+import static com.curcus.lms.model.entity.Permission.*;
 
 @RequiredArgsConstructor
 public enum Role {
@@ -38,7 +27,11 @@ public enum Role {
             INSTRUCTOR_CREATE,
             INSTRUCTOR_READ,
             INSTRUCTOR_UPDATE,
-            INSTRUCTOR_DELETE
+            INSTRUCTOR_DELETE,
+            COURSE_CREATE,
+            COURSE_READ,
+            COURSE_UPDATE,
+            COURSE_DELETE
     )),
     STUDENT(Set.of(
             STUDENT_CREATE,
@@ -50,7 +43,11 @@ public enum Role {
             INSTRUCTOR_CREATE,
             INSTRUCTOR_READ,
             INSTRUCTOR_UPDATE,
-            INSTRUCTOR_DELETE
+            INSTRUCTOR_DELETE,
+            COURSE_CREATE,
+            COURSE_READ,
+            COURSE_UPDATE,
+            COURSE_DELETE
     ))
 
     ;
