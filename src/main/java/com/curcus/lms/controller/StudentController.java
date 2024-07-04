@@ -56,25 +56,33 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping
     public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody StudentRequest studentRequest) {
-        return saveOrUpdateStudent(studentRequest, false);
+        try {
+            StudentResponse studentResponse = studentService.createStudent(studentRequest);
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(studentResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while creating the student");
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
-        return saveOrUpdateStudent(studentRequest, true);
-    }
-
-    private ResponseEntity<ApiResponse<StudentResponse>> saveOrUpdateStudent(StudentRequest studentRequest, boolean isUpdate) {
         try {
-            StudentResponse studentResponse = studentService.saveStudent(studentRequest);
+            StudentResponse studentResponse = studentService.updateStudent(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
-            return new ResponseEntity<>(apiResponse, isUpdate ? HttpStatus.OK : HttpStatus.CREATED);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while " + (isUpdate ? "updating" : "saving") + " the student");
+            error.put("message", "An error occurred while updating the student");
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
