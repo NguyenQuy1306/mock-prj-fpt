@@ -144,6 +144,17 @@
 		</dependency>
 		<dependency>
 			<groupId>
+				org.projectlombok
+			</groupId>
+			<artifactId>
+				lombok
+			</artifactId>
+			<optional>
+				true
+			</optional>
+		</dependency>
+		<dependency>
+			<groupId>
 				org.mapstruct
 			</groupId>
 			<artifactId>
@@ -166,17 +177,6 @@
 				1.5.5.Final
 			</version>
 			<!-- Use the latest version available -->
-		</dependency>
-		<dependency>
-			<groupId>
-				org.projectlombok
-			</groupId>
-			<artifactId>
-				lombok
-			</artifactId>
-			<optional>
-				true
-			</optional>
 		</dependency>
 		<dependency>
 			<groupId>
