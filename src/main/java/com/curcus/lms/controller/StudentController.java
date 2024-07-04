@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +14,7 @@ import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.service.StudentService;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/students")
@@ -31,9 +33,23 @@ public class StudentController {
         }
     }
 
-//    @GetMapping("/{id}")
-//    public Optional<Student> getStudentById(@PathVariable Long id) {
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<StudentResponse>> getStudentById(@PathVariable Long id) {
+        try {
+            Optional<StudentResponse> studentResponse = studentService.findById(id);
+            if (studentResponse.isPresent()) {
+                ApiResponse apiResponse = new ApiResponse();
+                apiResponse.ok(studentResponse.get());
+                return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            } else {
+                ApiResponse apiResponse = new ApiResponse();
+                return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
 //
 //    @PostMapping
 //    public Student saveStudent(@RequestBody Student student) {
