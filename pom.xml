@@ -87,14 +87,6 @@
 				org.springframework.boot
 			</groupId>
 			<artifactId>
-				spring-boot-starter-security
-			</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>
-				org.springframework.boot
-			</groupId>
-			<artifactId>
 				spring-boot-starter-validation
 			</artifactId>
 		</dependency>
@@ -212,16 +204,16 @@
 			</version>
 		</dependency>
 		<dependency>
-			<groupId>
-				org.springframework.security
-			</groupId>
-			<artifactId>
-				spring-security-test
-			</artifactId>
-			<scope>
-				test
-			</scope>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.36.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-taglib</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
