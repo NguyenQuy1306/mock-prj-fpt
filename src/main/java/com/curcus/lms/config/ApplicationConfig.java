@@ -1,5 +1,6 @@
 package com.curcus.lms.config;
 
+import com.curcus.lms.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +22,11 @@ import com.curcus.lms.auditing.ApplicationAuditAware;
 public class ApplicationConfig {
 
     private final UserRepository repository;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> (UserDetails) repository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userDetailsServiceImpl;
     }
 
     @Bean

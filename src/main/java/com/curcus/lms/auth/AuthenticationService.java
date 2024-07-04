@@ -42,7 +42,7 @@ public class AuthenticationService {
 
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
-                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.STUDENT)
+                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                 .build();
         var jwtToken = jwtService.generateToken(userDetails);
         var refreshToken = jwtService.generateRefreshToken(userDetails);
@@ -71,11 +71,13 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
+        System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
+
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
-                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.STUDENT)
+                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                 .build();
         var jwtToken = jwtService.generateToken(userDetails);
         var refreshToken = jwtService.generateRefreshToken(userDetails);
@@ -115,7 +117,7 @@ public class AuthenticationService {
                     .orElseThrow();
             var userDetails = UserDetailsImpl.builder()
                     .user(user)
-                    .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.STUDENT)
+                    .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                     .build();
             if (jwtService.isTokenValid(refreshToken, userDetails)) {
                 var accessToken = jwtService.generateToken(userDetails);
