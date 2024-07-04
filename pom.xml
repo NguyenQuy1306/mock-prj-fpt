@@ -82,7 +82,6 @@
 				spring-boot-starter-mail
 			</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -161,6 +160,7 @@
 			</artifactId>
 			<version>
 				1.5.5.Final
+				1.5.5.Final
 			</version>
 			<!-- Use the latest version available -->
 		</dependency>
@@ -208,6 +208,17 @@
 				2.5.0
 			</version>
 		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-taglib</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -276,6 +287,54 @@
 							</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>
+					org.apache.maven.plugins
+				</groupId>
+				<artifactId>
+					maven-compiler-plugin
+				</artifactId>
+				<version>
+					3.13.0
+				</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>
+								org.mapstruct
+							</groupId>
+							<artifactId>
+								mapstruct-processor
+							</artifactId>
+							<version>
+								1.5.5.Final
+							</version>
+						</path>
+						<path>
+							<groupId>
+								org.projectlombok
+							</groupId>
+							<artifactId>
+								lombok
+							</artifactId>
+							<version>
+								1.18.32
+							</version>
+						</path>
+						<path>
+							<groupId>
+								org.projectlombok
+							</groupId>
+							<artifactId>
+								lombok-mapstruct-binding
+							</artifactId>
+							<version>
+								0.2.0
+							</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
