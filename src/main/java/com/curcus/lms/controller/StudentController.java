@@ -13,7 +13,10 @@ import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.service.StudentService;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -37,16 +40,22 @@ public class StudentController {
     public ResponseEntity<ApiResponse<StudentResponse>> getStudentById(@PathVariable Long id) {
         try {
             Optional<StudentResponse> studentResponse = studentService.findById(id);
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             if (studentResponse.isPresent()) {
-                ApiResponse apiResponse = new ApiResponse();
                 apiResponse.ok(studentResponse.get());
                 return new ResponseEntity<>(apiResponse, HttpStatus.OK);
             } else {
-                ApiResponse apiResponse = new ApiResponse();
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "Student not found");
+                apiResponse.error(error);
                 return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
             }
         } catch (Exception ex) {
-            throw new ApplicationException();
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while processing the request");
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
