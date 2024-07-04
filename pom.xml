@@ -82,14 +82,14 @@
 				spring-boot-starter-mail
 			</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>
 				org.springframework.boot
 			</groupId>
 			<artifactId>
 				spring-boot-starter-security
 			</artifactId>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -211,7 +211,7 @@
 				2.5.0
 			</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>
 				org.springframework.security
 			</groupId>
@@ -221,7 +221,7 @@
 			<scope>
 				test
 			</scope>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>

@@ -12,7 +12,9 @@ import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.StudentResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -43,9 +45,26 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse saveStudent(StudentRequest studentRequest) {
+    public StudentResponse createStudent(StudentRequest studentRequest) {
         try {
             Student newStudent = new Student();
+            newStudent.setName(studentRequest.getName());
+            newStudent.setEmail(studentRequest.getEmail());
+            newStudent.setPassword(studentRequest.getPassword());
+            newStudent.setFirstName(studentRequest.getFirstName());
+            newStudent.setLastName(studentRequest.getLastName());
+            newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
+            return userMapper.toResponse(studentRepository.save(newStudent));
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+
+    }
+
+    @Override
+    public StudentResponse updateStudent(Long studentId, StudentRequest studentRequest) {
+        try {
+            Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
             newStudent.setEmail(studentRequest.getEmail());
             newStudent.setPassword(studentRequest.getPassword());

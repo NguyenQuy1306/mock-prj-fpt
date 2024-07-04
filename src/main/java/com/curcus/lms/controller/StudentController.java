@@ -86,7 +86,7 @@ public class StudentController {
         try {
             studentService.deleteStudent(id);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
-            apiResponse.ok(null);
+            apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();

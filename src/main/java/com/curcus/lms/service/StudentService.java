@@ -10,8 +10,10 @@ public interface StudentService {
     List<StudentResponse> findAll();
 
     Optional<StudentResponse> findById(Long studentId);
+    
+    StudentResponse createStudent(StudentRequest student);
 
-    StudentResponse saveStudent(StudentRequest student);
+    StudentResponse updateStudent(Long studentId, StudentRequest student);
 
     void deleteStudent(Long studentId);
 
