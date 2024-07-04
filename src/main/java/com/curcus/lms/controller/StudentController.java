@@ -1,18 +1,16 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.request.StudentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.service.StudentService;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,16 +56,46 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping
+    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody StudentRequest studentRequest) {
+        return saveOrUpdateStudent(studentRequest, false);
+    }
 
-//
-//    @PostMapping
-//    public Student saveStudent(@RequestBody Student student) {
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public void deleteStudent(@PathVariable Long id) {
-//    }
-//
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
+        return saveOrUpdateStudent(studentRequest, true);
+    }
+
+    private ResponseEntity<ApiResponse<StudentResponse>> saveOrUpdateStudent(StudentRequest studentRequest, boolean isUpdate) {
+        try {
+            StudentResponse studentResponse = studentService.saveStudent(studentRequest);
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(studentResponse);
+            return new ResponseEntity<>(apiResponse, isUpdate ? HttpStatus.OK : HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while " + (isUpdate ? "updating" : "saving") + " the student");
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteStudent(@PathVariable Long id) {
+        try {
+            studentService.deleteStudent(id);
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.ok(null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while deleting the student");
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 //    @GetMapping("/{id}/courses")
 //    public List<Course> getCoursesByStudentId(@PathVariable Long id){
 //    }
