@@ -1,21 +1,21 @@
 package com.curcus.lms.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.curcus.lms.model.dto.InstructorDTO;
+import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.request.InstructorCreateRequest;
+import com.curcus.lms.repository.InstructorRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.curcus.lms.model.entity.Instructor;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public interface InstructorService {
-    public List<Instructor> findAll();
-    
-    public Optional<Instructor> getInstructorById(Long id);
-
-    public Instructor createInstructor(Instructor instructor);
-
-    public Instructor updateInstructor(Instructor instructor);
-
-    public void deleteInstructor(Long id);
-} 
+    InstructorDTO createInstructor(InstructorCreateRequest request);
+    InstructorDTO getInstructor(Long id);
+    List<InstructorDTO> getAllInstructors();
+    InstructorDTO updateInstructor(Long id, InstructorCreateRequest request);
+    void deleteInstructor(Long id);
+}
