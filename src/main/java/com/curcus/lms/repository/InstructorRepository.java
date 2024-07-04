@@ -7,6 +7,6 @@ import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Student;
 
 @Repository
-public interface StudentRepository extends JpaRepository<Student, Long> {
+public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
 }

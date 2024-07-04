@@ -21,15 +21,14 @@ public class CourseResponse implements Serializable {
 
     private Long price;
 
-    private Boolean isFree;
 
-    private User instructor;
+
     private Long instructorId;
 
-    private Category category;
+
     private int categoryId;
 
-    Set<Enrollment> enrollment;
+
 
     @Override
     public String toString() {

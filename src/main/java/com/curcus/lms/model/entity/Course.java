@@ -27,8 +27,6 @@ public class Course {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = false)
-    private Boolean isFree;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
@@ -39,4 +37,10 @@ public class Course {
     private Category category;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
     Set<Enrollment> enrollment;
+	@Override
+	public String toString() {
+		return "Course [courseId=" + courseId + ", title=" + title + ", description=" + description + ", price=" + price
+				+ ", instructor=" + instructor.getUserId() + ", category=" + category + ", enrollment=" + enrollment + "]";
+	}
+    
 }

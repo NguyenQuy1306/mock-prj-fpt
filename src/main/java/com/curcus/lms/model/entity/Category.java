@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Category {
     @Id
     @GeneratedValue
-    private int categoryId;
+    private long categoryId;
     @Column(unique = true, nullable = false)
     private String categoryName;
 }
