@@ -47,6 +47,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(StudentRequest studentRequest) {
         try {
+            if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("Email đã tồn tại");
+            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
             Student newStudent = new Student();
             newStudent.setName(studentRequest.getName());
             newStudent.setEmail(studentRequest.getEmail());
@@ -64,12 +66,21 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudent(Long studentId, StudentRequest studentRequest) {
         try {
+            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
+
+            if(!newStudent.getEmail().equals(studentRequest.getEmail())) {
+                if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("Email đã tồn tại");
+            }
             newStudent.setEmail(studentRequest.getEmail());
             newStudent.setPassword(studentRequest.getPassword());
             newStudent.setFirstName(studentRequest.getFirstName());
             newStudent.setLastName(studentRequest.getLastName());
+
+            if(!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
+                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
+            }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
@@ -81,6 +92,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long studentId) {
         try {
+            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
             studentRepository.deleteById(studentId);
         } catch (ApplicationException ex) {
             throw ex;

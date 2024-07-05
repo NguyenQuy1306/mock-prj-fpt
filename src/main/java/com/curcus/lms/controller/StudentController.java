@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
+
+import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +61,7 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest) {
         try {
             StudentResponse studentResponse = studentService.createStudent(studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
@@ -74,7 +77,7 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest) {
         try {
             StudentResponse studentResponse = studentService.updateStudent(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
