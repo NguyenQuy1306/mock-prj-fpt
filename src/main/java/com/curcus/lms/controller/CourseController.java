@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -11,15 +12,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.VideoContentCreateResponse;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.request.CourseCreateRequest;
+import com.curcus.lms.model.request.VideoContentCreateRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -55,5 +59,14 @@ public class CourseController {
     	ApiResponse apiResponse=new ApiResponse<>();
     	apiResponse.ok(courseResponse);
     	return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
+    @PostMapping(value="/addVideoContent",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<VideoContentCreateResponse>> createVideoContent(
+    		@ModelAttribute @Valid  VideoContentCreateRequest videoContentCreateRequest){
+    	VideoContentCreateResponse videoContentCreateResponse=courseService.saveVideoContent(videoContentCreateRequest);
+    	ApiResponse apiResponse=new ApiResponse<>();
+    	apiResponse.ok(videoContentCreateResponse);
+    	return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    	
     }
 }
