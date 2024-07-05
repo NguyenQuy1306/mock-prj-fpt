@@ -1,4 +1,4 @@
-package com.curcus.lms.auth;
+package com.curcus.lms.model.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,16 +1,21 @@
-package com.curcus.lms.auth;
+package com.curcus.lms.service;
 
 
+import com.curcus.lms.exception.IncorrectPasswordException;
+import com.curcus.lms.auth.RegisterRequest;
+import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.model.request.AuthenticationRequest;
+import com.curcus.lms.model.response.AuthenticationResponse;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.TokenRepository;
 import com.curcus.lms.repository.UserRepository;
-import com.curcus.lms.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,32 +31,32 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-//    public AuthenticationResponse register(RegisterRequest request) {
-//        User user = switch (request.getUserRole().toUpperCase()) {
-//            case "I" -> new Instructor();
-//            case "S" -> new Student();
-//            default -> throw new IllegalArgumentException("Invalid user role: " + request.getUserRole());
-//        };
-//        user.setName(request.getName());
-//        user.setFirstName(request.getFirstname());
-//        user.setLastName(request.getLastname());
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        user.setEmail(request.getEmail());
-//        user.setPhoneNumber(request.getPhoneNumber());
-//        var savedUser = repository.save(user);
-//
-//        var userDetails = UserDetailsImpl.builder()
-//                .user(user)
-//                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
-//                .build();
-//        var jwtToken = jwtService.generateToken(userDetails);
-//        var refreshToken = jwtService.generateRefreshToken(userDetails);
-//        saveUserToken(savedUser, jwtToken);
-//        return AuthenticationResponse.builder()
-//                .accessToken(jwtToken)
-//                .refreshToken(refreshToken)
-//                .build();
-//    }
+    public AuthenticationResponse register(RegisterRequest request) {
+        User user = switch (request.getUserRole().toUpperCase()) {
+            case "I" -> new Instructor();
+            case "S" -> new Student();
+            default -> throw new IllegalArgumentException("Invalid user role: " + request.getUserRole());
+        };
+        user.setName(request.getName());
+        user.setFirstName(request.getFirstname());
+        user.setLastName(request.getLastname());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        var savedUser = repository.save(user);
+
+        var userDetails = UserDetailsImpl.builder()
+                .user(user)
+                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                .build();
+        var jwtToken = jwtService.generateToken(userDetails);
+        var refreshToken = jwtService.generateRefreshToken(userDetails);
+        saveUserToken(savedUser, jwtToken);
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
 
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
@@ -65,14 +70,20 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new UserNotFoundException("Account does not exist"));
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new IncorrectPasswordException("Incorrect password");
+        }
 
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
@@ -130,4 +141,6 @@ public class AuthenticationService {
             }
         }
     }
+
+
 }

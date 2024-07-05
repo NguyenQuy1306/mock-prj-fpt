@@ -1,4 +1,4 @@
-package com.curcus.lms.config;
+package com.curcus.lms.auth;
 
 import com.curcus.lms.model.entity.UserDetailsImpl;
 import com.curcus.lms.repository.TokenRepository;

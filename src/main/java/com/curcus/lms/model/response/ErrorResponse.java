@@ -1,5 +1,4 @@
-package com.curcus.lms.auth;
-
+package com.curcus.lms.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
-    private String email;
-    private String password;
+public class ErrorResponse {
+    private String code;
+    private String message;
 }
