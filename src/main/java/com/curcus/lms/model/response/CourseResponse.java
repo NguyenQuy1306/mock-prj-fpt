@@ -3,7 +3,6 @@ package com.curcus.lms.model.response;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.entity.Category;
 
@@ -28,8 +27,6 @@ public class CourseResponse implements Serializable {
 
     private Category category;
     private int categoryId;
-
-    Set<Enrollment> enrollment;
 
     @Override
     public String toString() {
