@@ -1,5 +1,8 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.Enrollment;
+import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 
@@ -19,12 +25,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private CourseMapper courseMapper;
 
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {
@@ -107,10 +120,24 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//    @GetMapping("/{id}/courses")
-//    public List<Course> getCoursesByStudentId(@PathVariable Long id){
-//    }
-//
+    @GetMapping("/{id}/courses")
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> getCoursesByStudentId(@PathVariable Long id){
+        try{
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(id);
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            List<CourseResponse> courseResponses = enrollments.stream().map(enrollment -> {return courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
+            apiResponse.ok(courseResponses);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while get list course");
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 //    @PostMapping("/{studentId}/courses/{courseId}")
 //    public Student studentEnrollCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
 //
