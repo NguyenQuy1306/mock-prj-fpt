@@ -1,4 +1,5 @@
 package com.curcus.lms.model.mapper;
+
 import java.io.IOException;
 
 import org.mapstruct.Mapper;
@@ -21,18 +22,20 @@ import com.curcus.lms.service.CloudinaryService;
 
 @Mapper(componentModel = "spring")
 public abstract class VideoContentMapper {
-	@Autowired
+    @Autowired
     protected CloudinaryService cloudinaryService;
-	@Autowired
-	protected SectionRepository sectionRepository;
-	@Autowired
-	protected CourseRepository courseRepository;
-	@Mapping(target = "course", expression = "java(findCourseById(videoContentCreateRequest.getCourseId()))")
+    @Autowired
+    protected SectionRepository sectionRepository;
+    @Autowired
+    protected CourseRepository courseRepository;
+
+    @Mapping(target = "course", expression = "java(findCourseById(videoContentCreateRequest.getCourseId()))")
     @Mapping(target = "section", expression = "java(findSectionById(videoContentCreateRequest.getSectionId()))")
-	@Mapping(target = "videoUrl", expression = "java(uploadVideoAndGetUrl(videoContentCreateRequest.getCourseVideo()))")
+    @Mapping(target = "videoUrl", expression = "java(uploadVideoAndGetUrl(videoContentCreateRequest.getCourseVideo()))")
     @Mapping(target = "videoType", expression = "java(getVideoType(videoContentCreateRequest.getCourseVideo()))")
     public abstract VideoContent toEntity(VideoContentCreateRequest videoContentCreateRequest);
-	protected String uploadVideoAndGetUrl(MultipartFile file) {
+
+    protected String uploadVideoAndGetUrl(MultipartFile file) {
         try {
             return cloudinaryService.uploadVideo(file);
         } catch (IOException | InvalidFileTypeException e) {
@@ -43,14 +46,16 @@ public abstract class VideoContentMapper {
     protected String getVideoType(MultipartFile file) {
         return file.getContentType();
     }
+
     protected Course findCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(
-        		()-> new NotFoundException("Course not existed with id "+id));
+                () -> new NotFoundException("Course not existed with id " + id));
     }
 
     protected Section findSectionById(Long id) {
         return sectionRepository.findById(id).orElseThrow(
-        		()-> new NotFoundException("Section has not existed with id "+id));
+                () -> new NotFoundException("Section has not existed with id " + id));
     }
-	public abstract VideoContentCreateResponse toResponse(VideoContent videoContent);
+
+    public abstract VideoContentCreateResponse toResponse(VideoContent videoContent);
 }

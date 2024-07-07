@@ -10,16 +10,19 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.VideoContent;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.VideoContentMapper;
 import com.curcus.lms.model.request.CourseCreateRequest;
+import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.VideoContentCreateRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.VideoContentCreateResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
+import com.curcus.lms.repository.SectionRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.repository.VideoContentRepository;
 import com.curcus.lms.service.CourseService;
@@ -31,6 +34,8 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private SectionRepository sectionRepository;
     @Autowired
     private InstructorRepository instructorRepository;
     @Autowired
@@ -100,5 +105,17 @@ public class CourseServiceImpl implements CourseService {
         VideoContent videoContent = videoContentMapper.toEntity(videoContentCreateRequest);
         videoContent = videoContentRepository.save(videoContent);
         return videoContentMapper.toResponse(videoContent);
+    }
+
+    @Override
+    public Section createSection(SectionRequest sectionRequest) {
+        Section section = new Section();
+        Course course = courseRepository.findById(sectionRequest.getCourseId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Course has not existed with id"));
+
+        section.setCourse(course);
+        section.setSectionName(sectionRequest.getSectionName());
+        return sectionRepository.save(section);
     }
 }
