@@ -16,22 +16,24 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class CourseMapper {
-	@Autowired
+    @Autowired
     protected UserRepository userRepository;
 
     @Autowired
     protected CategoryRepository categoryRepository;
-    
-	@Mapping(source = "course.instructor.userId", target = "instructorId")
-	@Mapping(source = "course.category.categoryId", target = "categoryId")
-	
-	public abstract CourseResponse toResponse(Course course);
-	public abstract List<CourseResponse> toResponseList(List<Course> courses);
 
-	@Mapping(target = "instructor", expression = "java(findUserById(courseCreateRequest.getInstructorId()))")
+    @Mapping(source = "course.instructor.userId", target = "instructorId")
+    @Mapping(source = "course.category.categoryId", target = "categoryId")
+
+    public abstract CourseResponse toResponse(Course course);
+
+    public abstract List<CourseResponse> toResponseList(List<Course> courses);
+
+    @Mapping(target = "instructor", expression = "java(findUserById(courseCreateRequest.getInstructorId()))")
     @Mapping(target = "category", expression = "java(findCategoryById(courseCreateRequest.getCategoryId()))")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-	protected User findUserById(Long id) {
+
+    protected User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 

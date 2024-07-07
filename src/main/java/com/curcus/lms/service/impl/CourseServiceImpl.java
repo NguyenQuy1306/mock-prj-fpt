@@ -19,6 +19,7 @@ import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.exception.NotFoundException;
+
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -46,17 +47,30 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
-	@Override
-	public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
-		// TODO Auto-generated method stub
-		Instructor instructor = instructorRepository.findById(courseCreateRequest.getInstructorId())
-                .orElseThrow(() -> new NotFoundException("Instructor has not existed with id"+courseCreateRequest.getInstructorId()));
+    @Override
+    public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
+        // TODO Auto-generated method stub
+        Instructor instructor = instructorRepository.findById(courseCreateRequest.getInstructorId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Instructor has not existed with id" + courseCreateRequest.getInstructorId()));
         Category category = categoryRepository.findById(courseCreateRequest.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("Category has not existed with id "+courseCreateRequest.getCategoryId()));
+                .orElseThrow(() -> new NotFoundException(
+                        "Category has not existed with id " + courseCreateRequest.getCategoryId()));
 
-		Course course = courseMapper.toEntity(courseCreateRequest);
-		System.out.println(course.toString());
+        Course course = courseMapper.toEntity(courseCreateRequest);
+        System.out.println(course.toString());
         Course savedCourse = courseRepository.save(course);
         return courseMapper.toResponse(savedCourse);
-	}
+    }
+
+    @Override
+    public CourseResponse deleteCourse(Long id) {
+        // TODO Auto-generated method stub
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(
+                        "Course has not existed with id"));
+        courseRepository.deleteById(id);
+
+        return courseMapper.toResponse(course);
+    }
 }

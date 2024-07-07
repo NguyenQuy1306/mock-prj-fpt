@@ -19,7 +19,9 @@ import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -49,11 +51,21 @@ public class CourseController {
             throw new ApplicationException();
         }
     }
-    @PostMapping(value="/create")
-    public ResponseEntity<ApiResponse<CourseResponse>> createCourse(@Valid @RequestBody CourseCreateRequest courseCreateRequest){
-    	CourseResponse courseResponse=courseService.saveCourse(courseCreateRequest);
-    	ApiResponse apiResponse=new ApiResponse<>();
-    	apiResponse.ok(courseResponse);
-    	return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<ApiResponse<CourseResponse>> createCourse(
+            @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
+        CourseResponse courseResponse = courseService.saveCourse(courseCreateRequest);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(courseResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<ApiResponse<CourseResponse>> deleteCourse(@Valid @PathVariable("id") Long id) {
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(courseService.deleteCourse(id));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
 }

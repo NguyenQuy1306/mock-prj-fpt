@@ -9,7 +9,9 @@ public interface CourseService {
 
     List<CourseResponse> findAll();
 
+    CourseResponse deleteCourse(Long id);
+
     List<CourseResponse> findByCategory(int categoryId);
-    
+
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
 }
