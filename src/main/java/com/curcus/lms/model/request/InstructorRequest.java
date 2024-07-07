@@ -2,12 +2,20 @@ package com.curcus.lms.model.request;
 
 import java.io.Serializable;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
 public class InstructorRequest implements Serializable {
+    @NotBlank(message = "Tên bị thiếu")
     private String name;
+    @NotBlank(message = "email bị thiếu")
     private String email;
+    @NotBlank(message = "Mật khẩu bị thiếu")
     private String password;
     private String firstName;
     private String lastName;
+    @NotBlank(message = "Số điện thoại bị thiếu")
     private String phoneNumber;
 
     public String getName() {

@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.service.InstructorService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -37,7 +40,11 @@ public class InstructorController {
             apiResponse.ok(instructorService.findAll());
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
-            throw new ApplicationException();
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while processing the request");
+            ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -45,12 +52,15 @@ public class InstructorController {
     @GetMapping(value = {"/name/{name}"})
     public ResponseEntity<ApiResponse<List<InstructorResponse>>> getInstructorsByName(@PathVariable String name){
         try {
-            System.out.println("aaaa'"+name);
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findByName(name));
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
-            throw new ApplicationException();
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while processing the request");
+            ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -80,8 +90,9 @@ public class InstructorController {
     }
     
     @PostMapping
-    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@RequestBody InstructorRequest instructorRequest){
+    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult){
         try {
+            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             InstructorResponse instructorResponse = instructorService.saveInstructor(instructorRequest);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorResponse);
@@ -96,8 +107,9 @@ public class InstructorController {
     }
 
     @PutMapping(value = {"/{id}"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @RequestBody InstructorRequest instructorRequest) {
+    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             InstructorResponse instructorResponse = instructorService.newUpdateInstructor(instructorRequest, id);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorResponse);

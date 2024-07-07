@@ -3,6 +3,7 @@ package com.curcus.lms.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.response.InstructorResponse;
 
@@ -17,6 +18,6 @@ public interface InstructorService {
 
     InstructorResponse newUpdateInstructor(InstructorRequest Instructor, Long id);
 
-    void deleteInstructor(Long studentId);
+    void deleteInstructor(Long instructorId);
 
 }
