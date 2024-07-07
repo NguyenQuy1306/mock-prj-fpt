@@ -10,13 +10,18 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.entity.VideoContent;
 import com.curcus.lms.model.mapper.CourseMapper;
+import com.curcus.lms.model.mapper.VideoContentMapper;
 import com.curcus.lms.model.request.CourseCreateRequest;
+import com.curcus.lms.model.request.VideoContentCreateRequest;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.VideoContentCreateResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.StudentRepository;
+import com.curcus.lms.repository.VideoContentRepository;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.exception.NotFoundException;
 
@@ -29,7 +34,11 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private InstructorRepository instructorRepository;
     @Autowired
+    private VideoContentRepository videoContentRepository;
+    @Autowired
     private CourseMapper courseMapper;
+    @Autowired
+    private VideoContentMapper videoContentMapper;
 
     @Override
     public List<CourseResponse> findAll() {
@@ -47,21 +56,24 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
-    @Override
-    public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
-        // TODO Auto-generated method stub
-        Instructor instructor = instructorRepository.findById(courseCreateRequest.getInstructorId())
-                .orElseThrow(() -> new NotFoundException(
-                        "Instructor has not existed with id" + courseCreateRequest.getInstructorId()));
-        Category category = categoryRepository.findById(courseCreateRequest.getCategoryId())
-                .orElseThrow(() -> new NotFoundException(
-                        "Category has not existed with id " + courseCreateRequest.getCategoryId()));
+    // @Override
+    // public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
+    // // TODO Auto-generated method stub
+    // Instructor instructor =
+    // instructorRepository.findById(courseCreateRequest.getInstructorId())
+    // .orElseThrow(() -> new NotFoundException(
+    // "Instructor has not existed with id" +
+    // courseCreateRequest.getInstructorId()));
+    // Category category =
+    // categoryRepository.findById(courseCreateRequest.getCategoryId())
+    // .orElseThrow(() -> new NotFoundException(
+    // "Category has not existed with id " + courseCreateRequest.getCategoryId()));
 
-        Course course = courseMapper.toEntity(courseCreateRequest);
-        System.out.println(course.toString());
-        Course savedCourse = courseRepository.save(course);
-        return courseMapper.toResponse(savedCourse);
-    }
+    // Course course = courseMapper.toEntity(courseCreateRequest);
+    // System.out.println(course.toString());
+    // Course savedCourse = courseRepository.save(course);
+    // return courseMapper.toResponse(savedCourse);
+    // }
 
     @Override
     public CourseResponse deleteCourse(Long id) {
@@ -72,5 +84,21 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.deleteById(id);
 
         return courseMapper.toResponse(course);
+    }
+
+    @Override
+    public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
+        // TODO Auto-generated method stub
+        Course course = courseMapper.toEntity(courseCreateRequest);
+        Course savedCourse = courseRepository.save(course);
+        return courseMapper.toResponse(savedCourse);
+    }
+
+    @Override
+    public VideoContentCreateResponse saveVideoContent(VideoContentCreateRequest videoContentCreateRequest) {
+        // TODO Auto-generated method stub
+        VideoContent videoContent = videoContentMapper.toEntity(videoContentCreateRequest);
+        videoContent = videoContentRepository.save(videoContent);
+        return videoContentMapper.toResponse(videoContent);
     }
 }
