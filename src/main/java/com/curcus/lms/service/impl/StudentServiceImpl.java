@@ -69,12 +69,6 @@ public class StudentServiceImpl implements StudentService {
             if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
-
-            if(!newStudent.getEmail().equals(studentRequest.getEmail())) {
-                if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("Email đã tồn tại");
-            }
-            newStudent.setEmail(studentRequest.getEmail());
-            newStudent.setPassword(studentRequest.getPassword());
             newStudent.setFirstName(studentRequest.getFirstName());
             newStudent.setLastName(studentRequest.getLastName());
 
