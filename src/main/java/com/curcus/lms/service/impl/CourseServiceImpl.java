@@ -1,15 +1,15 @@
 package com.curcus.lms.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.VideoContent;
 import com.curcus.lms.model.mapper.CourseMapper;
@@ -23,10 +23,8 @@ import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
-import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.repository.VideoContentRepository;
 import com.curcus.lms.service.CourseService;
-import com.curcus.lms.exception.NotFoundException;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -86,6 +84,8 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "Course has not existed with id"));
+        if (!course.getEnrollment().isEmpty())
+            throw new ValidationException("The course cannot be deleted because someone is currently enrolled");
         courseRepository.deleteById(id);
 
         return courseMapper.toResponse(course);
