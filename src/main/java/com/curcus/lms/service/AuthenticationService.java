@@ -47,7 +47,7 @@ public class AuthenticationService {
 
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
-                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                 .build();
         var jwtToken = jwtService.generateToken(userDetails);
         var refreshToken = jwtService.generateRefreshToken(userDetails);
@@ -87,7 +87,7 @@ public class AuthenticationService {
 
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
-                .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                 .build();
         var jwtToken = jwtService.generateToken(userDetails);
         var refreshToken = jwtService.generateRefreshToken(userDetails);
@@ -127,7 +127,7 @@ public class AuthenticationService {
                     .orElseThrow();
             var userDetails = UserDetailsImpl.builder()
                     .user(user)
-                    .role(user.getDicriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
                     .build();
             if (jwtService.isTokenValid(refreshToken, userDetails)) {
                 var accessToken = jwtService.generateToken(userDetails);

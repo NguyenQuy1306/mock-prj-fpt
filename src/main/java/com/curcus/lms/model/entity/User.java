@@ -35,8 +35,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
+    @OneToMany(mappedBy = "user")
+    private List<VerificationToken> verificationTokens;
+
     @Transient
-    public String getDicriminatorValue() {
+    public String getDiscriminatorValue() {
         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
     }
 }
