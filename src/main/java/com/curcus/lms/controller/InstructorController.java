@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.request.InstructorRequest;
+import com.curcus.lms.model.request.InstructorUpdateRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.service.InstructorService;
@@ -107,10 +108,10 @@ public class InstructorController {
     }
 
     @PutMapping(value = {"/{id}"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
-            InstructorResponse instructorResponse = instructorService.newUpdateInstructor(instructorRequest, id);
+            InstructorResponse instructorResponse = instructorService.newUpdateInstructor(instructorUpdateRequest, id);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);

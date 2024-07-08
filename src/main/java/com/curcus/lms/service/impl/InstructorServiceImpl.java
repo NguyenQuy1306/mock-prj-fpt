@@ -10,6 +10,7 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.InstructorRequest;
+import com.curcus.lms.model.request.InstructorUpdateRequest;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.service.InstructorService;
@@ -69,21 +70,20 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public InstructorResponse newUpdateInstructor(InstructorRequest instructorRequest, Long id) {
+    public InstructorResponse newUpdateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
         try {
             if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (instructorRequest.getName()!=null) newInstructor.setName(instructorRequest.getName());
-            if (instructorRequest.getEmail()!=null) newInstructor.setEmail(instructorRequest.getEmail());
-            if (instructorRequest.getPassword()!=null) {
-                if (instructorRepository.findByEmail(instructorRequest.getEmail())!=null) throw new ApplicationException("Email already exists");
-                newInstructor.setPassword(instructorRequest.getPassword());
+            if (instructorUpdateRequest.getName()!=null) newInstructor.setName(instructorUpdateRequest.getName());
+            if (instructorUpdateRequest.getEmail()!=null) {
+                if (instructorRepository.findByEmail(instructorUpdateRequest.getEmail())!=null) throw new ApplicationException("Email already exists");
+                newInstructor.setEmail(instructorUpdateRequest.getEmail());
             }
-            if (instructorRequest.getFirstName()!=null) newInstructor.setFirstName(instructorRequest.getFirstName());
-            if (instructorRequest.getLastName()!=null) newInstructor.setLastName(instructorRequest.getLastName());
-            if (instructorRequest.getPhoneNumber()!=null) {
-                if (instructorRepository.findByEmail(instructorRequest.getPhoneNumber())!=null) throw new ApplicationException("PhoneNumber already exists");
-                newInstructor.setPhoneNumber(instructorRequest.getPhoneNumber());
+            if (instructorUpdateRequest.getFirstName()!=null) newInstructor.setFirstName(instructorUpdateRequest.getFirstName());
+            if (instructorUpdateRequest.getLastName()!=null) newInstructor.setLastName(instructorUpdateRequest.getLastName());
+            if (instructorUpdateRequest.getPhoneNumber()!=null) {
+                if (instructorRepository.findByEmail(instructorUpdateRequest.getPhoneNumber())!=null) throw new ApplicationException("PhoneNumber already exists");
+                newInstructor.setPhoneNumber(instructorUpdateRequest.getPhoneNumber());
             }
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
