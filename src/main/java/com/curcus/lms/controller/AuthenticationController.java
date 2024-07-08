@@ -8,7 +8,9 @@ import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;
 import com.curcus.lms.service.AuthenticationService;
+import com.curcus.lms.service.JwtService;
 import com.curcus.lms.service.impl.EmailServiceImpl;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class AuthenticationController {
     private final AuthenticationService service;
     private final EmailServiceImpl emailService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -38,7 +41,8 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticate(
             @Valid @RequestBody AuthenticationRequest request,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            HttpServletResponse response
     ) {
 
         if (bindingResult.hasErrors()) {
@@ -49,7 +53,19 @@ public class AuthenticationController {
         }
 
         try {
-            return ResponseEntity.ok(service.authenticate(request));
+            AuthenticationResponse tokens = service.authenticate(request);
+//            Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
+//            accessTokenCookie.setHttpOnly(true);
+//            accessTokenCookie.setSecure(true); // Set to true in production
+//            accessTokenCookie.setPath("/");
+//            accessTokenCookie.setMaxAge(86400000);
+//
+//            Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
+//            refreshTokenCookie.setHttpOnly(true);
+//            refreshTokenCookie.setSecure(true); // Set to true in production
+//            refreshTokenCookie.setPath("/");
+//            refreshTokenCookie.setMaxAge(604800000);
+            return ResponseEntity.ok(tokens);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("MSG8", "Account does not exist"));
         } catch (IncorrectPasswordException e) {
@@ -70,7 +86,7 @@ public class AuthenticationController {
         String recipient = mail;
         String subject = "Xác nhận địa chỉ email của bạn";
         String template = "<p>Dear " + mail + ",</p>"
-                + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn" + "<a href=\"google.com\">link text</a>" +".</p>"
+                + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn " + "<a href=\"google.com\">link text</a>" +".</p>"
                 + "<p>Best regards,</p>"
                 + "<p>FSA Backend</p>";
 
