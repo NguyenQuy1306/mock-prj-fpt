@@ -1,6 +1,8 @@
 package com.curcus.lms.model.dto;
 
+import lombok.Data;
 
+@Data
 public class InstructorDTO {
     private Long userId;
     private String name;
