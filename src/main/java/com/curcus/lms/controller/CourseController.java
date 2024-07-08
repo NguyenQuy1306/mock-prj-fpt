@@ -13,6 +13,8 @@ import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
@@ -31,24 +33,46 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private CourseMapper courseMapper;
 
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
             @RequestParam(value = "category", required = false) String category) {
         try {
-            List<CourseResponse> coures = null;
+            List<CourseResponse> course = null;
             if (category == null) {
-                coures = courseService.findAll();
+                course = courseService.findAll();
             } else {
-                coures = courseService.findByCategory(Integer.parseInt(category));
+                course = courseService.findByCategory(Integer.parseInt(category));
             }
-            if (coures.size() == 0) {
+            if (course.size() == 0) {
                 throw new NotFoundException("Course not found.");
             }
             ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(coures);
+            apiResponse.ok(course);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<ApiResponse<CourseResponse>> getCourseById(@RequestParam Long courseId) {
+        try {
+            Course course = courseService.findById(courseId);
+            if (course == null) {
+                throw new NotFoundException("Course not found");
+            }
+            CourseResponse courseResponse = courseMapper.toResponse(course);
+            ApiResponse apiResponse = new ApiResponse<>();
+            apiResponse.ok(courseResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+
+        catch (NotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException();
