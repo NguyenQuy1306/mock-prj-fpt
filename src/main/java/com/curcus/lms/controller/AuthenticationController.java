@@ -8,6 +8,7 @@ import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;
 import com.curcus.lms.service.AuthenticationService;
+import com.curcus.lms.service.impl.EmailServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -16,10 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -29,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
+    private final EmailServiceImpl emailService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -65,4 +64,17 @@ public class AuthenticationController {
     ) throws IOException {
         service.refreshToken(request, response);
     }
+
+    @GetMapping("/confirmEmail/{mail}")
+    public ResponseEntity<Boolean> sendEmail(@PathVariable String mail) {
+        String recipient = mail;
+        String subject = "Xác nhận địa chỉ email của bạn";
+        String template = "<p>Dear " + mail + ",</p>"
+                + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn" + "<a href=\"google.com\">link text</a>" +".</p>"
+                + "<p>Best regards,</p>"
+                + "<p>FSA Backend</p>";
+
+        return ResponseEntity.ok(emailService.sendEmail(recipient, subject, template));
+    }
+
 }
