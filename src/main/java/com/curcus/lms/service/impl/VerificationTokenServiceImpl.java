@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.entity.VerificationToken;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
@@ -28,7 +29,7 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
                     .token(token)
                     .issueAt(timeNow)
                     .revoked(false)
-                    .user(userRepository.findByEmail(email).orElseThrow())
+                    .user(userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found")))
                     .build();
             verificationTokenRepository.save(verificationToken);
         } catch (Exception e) {

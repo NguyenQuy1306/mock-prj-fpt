@@ -2,7 +2,7 @@ package com.curcus.lms.service;
 
 
 import com.curcus.lms.exception.IncorrectPasswordException;
-import com.curcus.lms.auth.RegisterRequest;
+import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;

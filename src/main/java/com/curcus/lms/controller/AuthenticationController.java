@@ -5,34 +5,29 @@ import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.entity.VerificationToken;
 import com.curcus.lms.model.response.ErrorResponse;
 import com.curcus.lms.exception.IncorrectPasswordException;
-import com.curcus.lms.auth.RegisterRequest;
+import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;
+import com.curcus.lms.model.response.SuccessfulResponse;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
 import com.curcus.lms.service.JwtService;
 import com.curcus.lms.service.impl.EmailServiceImpl;
 import com.curcus.lms.service.impl.VerificationTokenServiceImpl;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,18 +35,49 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
-    private final EmailServiceImpl emailService;
-    private final JwtService jwtService;
+    private final EmailServiceImpl emailServiceImpl;
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final VerificationTokenServiceImpl verificationTokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
-    ) {
-        return ResponseEntity.ok(service.register(request));
+    public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request,
+                                           BindingResult bindingResult) {
+        System.out.println(bindingResult.hasErrors());
+        if (bindingResult.hasErrors()) {
+//            String errorMessage = bindingResult.getAllErrors().stream()
+//                    .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
+//                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body(new ErrorResponse("MSG1", "Vui lòng điền đầy đủ thông tin."));
+        }
+        try {
+            if (userRepository.findByEmail(request.getEmail()).isPresent()
+            || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("MSG2", "Người dùng đã tồn tại trong hệ thống."));
+            }
+            AuthenticationResponse authenticationResponse = service.register(request);
+
+            boolean emailSent = false;
+            String successMessage = "";
+
+            if ("S".equals(request.getUserRole())) {
+                emailSent = emailServiceImpl.sendEmailToStudent(request.getEmail());
+                successMessage = "Đăng ký thành công. Vui lòng kiểm tra email để hoàn thành xác nhận tài khoản. Nếu bạn không nhận được email, ấn vào đây.";
+            } else if ("I".equals(request.getUserRole())) {
+                emailSent = emailServiceImpl.sendEmailToInstructor(request.getEmail());
+                successMessage = "Đăng ký thành công. Vui lòng kiểm tra email.";
+            }
+
+            if (emailSent) {
+                return ResponseEntity.ok(new SuccessfulResponse("MGS7", successMessage));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG 21", "Đã xảy ra lỗi. Vui lòng thử lại sau."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG (?)", "Lỗi chưa xác định."));
+        }
     }
+
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticate(
             @Valid @RequestBody AuthenticationRequest request,
@@ -106,7 +132,7 @@ public class AuthenticationController {
                     + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn " + "<a href=\"http://localhost:8080/api/v1/auth/is-expired-verification?token=" + token + "\">link text</a>" +".</p>"
                     + "<p>Best regards,</p>"
                     + "<p>FSA Backend</p>";
-            return ResponseEntity.ok(emailService.sendEmail(recipient, subject, template));
+            return ResponseEntity.ok(emailServiceImpl.sendEmail(recipient, subject, template));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
@@ -114,14 +140,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/is-expired-verification")
-    public RedirectView isExpiredVerification(@RequestParam String token) {
+    public ResponseEntity<Object> isExpiredVerification(@RequestParam String token) {
         try {
             VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
 
             if (verificationToken.isRevoked()) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has been verified");
-                return new RedirectView("/api/v1/auth/unsuccessful");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has been verified");
+//                return new RedirectView("/api/v1/auth/unsuccessful");
 
             }
 
@@ -130,7 +156,7 @@ public class AuthenticationController {
 
             if (now.isAfter(expiredDate)) {
 //                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is expired");
-                return new RedirectView("/api/v1/auth/unsuccessful");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("MSG3", "Mã xác thực đã hết hiệu lực"));
 
             }
 
@@ -142,15 +168,15 @@ public class AuthenticationController {
             user.setActivated(true);
             userRepository.save(user);
 
-//            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Token is not expired and now is revoked");
-            return new RedirectView("/api/v1/auth/successful");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Token is not expired and now is revoked");
+//            return new RedirectView("/api/v1/auth/successful");
         } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-            return new RedirectView("/api/v1/auth/unsuccessful");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+//            return new RedirectView("/api/v1/auth/unsuccessful");
         } catch (Exception e) {
             e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
-            return new RedirectView("/api/v1/auth/unsuccessful");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+//            return new RedirectView("/api/v1/auth/unsuccessful");
 
         }
     }
