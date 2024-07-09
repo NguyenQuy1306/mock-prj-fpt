@@ -32,6 +32,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    private boolean activated;
+
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
