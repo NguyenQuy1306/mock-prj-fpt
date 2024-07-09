@@ -2,9 +2,9 @@ package com.curcus.lms.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.service.CloudinaryService;
 import com.curcus.lms.validation.FileValidation;
-import com.curcus.lms.exception.InvalidFileTypeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +28,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             throw e;
         }
     }
+
     public String uploadImage(MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateFileType(file.getOriginalFilename());
         try {
@@ -56,6 +57,46 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         try {
             Map deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             return deleteResult.get("result").toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public String updateFile(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
+        FileValidation.validateFileType(file.getOriginalFilename());
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "public_id", publicId
+            ));
+            return uploadResult.get("url").toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public String updateImage(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
+        FileValidation.validateImageType(file.getOriginalFilename());
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "public_id", publicId
+            ));
+            return uploadResult.get("url").toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public String updateVideo(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
+        FileValidation.validateVideoType(file.getOriginalFilename());
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "resource_type", "video",
+                    "public_id", publicId
+            ));
+            return uploadResult.get("url").toString();
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
