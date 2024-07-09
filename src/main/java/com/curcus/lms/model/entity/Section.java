@@ -24,6 +24,6 @@ public class Section {
     private Course course;
     @Column(nullable = false)
     private String sectionName;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "section")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "section")
     Set<Content> contents;
 }

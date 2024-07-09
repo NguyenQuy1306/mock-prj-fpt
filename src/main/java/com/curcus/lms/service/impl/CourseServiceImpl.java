@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import java.io.Console;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,21 +10,26 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Category;
+import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.entity.VideoContent;
+
+import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.mapper.CourseMapper;
-import com.curcus.lms.model.mapper.VideoContentMapper;
+
+import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.model.request.VideoContentCreateRequest;
+
+import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.VideoContentCreateResponse;
+
 import com.curcus.lms.repository.CategoryRepository;
+import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
-import com.curcus.lms.repository.VideoContentRepository;
+
 import com.curcus.lms.service.CourseService;
 
 @Service
@@ -37,11 +43,11 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private InstructorRepository instructorRepository;
     @Autowired
-    private VideoContentRepository videoContentRepository;
+    private ContentRepository contentRepository;
     @Autowired
     private CourseMapper courseMapper;
     @Autowired
-    private VideoContentMapper videoContentMapper;
+    private ContentMapper contentMapper;
 
     @Override
     public List<CourseResponse> findAll() {
@@ -100,11 +106,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public VideoContentCreateResponse saveVideoContent(VideoContentCreateRequest videoContentCreateRequest) {
+    public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
-        VideoContent videoContent = videoContentMapper.toEntity(videoContentCreateRequest);
-        videoContent = videoContentRepository.save(videoContent);
-        return videoContentMapper.toResponse(videoContent);
+    	System.out.println("contentCreateRequest is "+contentCreateRequest);
+        Content content = contentMapper.toEntity(contentCreateRequest);
+        System.out.println(content.toString());
+        content = contentRepository.save(content);
+        return contentMapper.toResponse(content);
     }
 
     @Override

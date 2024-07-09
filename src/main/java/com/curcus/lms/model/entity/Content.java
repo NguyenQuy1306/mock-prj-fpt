@@ -1,6 +1,6 @@
 package com.curcus.lms.model.entity;
 
-import java.time.LocalDateTime;
+import com.curcus.lms.constants.ContentType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,20 +17,19 @@ import lombok.NoArgsConstructor;
 public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ContentId;
+    private Long id;
 
-    @Column(nullable = false)
-    private LocalDateTime dateTime;
-    private String docsType;
     @ManyToOne
     @JoinColumn(name = "section_id", referencedColumnName = "sectionId")
     private Section section;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "video_id", referencedColumnName = "videoId")
-    private VideoContent videoContent;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ContentType type;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "document_id", referencedColumnName = "documentId")
-    private DocumentContent documentContent;
+    @Column(nullable = false)
+    private String url;
+
+    @Column(nullable = false)
+    private Long position;
 }

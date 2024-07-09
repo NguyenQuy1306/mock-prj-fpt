@@ -34,7 +34,7 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private Category category;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course", cascade = CascadeType.ALL)
     Set<Enrollment> enrollment;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "course")
