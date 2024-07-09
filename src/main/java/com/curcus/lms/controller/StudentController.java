@@ -110,9 +110,8 @@ public class StudentController {
     }
 
     @PutMapping("/{id}/changePassword")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
         try {
-            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             StudentResponse studentResponse = studentService.updateStudentPassword(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);

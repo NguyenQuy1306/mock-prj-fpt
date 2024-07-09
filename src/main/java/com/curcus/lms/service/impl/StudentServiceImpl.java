@@ -98,6 +98,7 @@ public class StudentServiceImpl implements StudentService {
             if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
+            if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
             if(newStudent.getPassword().equals(studentRequest.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
             newStudent.setPassword(studentRequest.getPassword());
             return userMapper.toResponse(studentRepository.save(newStudent));
