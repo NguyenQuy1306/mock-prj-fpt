@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
+import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.service.StudentService;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -29,7 +31,7 @@ public class StudentController {
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {
         try {
-            ApiResponse apiResponse = new ApiResponse();
+            ApiResponse<List<StudentResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentService.findAll());
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
@@ -53,7 +55,7 @@ public class StudentController {
             }
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while processing the request");
+            error.put("message", ex.getMessage());
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -87,7 +89,7 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while updating the student");
+            error.put("message", ex.getMessage());
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,7 +105,7 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while updating the student password");
+            error.put("message", ex.getMessage());
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,7 +121,7 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while deleting the student");
+            error.put("message", ex.getMessage());
             ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -145,12 +147,29 @@ public class StudentController {
             // apiResponse.error(error);
             // return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while get list course");
+            error.put("message", ex.getMessage());
             ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{id}/cart")
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long id) {
+        try {
+            List<CourseResponse> listCourse = studentService.getListCourseFromCart(id);
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(listCourse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 
     @PostMapping("/{studentId}/courses/{courseId}")
     public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId, @PathVariable Long courseId) {

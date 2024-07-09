@@ -31,7 +31,7 @@ public class CourseController {
             } else {
                 coures = courseService.findByCategory(Integer.parseInt(category));
             }
-            ApiResponse apiResponse = new ApiResponse<>();
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(coures);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
