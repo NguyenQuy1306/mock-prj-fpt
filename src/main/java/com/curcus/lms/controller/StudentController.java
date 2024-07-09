@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.curcus.lms.exception.ApplicationException;
@@ -75,8 +76,9 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             StudentResponse studentResponse = studentService.createStudent(studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
@@ -91,8 +93,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             StudentResponse studentResponse = studentService.updateStudent(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
@@ -107,8 +110,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}/changePassword")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
             StudentResponse studentResponse = studentService.updateStudentPassword(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
