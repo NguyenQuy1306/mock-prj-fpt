@@ -167,9 +167,26 @@ public class StudentController {
         }
     }
 
-//    @PostMapping("/{studentId}/courses/{courseId}")
-//    public Student studentEnrollCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
-//
-//    }
+    @PostMapping("/{studentId}/courses/{courseId}")
+    public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
+        try {
+            EnrollmentResponse enrollmentResponse = studentService.addStudentToCourse(studentId, courseId);
+            ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(enrollmentResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
+            if (ex instanceof ApplicationException) {
+                error.put("message", ex.getMessage());
+                apiResponse.error(error);
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            } else {
+                error.put("message", "An error occurred while enrolling the student to the course");
+                apiResponse.error(error);
+                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
 
 }

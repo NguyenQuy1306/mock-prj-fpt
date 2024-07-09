@@ -25,4 +25,5 @@ public interface StudentService {
 
     List<CourseResponse> getListCourseFromCart(Long studentId);
 
+    EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 }
