@@ -174,18 +174,18 @@ public class StudentController {
             ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(enrollmentResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-        } catch (ApplicationException ex) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while enrolling the student to the course");
             ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            if (ex instanceof ApplicationException) {
+                error.put("message", ex.getMessage());
+                apiResponse.error(error);
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            } else {
+                error.put("message", "An error occurred while enrolling the student to the course");
+                apiResponse.error(error);
+                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
