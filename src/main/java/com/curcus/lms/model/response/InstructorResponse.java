@@ -7,7 +7,6 @@ public class InstructorResponse implements Serializable{
     private Long instructorId;
     private String name;
     private String email;
-    private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -28,12 +27,6 @@ public class InstructorResponse implements Serializable{
     }
     public void setEmail(String email) {
         this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
     }
     public String getFirstName() {
         return firstName;
@@ -56,7 +49,7 @@ public class InstructorResponse implements Serializable{
     
     @Override
     public String toString() {
-        return "StudentResponse{" +
+        return "InstructorResponse{" +
                 "studentId=" + instructorId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +

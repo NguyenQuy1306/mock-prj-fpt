@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.InstructorRequest;
@@ -14,6 +15,8 @@ import com.curcus.lms.model.request.InstructorUpdateRequest;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.service.InstructorService;
+
+import jakarta.validation.ValidationException;
 
 @Service
 public class InstructorServiceImpl implements InstructorService{
@@ -51,11 +54,11 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public InstructorResponse saveInstructor(InstructorRequest instructorRequest) {
+    public InstructorResponse createInstructor(InstructorRequest instructorRequest) {
         try {
             Instructor newInstructor = new Instructor();
             newInstructor.setName(instructorRequest.getName());
-            if (instructorRepository.findByEmail(instructorRequest.getEmail())!=null) throw new ApplicationException("Email already exists");
+            if (instructorRepository.findByEmail(instructorRequest.getEmail())!=null) throw new ValidationException("Email already exists");
             newInstructor.setEmail(instructorRequest.getEmail());
             newInstructor.setPassword(instructorRequest.getPassword());
             newInstructor.setFirstName(instructorRequest.getFirstName());
@@ -70,15 +73,11 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public InstructorResponse newUpdateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
+    public InstructorResponse updateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
         try {
             if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
             Instructor newInstructor = instructorRepository.findById(id).get();
             if (instructorUpdateRequest.getName()!=null) newInstructor.setName(instructorUpdateRequest.getName());
-            if (instructorUpdateRequest.getEmail()!=null) {
-                if (instructorRepository.findByEmail(instructorUpdateRequest.getEmail())!=null) throw new ApplicationException("Email already exists");
-                newInstructor.setEmail(instructorUpdateRequest.getEmail());
-            }
             if (instructorUpdateRequest.getFirstName()!=null) newInstructor.setFirstName(instructorUpdateRequest.getFirstName());
             if (instructorUpdateRequest.getLastName()!=null) newInstructor.setLastName(instructorUpdateRequest.getLastName());
             if (instructorUpdateRequest.getPhoneNumber()!=null) {
@@ -92,12 +91,28 @@ public class InstructorServiceImpl implements InstructorService{
 
     }
 
+    @Override
+    public InstructorResponse updateInstructorPassword(Long id, String password) {
+        try {
+            if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
+            Instructor newInstructor = instructorRepository.findById(id).get();
+            if (instructorRepository.findByPassword(password)!=null) throw new ApplicationException("Password already exists");
+            newInstructor.setPassword(password);
+            return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+
+    }
 
     @Override
     public void deleteInstructor(Long instructorId){
         try {
-            if (instructorRepository.findById(instructorId)==null) throw new ApplicationException("Unknown account");
-            instructorRepository.deleteById(instructorId);
+            System.out.println(123);
+            if (instructorRepository.findById(instructorId).isPresent()) instructorRepository.deleteById(instructorId);
+            else throw new NotFoundException("Unknown account");
+            System.out.println(9999);
+            
         } catch (ApplicationException ex) {
             throw ex;
         }

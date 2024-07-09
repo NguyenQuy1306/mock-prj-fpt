@@ -2,6 +2,7 @@ package com.curcus.lms.model.request;
 
 import java.io.Serializable;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
 public class InstructorRequest implements Serializable {
     @NotBlank(message = "Tên bị thiếu")
     private String name;
+    @Email(message = "Email is not valid")
     @NotBlank(message = "email bị thiếu")
     private String email;
     @NotBlank(message = "Mật khẩu bị thiếu")

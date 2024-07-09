@@ -15,9 +15,11 @@ public interface InstructorService {
 
     Optional<InstructorResponse> findById(Long instructorId);
 
-    InstructorResponse saveInstructor(InstructorRequest Instructor);
+    InstructorResponse createInstructor(InstructorRequest instructorRequest);
 
-    InstructorResponse newUpdateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id);
+    InstructorResponse updateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id);
+
+    InstructorResponse updateInstructorPassword(Long id, String password);
 
     void deleteInstructor(Long instructorId);
 

@@ -9,8 +9,6 @@ import lombok.Data;
 public class InstructorUpdateRequest implements Serializable {
     @NotBlank(message = "Tên bị thiếu")
     private String name;
-    @NotBlank(message = "email bị thiếu")
-    private String email;
     @NotBlank(message = "Mật khẩu bị thiếu")
     private String firstName;
     private String lastName;
@@ -22,12 +20,6 @@ public class InstructorUpdateRequest implements Serializable {
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
     }
     public String getFirstName() {
         return firstName;

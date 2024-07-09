@@ -12,7 +12,6 @@ public interface InstructorMapper {
     @Mapping(source = "userId", target = "instructorId")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "email", target = "email")
-    @Mapping(source = "password", target = "password")
     @Mapping(source = "firstName", target = "firstName")
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
