@@ -20,4 +20,5 @@ public class Cart {
     @JoinColumn(name = "student_id", referencedColumnName = "studentId")
     private Student student;
     private Boolean isPaid;
+    private Long totalPrice;
 }

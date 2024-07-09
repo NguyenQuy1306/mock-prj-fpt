@@ -12,4 +12,6 @@ public interface CartService {
     CartItems getById(Long cartId, Long courseId);
 
     Cart getCartById(Long studentId);
+
+    Long updateTotalPrice(Cart cart, Long priceOfCourseAdded);
 }
