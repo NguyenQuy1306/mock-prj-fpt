@@ -3,22 +3,24 @@ package com.curcus.lms.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.curcus.lms.repository.CartItemsRepository;
+import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.model.entity.Category;
+import com.curcus.lms.model.entity.Cart;
+import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.entity.Student;
+import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,13 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
+    private CourseMapper courseMapper;
+    @Autowired
     private EnrollmentRepository enrollmentRepository;
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private CartItemsRepository cartItemsRepository;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -132,6 +140,19 @@ public class StudentServiceImpl implements StudentService {
                 )
             ).collect(Collectors.toList());
             return enrollmentResponses;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<CourseResponse> getListCourseFromCart(Long studentId) {
+        try {
+            Cart cart = cartRepository.findByStudent_UserId(studentId);
+            if (cart == null) throw new ApplicationException("Giỏ hàng không tồn tại");
+            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
+            List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
+            return courseResponses;
         } catch (ApplicationException ex) {
             throw ex;
         }

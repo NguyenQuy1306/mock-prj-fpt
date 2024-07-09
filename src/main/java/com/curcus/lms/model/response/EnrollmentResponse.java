@@ -7,9 +7,6 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.Objects;
 
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Student;
-
 import java.io.Serializable;
 
 @AllArgsConstructor
