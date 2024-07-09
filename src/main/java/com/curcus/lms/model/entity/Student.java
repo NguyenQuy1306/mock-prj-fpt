@@ -3,8 +3,6 @@ package com.curcus.lms.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import org.hibernate.mapping.Set;
-
 import com.curcus.lms.model.entity.UserRole.Role;
 
 @Setter

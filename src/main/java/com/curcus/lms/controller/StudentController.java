@@ -1,24 +1,16 @@
 package com.curcus.lms.controller;
 
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Enrollment;
-import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
-import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.repository.CourseRepository;
-import com.curcus.lms.repository.EnrollmentRepository;
-import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -27,19 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
     @Autowired
     private StudentService studentService;
-
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
-
-    @Autowired
-    private CourseMapper courseMapper;
 
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {

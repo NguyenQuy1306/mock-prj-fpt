@@ -1,7 +1,6 @@
 package com.curcus.lms.model.mapper;
 
 import com.curcus.lms.model.entity.Student;
-import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.StudentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
