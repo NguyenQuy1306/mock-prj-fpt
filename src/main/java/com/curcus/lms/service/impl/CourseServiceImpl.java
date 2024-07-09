@@ -35,4 +35,14 @@ public class CourseServiceImpl implements CourseService {
             throw ex;
         }
     }
+
+    @Override
+    public Course findById(Long id) {
+        try {
+            return courseRepository.findById(id).orElse(null);
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
 }

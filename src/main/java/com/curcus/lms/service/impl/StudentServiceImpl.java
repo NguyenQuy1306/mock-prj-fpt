@@ -1,5 +1,7 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +17,9 @@ import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +30,8 @@ public class StudentServiceImpl implements StudentService {
     private UserMapper userMapper;
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -131,6 +133,35 @@ public class StudentServiceImpl implements StudentService {
                 )
             ).collect(Collectors.toList());
             return enrollmentResponses;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Transactional
+    public EnrollmentResponse addStudentToCourse(Long studentId, Long courseId) {
+        try {
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new ApplicationException("Student not found"));
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new ApplicationException("Course not found"));
+
+            Enrollment enrollment = Enrollment.builder()
+                    .student(student)
+                    .course(course)
+                    .enrollmentDate(new Date())
+                    .isComplete(false)
+                    .build();
+
+            Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
+
+            return new EnrollmentResponse(
+                    savedEnrollment.getEnrollmentId(),
+                    savedEnrollment.getStudent().getUserId(),
+                    savedEnrollment.getCourse().getCourseId(),
+                    savedEnrollment.getEnrollmentDate(),
+                    savedEnrollment.getIsComplete()
+            );
         } catch (ApplicationException ex) {
             throw ex;
         }
