@@ -1,6 +1,7 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.entity.VerificationToken;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
@@ -29,12 +30,45 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
                     .token(token)
                     .issueAt(timeNow)
                     .revoked(false)
-                    .user(userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User Not Found")))
+                    .user(userRepository.findByEmail(email).orElseThrow())
                     .build();
             verificationTokenRepository.save(verificationToken);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Optional.ofNullable(token);
+    }
+
+    @Override
+    public Optional<User> validateVerificationToken(String token) {
+        try {
+            VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
+                    .orElseThrow(() -> new NotFoundException("Verification token not found"));
+
+            // check if token is revoked
+            if (verificationToken.isRevoked()) {
+                return Optional.empty();
+            }
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime expiredDate = verificationToken.getIssueAt().plusDays(1);
+            // check if token is expired
+            if (now.isAfter(expiredDate)) {
+                return Optional.empty();
+            }
+
+            // revoke token and return user
+            verificationToken.setRevoked(true);
+            verificationTokenRepository.save(verificationToken);
+            User user = userRepository.findById(verificationToken.getUser().getUserId())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+            return Optional.ofNullable(user);
+
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
