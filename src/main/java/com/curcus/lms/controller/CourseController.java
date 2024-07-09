@@ -91,7 +91,6 @@ public class CourseController {
             throw ex;
         } catch (ValidationException ex) {
             throw ex;
-            // other exception throw application() (not exception of user)
         } catch (Exception ex) {
             throw new ApplicationException();
         }

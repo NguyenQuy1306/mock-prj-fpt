@@ -23,7 +23,6 @@ import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
 import com.curcus.lms.util.ValidatorUtil;
 import com.curcus.lms.validation.CourseValidator;
-import com.curcus.lms.validation.InstructorValidator;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -37,8 +36,6 @@ public class CourseServiceImpl implements CourseService {
     private ValidatorUtil validatorUtil;
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private InstructorValidator instructorValidator;
     @Autowired
     private InstructorService instructorService;
     @Autowired
@@ -79,7 +76,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
+    public void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult) {
         // Get id of course
         if (findById(courseRequest.getCourseId()) == null) {
             throw new NotFoundException("Course not found.");
@@ -91,29 +88,38 @@ public class CourseServiceImpl implements CourseService {
             Map<String, String> validationException = validatorUtil.toErrors(bindingResult.getFieldErrors());
             throw new ValidationException(validationException);
         }
-        // Get id of instructor
-        if (findByIdInstructor(courseRequest.getInstructorId()) == null) {
-            throw new NotFoundException("Instructor not found");
-        }
         // Validator to check instructor of course
-        instructorValidator.validate(courseRequest, bindingResult);
+        courseValidator.validate(courseRequest, bindingResult);
         if (bindingResult.hasErrors()) {
             Map<String, String> validationExceptionInstructor = validatorUtil.toErrors(bindingResult.getFieldErrors());
             throw new ValidationException(validationExceptionInstructor);
         }
+    }
 
-        // set category entity to course
-        Course course = courseMapper.toRequest(courseRequest);
-        Category category = categoryService.findById(courseRequest.getCategoryId());
-        course.setCategory(category);
-        // set instructor entity to course
-        Instructor instructor = instructorService.findById(courseRequest.getInstructorId());
-        course.setInstructor(instructor);
-        // Save update course
-        courseRepository.save(course);
-        // Mapping course to courseResponse
-        CourseResponse courseResponse = courseMapper.toResponse(course);
-        return courseResponse;
+    @Override
+    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
+        try {
+            // call method check course
+            checkCourseRequest(courseRequest, bindingResult);
+            // set category entity to course
+            Course course = courseMapper.toRequest(courseRequest);
+            Category category = categoryService.findById(courseRequest.getCategoryId());
+            course.setCategory(category);
+            // set instructor entity to course
+            Instructor instructor = instructorService.findById(courseRequest.getInstructorId());
+            course.setInstructor(instructor);
+            // Save update course
+            courseRepository.save(course);
+            // Mapping course to courseResponse
+            CourseResponse courseResponse = courseMapper.toResponse(course);
+            return courseResponse;
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
     }
 
 }

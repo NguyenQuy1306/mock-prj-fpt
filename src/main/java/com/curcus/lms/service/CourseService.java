@@ -20,4 +20,6 @@ public interface CourseService {
     Instructor findByIdInstructor(Long id);
 
     CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+
+    void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
 }
