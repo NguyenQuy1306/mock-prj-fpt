@@ -28,11 +28,13 @@ public class PasswordResetController {
         }
     }
 
+    // sẽ redirect qua bên front-end (một static page với message bên dưới), hiện tại đang để tạm như vậy
     @GetMapping("/successful")
     public ResponseEntity<String> successful() {
         return ResponseEntity.ok("Reset mật khẩu thành công. Một email chứa mật khẩu mới đã được gửi vào email của bạn.");
     }
 
+    // sẽ redirect qua bên front-end (một static page với message bên dưới), hiện tại đang để tạm như vậy
     @GetMapping("/failed")
     public ResponseEntity<String> unsuccessful() {
         return ResponseEntity.ok("Đã xảy ra lỗi");
