@@ -20,86 +20,51 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     public String uploadFile(MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateFileType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        return uploadResult.get("url").toString();
     }
 
     public String uploadImage(MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateFileType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "resource_type", "raw"
-            ));
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "resource_type", "raw"
+        ));
+        return uploadResult.get("url").toString();
     }
 
     public String uploadVideo(MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateVideoType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "video"));
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "video"));
+        return uploadResult.get("url").toString();
     }
 
     public String deleteFile(String publicId) throws IOException {
-        try {
-            Map deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            return deleteResult.get("result").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        return deleteResult.get("result").toString();
     }
 
     public String updateFile(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateFileType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "public_id", publicId
-            ));
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "public_id", publicId
+        ));
+        return uploadResult.get("url").toString();
     }
 
     public String updateImage(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateImageType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "public_id", publicId
-            ));
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "public_id", publicId
+        ));
+        return uploadResult.get("url").toString();
     }
 
     public String updateVideo(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
         FileValidation.validateVideoType(file.getOriginalFilename());
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "resource_type", "video",
-                    "public_id", publicId
-            ));
-            return uploadResult.get("url").toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "resource_type", "video",
+                "public_id", publicId
+        ));
+        return uploadResult.get("url").toString();
     }
 }
