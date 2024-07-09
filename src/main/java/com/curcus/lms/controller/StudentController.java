@@ -14,6 +14,7 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
@@ -105,6 +106,22 @@ public class StudentController {
         }
     }
 
+    @PutMapping("/{id}/changePassword")
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest) {
+        try {
+            StudentResponse studentResponse = studentService.updateStudentPassword(id, studentRequest);
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(studentResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An error occurred while updating the student password");
+            ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(@PathVariable Long id) {
         try {
@@ -121,18 +138,27 @@ public class StudentController {
         }
     }
     @GetMapping("/{id}/courses")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getCoursesByStudentId(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id){
         try{
-            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(id);
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            List<CourseResponse> courseResponses = enrollments.stream().map(enrollment -> {return courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
-            apiResponse.ok(courseResponses);
+            // List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(id);
+            // ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            // List<CourseResponse> courseResponses = enrollments.stream().map(enrollment -> {return courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
+            // apiResponse.ok(courseResponses);
+            // return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            List<EnrollmentResponse> enrollments = studentService.getCoursesByStudentId(id);
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(enrollments);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         } catch (Exception ex) {
+            // Map<String, String> error = new HashMap<>();
+            // error.put("message", "An error occurred while get list course");
+            // ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            // apiResponse.error(error);
+            // return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             Map<String, String> error = new HashMap<>();
             error.put("message", "An error occurred while get list course");
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
