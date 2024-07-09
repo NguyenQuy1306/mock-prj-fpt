@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     public ApiResponse handleNotFoundException(NotFoundException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "404");
-        error.put("errorMessage", "NOT_FOUND");
+        error.put("errorMessage", ex.getMessage());
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);
@@ -42,9 +42,12 @@ public class GlobalExceptionHandler {
     public ApiResponse handleValidationException(ValidationException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "400");
-        error.put("errorMessage", "BAD_REQUEST");
+        error.put("errorMessage", ex.getMessage());
 
-        error.putAll(ex.getErrors());
+        // error.putAll(ex.getErrors());
+        if (ex.getErrors() != null) {
+            error.putAll(ex.getErrors());
+        }
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);
@@ -57,7 +60,7 @@ public class GlobalExceptionHandler {
     public ApiResponse handleApplicationException(ApplicationException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "500");
-        error.put("errorMessage", "INTERNAL_SERVER_ERROR");
+        error.put("errorMessage", ex.getMessage());
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);

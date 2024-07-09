@@ -86,11 +86,9 @@ public class CartServiceImpl implements CartService {
                 cartRepository.save(cart);
             }
             // check course alreay in cart
-            System.out.println("getById(cart.getCartId(), courseId) " + getById(cart.getCartId(), courseId));
             if (getById(cart.getCartId(), courseId) != null) {
                 throw new ValidationException("Course already in cart");
             }
-            System.out.println("heere123232");
 
             // add course
             // create cartItems and save
@@ -101,8 +99,12 @@ public class CartServiceImpl implements CartService {
             cartItems.setCourse(course);
             cartItemRepository.save(cartItems);
             return cartItems;
+        } catch (NotFoundException ex) {
+            throw ex;
         } catch (ValidationException ex) {
             throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
         }
     }
 }
