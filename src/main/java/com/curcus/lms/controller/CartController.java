@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CartService;
+import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -28,25 +30,19 @@ public class CartController {
     private CartService cartService;
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private CourseService courseService;
 
     @PostMapping(value = "/addCourse")
-    public ResponseEntity<ApiResponse> addCourseToCart(@RequestParam Long studentId,
-            @Valid @RequestBody CourseRequest courseRequest,
-            BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<CartItems>> addCourseToCart(@RequestParam Long studentId,
+            @RequestParam Long courseId) {
         try {
-            if (studentService.findById(studentId) == null) {
-                throw new NotFoundException("student not found");
-            }
-            CartItems cartItems = cartService.addCourseToCart(courseRequest, bindingResult);
+            CartItems cartItems = cartService.addCourseToCart(studentId, courseId);
             ApiResponse apiResponse = new ApiResponse<>();
             apiResponse.ok(cartItems);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (ApplicationException ex) {
+        } catch (ValidationException ex) {
             throw ex;
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
         }
     }
 

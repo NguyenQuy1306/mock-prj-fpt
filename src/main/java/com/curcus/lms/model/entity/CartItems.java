@@ -13,12 +13,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "cart_items")
 public class CartItems {
-    @Id
+    @EmbeddedId
+    private CartItemsId id;
+
     @ManyToOne
+    @MapsId("cartId")
     @JoinColumn(name = "cart_id", referencedColumnName = "cartId")
     private Cart cart;
-    @Id
+
     @ManyToOne
+    @MapsId("courseId")
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
 }

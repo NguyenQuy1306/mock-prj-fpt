@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.mapping.Set;
 
 import com.curcus.lms.model.entity.UserRole.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Setter
 @Getter
@@ -18,6 +19,11 @@ import com.curcus.lms.model.entity.UserRole.Role;
 public class Student extends User {
     // Add any additional properties or relationships specific to Student here
     @OneToMany(mappedBy = "student")
-    java.util.Set<Enrollment> enrollment;
+    @JsonIgnore
 
+    java.util.Set<Enrollment> enrollment;
+    @OneToMany(mappedBy = "student")
+    @JsonIgnore
+
+    java.util.Set<Cart> cart;
 }
