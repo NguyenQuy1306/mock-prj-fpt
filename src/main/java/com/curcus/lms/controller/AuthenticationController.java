@@ -2,7 +2,6 @@ package com.curcus.lms.controller;
 
 
 import com.curcus.lms.model.entity.User;
-import com.curcus.lms.model.entity.VerificationToken;
 import com.curcus.lms.model.response.ErrorResponse;
 import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.model.request.RegisterRequest;
@@ -13,7 +12,6 @@ import com.curcus.lms.model.response.SuccessfulResponse;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
-import com.curcus.lms.service.JwtService;
 import com.curcus.lms.service.impl.EmailServiceImpl;
 import com.curcus.lms.service.impl.VerificationTokenServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +25,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,7 +35,7 @@ public class AuthenticationController {
     private final EmailServiceImpl emailServiceImpl;
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
-    private final VerificationTokenServiceImpl verificationTokenService;
+    private final VerificationTokenServiceImpl verificationTokenServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request,
@@ -121,50 +118,11 @@ public class AuthenticationController {
         service.refreshToken(request, response);
     }
 
-    @GetMapping("/confirmEmail/{email}")
-    public ResponseEntity<Boolean> sendEmail(@PathVariable String email) {
-        String token = verificationTokenService.createVerificationToken(email).orElseThrow();
-        if (token != null) {
-            // create email content
-            String recipient = email;
-            String subject = "Xác nhận địa chỉ email của bạn";
-            String template = "<p>Dear " + email + ",</p>"
-                    + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn " + "<a href=\"http://localhost:8080/api/v1/auth/is-expired-verification?token=" + token + "\">link text</a>" +".</p>"
-                    + "<p>Best regards,</p>"
-                    + "<p>FSA Backend</p>";
-            return ResponseEntity.ok(emailServiceImpl.sendEmail(recipient, subject, template));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
-        }
-
-    }
-
     @GetMapping("/is-expired-verification")
     public ResponseEntity<Object> isExpiredVerification(@RequestParam String token) {
         try {
-            VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
-
-            if (verificationToken.isRevoked()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token has been verified");
-//                return new RedirectView("/api/v1/auth/unsuccessful");
-
-            }
-
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime expiredDate = verificationToken.getIssueAt().plusDays(1);
-
-            if (now.isAfter(expiredDate)) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is expired");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("MSG3", "Mã xác thực đã hết hiệu lực"));
-
-            }
-
-            verificationToken.setRevoked(true);
-            verificationTokenRepository.save(verificationToken);
-
-            User user = userRepository.findById(verificationToken.getUser().getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User user = verificationTokenServiceImpl.validateVerificationToken(token)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
             user.setActivated(true);
             userRepository.save(user);
 
