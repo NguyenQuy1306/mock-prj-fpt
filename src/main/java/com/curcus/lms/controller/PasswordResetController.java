@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 
 @RestController
-@RequestMapping("/password-reset")
+@RequestMapping("/api/password-reset")
 public class PasswordResetController {
     @Autowired
     PasswordResetImpl passwordReset;
@@ -45,9 +45,9 @@ public class PasswordResetController {
     public RedirectView reset(@RequestParam String token) {
         Boolean result = passwordReset.resetPassword(token);
         if (result) {
-            return new RedirectView("http://localhost:8080/password-reset/successful");
+            return new RedirectView("http://localhost:8080/api/password-reset/successful");
         } else {
-            return new RedirectView("http://localhost:8080/password-reset/failed");
+            return new RedirectView("http://localhost:8080/api/password-reset/failed");
         }
     }
 
