@@ -8,4 +8,5 @@ public interface EmailService {
     Boolean sendEmailToStudent(String to);
     Boolean sendEmailToInstructor(String to);
     Boolean sendPasswordResetConfirmation(String to, String token);
+    Boolean sendPassword(String to, String password);
 }

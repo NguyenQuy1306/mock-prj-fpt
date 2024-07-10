@@ -78,12 +78,28 @@ public class EmailServiceImpl implements EmailService {
             String subject = "Khôi phục mật khẩu";
             String template = String.format(
                       "<p>Dear %s,</p>"
-                    + "<p>Vui lòng nhấn <a href=\"http://localhost:8080/password-reset/reset?token=%s\">vào đây</a> để khôi phục tài khoản của bạn</p>"
+                    + "<p>Vui lòng nhấn <a href=\"http://localhost:8080/api/password-reset/reset?token=%s\">vào đây</a> để khôi phục tài khoản của bạn</p>"
                     + "<p>Best regards,</p>"
                     + "<p>FSA Backend</p>"
                     , to, token);
             return sendEmail(to, subject, template);
         } catch(Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean sendPassword(String to, String password) {
+        try {
+            String subject = "Khôi phục mật khẩu";
+            String template = String.format(
+                    "<p>Dear %s,</p>"
+                            + "<p>Mật khẩu mới của bạn là: %s</p>"
+                            + "<p>Best regards,</p>"
+                            + "<p>FSA Backend</p>"
+                    , to, password);
+            return sendEmail(to, subject, template);
+        } catch (Exception e) {
             return false;
         }
     }

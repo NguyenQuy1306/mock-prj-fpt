@@ -36,15 +36,12 @@ public class PasswordResetImpl implements PasswordResetService {
     public Boolean resetPassword(String token) {
         try {
             User user = verificationTokenService.validateVerificationToken(token)
-                    .orElseThrow(()-> new NotFoundException("Token Not Found"));
+                    .orElseThrow(()-> new NotFoundException("Invalid Token"));
             RandomValueStringGenerator randomValueStringGenerator = new RandomValueStringGenerator(10);
             String password = randomValueStringGenerator.generate();
             user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
-            String body = "<p>Dear " + user.getEmail() + ",</p>"
-                    + "<p>Mật khẩu mới của bạn là: " + password + "</p>";
-            emailService.sendEmail(user.getEmail(), "Reset mật khẩu", body);
-            return true;
+            return emailService.sendPassword(user.getEmail(), password);
         } catch(NotFoundException e) {
             return false;
         }
