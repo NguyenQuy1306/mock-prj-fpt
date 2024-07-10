@@ -52,7 +52,9 @@ public class AuthenticationController {
             || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
                 return ResponseEntity.badRequest().body(new ErrorResponse("MSG2", "Người dùng đã tồn tại trong hệ thống."));
             }
-            AuthenticationResponse authenticationResponse = service.register(request);
+            if (!service.register(request)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG (?)", "Can't create account"));
+            }
 
             boolean emailSent = false;
             String successMessage = "";

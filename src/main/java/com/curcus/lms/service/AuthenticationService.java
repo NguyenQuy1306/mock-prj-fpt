@@ -31,31 +31,37 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        User user = switch (request.getUserRole().toUpperCase()) {
-            case "I" -> new Instructor();
-            case "S" -> new Student();
-            default -> throw new IllegalArgumentException("Invalid user role: " + request.getUserRole());
-        };
-        user.setName(request.getName());
-        user.setFirstName(request.getFirstname());
-        user.setLastName(request.getLastname());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setPhoneNumber(request.getPhoneNumber());
-        var savedUser = repository.save(user);
+    public Boolean register(RegisterRequest request) {
+        try {
+            User user = switch (request.getUserRole().toUpperCase()) {
+                case "I" -> new Instructor();
+                case "S" -> new Student();
+                default -> throw new IllegalArgumentException("Invalid user role: " + request.getUserRole());
+            };
+            user.setName(request.getName());
+            user.setFirstName(request.getFirstname());
+            user.setLastName(request.getLastname());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setEmail(request.getEmail());
+            user.setPhoneNumber(request.getPhoneNumber());
+            repository.save(user);
 
-        var userDetails = UserDetailsImpl.builder()
-                .user(user)
-                .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
-                .build();
-        var jwtToken = jwtService.generateToken(userDetails);
-        var refreshToken = jwtService.generateRefreshToken(userDetails);
-        saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+//            var userDetails = UserDetailsImpl.builder()
+//                    .user(user)
+//                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+//                    .build();
+//            var jwtToken = jwtService.generateToken(userDetails);
+//            var refreshToken = jwtService.generateRefreshToken(userDetails);
+//            saveUserToken(savedUser, jwtToken);
+//            return AuthenticationResponse.builder()
+//                    .accessToken(jwtToken)
+//                    .refreshToken(refreshToken)
+//                    .build();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void saveUserToken(User user, String jwtToken) {
