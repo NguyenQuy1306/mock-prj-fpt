@@ -66,9 +66,6 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 
         } catch (NotFoundException e) {
             return Optional.empty();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }
