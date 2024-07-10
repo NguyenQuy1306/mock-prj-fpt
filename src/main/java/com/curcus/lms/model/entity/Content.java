@@ -13,14 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "contents")
 public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "section_id", referencedColumnName = "sectionId")
+    @JoinColumn(name = "section_id")
     private Section section;
 
     @Enumerated(EnumType.STRING)

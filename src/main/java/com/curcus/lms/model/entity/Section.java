@@ -1,5 +1,7 @@
 package com.curcus.lms.model.entity;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -13,7 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "sections")
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +26,5 @@ public class Section {
     @Column(nullable = false)
     private String sectionName;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "section")
-    Set<Content> contents;
+    private List<Content> contents;
 }

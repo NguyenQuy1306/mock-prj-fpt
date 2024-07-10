@@ -74,7 +74,7 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/addSection")
+    @PostMapping(value = "/addSection")
     public ResponseEntity<ApiResponse<Section>> createSection(@RequestBody SectionRequest sectionRequest) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseService.createSection(sectionRequest));

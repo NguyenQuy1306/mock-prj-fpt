@@ -2,6 +2,7 @@ package com.curcus.lms.service.impl;
 
 import java.io.Console;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,9 +109,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
-    	System.out.println("contentCreateRequest is "+contentCreateRequest);
         Content content = contentMapper.toEntity(contentCreateRequest);
-        System.out.println(content.toString());
         content = contentRepository.save(content);
         return contentMapper.toResponse(content);
     }
