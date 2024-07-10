@@ -106,6 +106,18 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
+    public InstructorResponse recoverInstructorPassword(Long id, String password) {
+        try {
+            if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
+            Instructor newInstructor = instructorRepository.findById(id).get();
+            newInstructor.setPassword(password);
+            return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
     public void deleteInstructor(Long instructorId){
         try {
             System.out.println(123);

@@ -157,6 +157,22 @@ public class InstructorController {
         }
     }
 
+    @PutMapping(value = {"/{id}/recoverpassword"})
+    public ResponseEntity<ApiResponse<InstructorResponse>> recoverInstructorPassword(@PathVariable Long id, @Valid @RequestParam String password) {
+        try {
+            InstructorResponse instructorResponse = instructorService.recoverInstructorPassword(id, password);
+            ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(instructorResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
     @DeleteMapping(value = {"/{id}"})
     public ResponseEntity<ApiResponse<Void>> deleteInstructor(@PathVariable Long id) {
         try {

@@ -21,6 +21,8 @@ public interface InstructorService {
 
     InstructorResponse updateInstructorPassword(Long id, String password);
 
+    InstructorResponse recoverInstructorPassword(Long id, String password);
+
     void deleteInstructor(Long instructorId);
 
 }
