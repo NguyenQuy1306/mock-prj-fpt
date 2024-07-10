@@ -14,14 +14,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final VNPayConfig vnPayConfig;
-    public PaymentResponse.VNPayResponse createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
-        String bankCode = request.getParameter("bankCode");
+
+    public PaymentResponse.VNPayResponse createVnPayPayment(HttpServletRequest request, long amount, String orderInfo) {
+        // long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
+        // String bankCode = request.getParameter("bankCode");
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
-        vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
-        if (bankCode != null && !bankCode.isEmpty()) {
-            vnpParamsMap.put("vnp_BankCode", bankCode);
-        }
+        vnpParamsMap.put("vnp_Amount", String.valueOf(amount * 100L));
+        vnpParamsMap.put("vnp_OrderInfo", orderInfo);
+
+        // if (bankCode != null && !bankCode.isEmpty()) {
+        // vnpParamsMap.put("vnp_BankCode", bankCode);
+        // }
         vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
 
         String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);

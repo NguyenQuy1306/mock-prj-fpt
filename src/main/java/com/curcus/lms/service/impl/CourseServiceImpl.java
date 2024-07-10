@@ -89,7 +89,7 @@ public class CourseServiceImpl implements CourseService {
         // TODO Auto-generated method stub
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
-                        "Course has not existed with id"));
+                        "Course has not existed with id " + id));
         if (!course.getEnrollment().isEmpty())
             throw new ValidationException("The course cannot be deleted because someone is currently enrolled");
         courseRepository.deleteById(id);
@@ -108,7 +108,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
-    	System.out.println("contentCreateRequest is "+contentCreateRequest);
+        System.out.println("contentCreateRequest is " + contentCreateRequest);
         Content content = contentMapper.toEntity(contentCreateRequest);
         System.out.println(content.toString());
         content = contentRepository.save(content);
@@ -120,7 +120,7 @@ public class CourseServiceImpl implements CourseService {
         Section section = new Section();
         Course course = courseRepository.findById(sectionRequest.getCourseId())
                 .orElseThrow(() -> new NotFoundException(
-                        "Course has not existed with id"));
+                        "Course has not existed with id " + sectionRequest.getCourseId()));
 
         section.setCourse(course);
         section.setSectionName(sectionRequest.getSectionName());

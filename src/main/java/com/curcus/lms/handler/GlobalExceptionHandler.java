@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         String errorMessage = (ex.getMessage() == null) ? "NOT_FOUND" : ex.getMessage();
         error.put("errorMessage", errorMessage);
 
-        ApiResponse apiResponse = new ApiResponse();
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
         apiResponse.error(error);
         return apiResponse;
     }
@@ -70,6 +70,7 @@ public class GlobalExceptionHandler {
         apiResponse.error(error);
         return apiResponse;
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
