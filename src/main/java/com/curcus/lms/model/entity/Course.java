@@ -27,9 +27,6 @@ public class Course {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = false)
-    private Boolean isFree;
-
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;

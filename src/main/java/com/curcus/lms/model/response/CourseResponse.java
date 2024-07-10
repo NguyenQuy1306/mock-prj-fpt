@@ -20,8 +20,6 @@ public class CourseResponse implements Serializable {
 
     private Long price;
 
-    private Boolean isFree;
-
     private User instructor;
     private Long instructorId;
 

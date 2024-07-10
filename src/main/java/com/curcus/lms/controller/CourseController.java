@@ -38,13 +38,13 @@ public class CourseController {
 
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
-            @RequestParam(value = "category", required = false) String category) {
+            @RequestParam(value = "category", required = false) Long category) {
         try {
             List<CourseResponse> course = null;
             if (category == null) {
                 course = courseService.findAll();
             } else {
-                course = courseService.findByCategory(Integer.parseInt(category));
+                course = courseService.findByCategory(category);
             }
             if (course.size() == 0) {
                 throw new NotFoundException("Course not found.");

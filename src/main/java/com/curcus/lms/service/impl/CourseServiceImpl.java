@@ -68,7 +68,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> findByCategory(int categoryId) {
+    public List<CourseResponse> findByCategory(Long categoryId) {
         try {
             Category category = new Category();
             category.setCategoryId(categoryId);

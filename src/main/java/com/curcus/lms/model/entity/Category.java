@@ -1,6 +1,5 @@
 package com.curcus.lms.model.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Category {
     @Id
     @GeneratedValue
-    private int categoryId;
+    private Long categoryId;
     @Column(unique = true, nullable = false)
     private String categoryName;
 }

@@ -13,7 +13,7 @@ public interface CourseService {
 
     List<CourseResponse> findAll();
 
-    List<CourseResponse> findByCategory(int categoryId);
+    List<CourseResponse> findByCategory(Long categoryId);
 
     Course findById(Long id);
 
