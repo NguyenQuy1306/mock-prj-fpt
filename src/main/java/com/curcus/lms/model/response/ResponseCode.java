@@ -19,7 +19,12 @@ public class ResponseCode {
             case 8:
                 map.put("MSG 8", "Tài khoản không tồn tại");
                 break;
+            case 9:
+                map.put("MSG 9", "Sai mật khẩu.");
+                break;
             // TODO case 4 - 22
+            case 21:
+                map.put("MSG 21", "Đã xảy ra lỗi, vui lòng thử lại sau");
             case 23:
                 map.put("MSG 23", "Internal Server Error");
             default:

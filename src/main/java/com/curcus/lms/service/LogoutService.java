@@ -1,5 +1,6 @@
 package com.curcus.lms.service;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import com.curcus.lms.repository.TokenRepository;
+
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +24,18 @@ public class LogoutService implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
+        String jwt = "";
+        Cookie[] cookies = request.getCookies();
+        System.out.println(Arrays.stream(cookies).toList());
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    jwt = cookie.getValue();
+                }
+            }
         }
-        jwt = authHeader.substring(7);
+        Cookie cookie = new Cookie("accessToken", null);
+        response.addCookie(cookie);
         var storedToken = tokenRepository.findByToken(jwt)
                 .orElse(null);
         if (storedToken != null) {

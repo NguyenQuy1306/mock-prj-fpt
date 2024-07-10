@@ -2,18 +2,17 @@ package com.curcus.lms.controller;
 
 
 import com.curcus.lms.model.entity.User;
-import com.curcus.lms.model.response.ErrorResponse;
+import com.curcus.lms.model.response.*;
 import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
-import com.curcus.lms.model.response.AuthenticationResponse;
-import com.curcus.lms.model.response.SuccessfulResponse;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
 import com.curcus.lms.service.impl.EmailServiceImpl;
 import com.curcus.lms.service.impl.VerificationTokenServiceImpl;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -38,22 +37,27 @@ public class AuthenticationController {
     private final VerificationTokenServiceImpl verificationTokenServiceImpl;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request,
+    public ResponseEntity<ApiResponse<Boolean>> register(@Valid @RequestBody RegisterRequest request,
                                            BindingResult bindingResult) {
-        System.out.println(bindingResult.hasErrors());
+
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+
         if (bindingResult.hasErrors()) {
 //            String errorMessage = bindingResult.getAllErrors().stream()
 //                    .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
 //                    .collect(Collectors.joining(", "));
-            return ResponseEntity.badRequest().body(new ErrorResponse("MSG1", "Vui lòng điền đầy đủ thông tin."));
+            apiResponse.error(ResponseCode.getError(1));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
         try {
             if (userRepository.findByEmail(request.getEmail()).isPresent()
             || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
-                return ResponseEntity.badRequest().body(new ErrorResponse("MSG2", "Người dùng đã tồn tại trong hệ thống."));
+                apiResponse.error(ResponseCode.getError(2));
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
             }
             if (!service.register(request)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG (?)", "Can't create account"));
+                apiResponse.error(ResponseCode.getError(23));
+                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             boolean emailSent = false;
@@ -68,47 +72,56 @@ public class AuthenticationController {
             }
 
             if (emailSent) {
-                return ResponseEntity.ok(new SuccessfulResponse("MGS7", successMessage));
+                apiResponse.ok(true);
+                return new ResponseEntity<>(apiResponse, HttpStatus.OK);
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG 21", "Đã xảy ra lỗi. Vui lòng thử lại sau."));
+                apiResponse.error(ResponseCode.getError(21));
+                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("MSG (?)", "Lỗi chưa xác định."));
+            apiResponse.error(ResponseCode.getError(23));
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<Object> authenticate(
+    public ResponseEntity<ApiResponse<Boolean>> authenticate(
             @Valid @RequestBody AuthenticationRequest request,
             BindingResult bindingResult,
             HttpServletResponse response
     ) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
 
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
                     .collect(Collectors.joining(", "));
-            return ResponseEntity.badRequest().body(new ErrorResponse("MSG1", errorMessage));
+            apiResponse.error(ResponseCode.getError(1));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
 
         try {
             AuthenticationResponse tokens = service.authenticate(request);
-//            Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
-//            accessTokenCookie.setHttpOnly(true);
+            Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
+            accessTokenCookie.setHttpOnly(true);
 //            accessTokenCookie.setSecure(true); // Set to true in production
-//            accessTokenCookie.setPath("/");
+            accessTokenCookie.setPath("/");
 //            accessTokenCookie.setMaxAge(86400000);
-//
+            response.addCookie(accessTokenCookie);
+
 //            Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
 //            refreshTokenCookie.setHttpOnly(true);
 //            refreshTokenCookie.setSecure(true); // Set to true in production
 //            refreshTokenCookie.setPath("/");
 //            refreshTokenCookie.setMaxAge(604800000);
-            return ResponseEntity.ok(tokens);
+            apiResponse.ok(true);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("MSG8", "Account does not exist"));
+            apiResponse.error(ResponseCode.getError(8));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch (IncorrectPasswordException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("MSG9", "Incorrect password"));
+            apiResponse.error(ResponseCode.getError(9));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
     }
 

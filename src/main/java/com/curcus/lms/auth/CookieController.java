@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/cookie")
 public class CookieController {
     @GetMapping("/set-cookie")
-    public String setCookie(@RequestParam String name, HttpServletResponse response) {
+    public String setCookie(
+            @RequestParam String name,
+            HttpServletResponse response) {
         Cookie cookie = new Cookie("username", name);
         cookie.setMaxAge(7 * 24 * 60 * 60); // Cookie sẽ tồn tại trong 7 ngày
         cookie.setHttpOnly(true); // Chỉ truy cập được qua HTTP, bảo mật hơn

@@ -58,6 +58,12 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
 
+                                .requestMatchers("/api/v1/test/**").hasAnyRole(ADMIN.name(), STUDENT.name())
+                                .requestMatchers(GET, "/api/v1/test/**").hasAuthority(STUDENT_READ.name())
+                                .requestMatchers(POST, "/api/v1/test/**").hasAuthority(STUDENT_CREATE.name())
+                                .requestMatchers(PUT, "/api/v1/test/**").hasAuthority(STUDENT_UPDATE.name())
+                                .requestMatchers(DELETE, "/api/v1/test/**").hasAuthority(STUDENT_DELETE.name())
+
                                 .requestMatchers("/api/students/**").hasAnyRole(ADMIN.name(), STUDENT.name())
                                 .requestMatchers(GET, "/api/students/**").hasAnyAuthority(ADMIN_READ.name(), STUDENT_READ.name())
                                 .requestMatchers(POST, "/api/students/**").hasAnyAuthority(ADMIN_CREATE.name(), STUDENT_CREATE.name())
