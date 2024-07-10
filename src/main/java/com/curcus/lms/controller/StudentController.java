@@ -187,4 +187,21 @@ public class StudentController {
         }
     }
 
+    @PostMapping("/{studentId}/enrollFromCart")
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> addStudentToCoursesFromCart(@PathVariable Long studentId) {
+        try {
+            List<EnrollmentResponse> enrollmentResponses = studentService.addStudentToCoursesFromCart(studentId);
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(enrollmentResponses);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

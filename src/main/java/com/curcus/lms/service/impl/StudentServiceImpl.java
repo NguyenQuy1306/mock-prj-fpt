@@ -163,6 +163,7 @@ public class StudentServiceImpl implements StudentService {
             throw ex;
         }
     }
+
     @Transactional
     public EnrollmentResponse addStudentToCourse(Long studentId, Long courseId) {
         try {
@@ -192,5 +193,27 @@ public class StudentServiceImpl implements StudentService {
             throw ex;
         }
     }
+
+    @Transactional
+    public List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId) {
+        List<CourseResponse> courseResponses = getListCourseFromCart(studentId);
+        List<Long> courseIds = courseResponses.stream()
+                .map(CourseResponse::getCourseId)
+                .collect(Collectors.toList());
+
+        List<EnrollmentResponse> enrollmentResponses = new ArrayList<>();
+
+        for (Long courseId : courseIds) {
+            try {
+                EnrollmentResponse enrollmentResponse = addStudentToCourse(studentId, courseId);
+                enrollmentResponses.add(enrollmentResponse);
+            } catch (ApplicationException ex) {
+                throw ex;
+            }
+        }
+
+        return enrollmentResponses;
+    }
+
 
 }
