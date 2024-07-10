@@ -96,7 +96,7 @@ public class InstructorServiceImpl implements InstructorService{
         try {
             if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (instructorRepository.findByPassword(password)!=null) throw new ApplicationException("Password already exists");
+            if (newInstructor.getPassword().equals(password)) throw new ApplicationException("Password already exists in your account");
             newInstructor.setPassword(password);
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
