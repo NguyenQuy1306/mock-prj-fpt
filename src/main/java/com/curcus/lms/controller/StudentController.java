@@ -180,7 +180,7 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "An error occurred while enrolling the student to the course");
+            error.put("message", ex.getMessage());
             ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
