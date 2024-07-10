@@ -21,6 +21,7 @@ import com.curcus.lms.service.CloudinaryService;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public abstract class ContentMapper {
@@ -55,7 +56,7 @@ public abstract class ContentMapper {
                     throw new InvalidFileTypeException("Unsupported file type");
             }
         } catch (IOException | InvalidFileTypeException e) {
-            throw new RuntimeException("Error uploading content", e);
+            throw new InvalidFileTypeException("Unsupported file type");
         }
     }
 
@@ -74,7 +75,6 @@ public abstract class ContentMapper {
     }
 
     @Named("getLastPosition")
-    @Transactional
     public Long getLastPosition(Long sectionId) {
         Section section = findSectionById(sectionId);
         return section.getContents().stream()
