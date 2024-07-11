@@ -17,7 +17,7 @@ import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.repository.CartItemRepository;
+import com.curcus.lms.repository.CartItemsRepository;
 import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private CartItemsRepository cartItemRepository;
 
     @Override
     public Cart getCartById(Long studentId) {

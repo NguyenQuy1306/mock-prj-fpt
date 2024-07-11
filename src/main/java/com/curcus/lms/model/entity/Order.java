@@ -1,5 +1,7 @@
 package com.curcus.lms.model.entity;
 
+import java.sql.Date;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "carts")
-public class Cart {
+@Table(name = "orders")
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
-    
+    private Long orderId;
+
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "studentId")
     private Student student;
+
+    @Column(nullable = false)
+    private Date paymentDate;
+
+    @Column(nullable = false)
+    private Long totalPrice;
 }
