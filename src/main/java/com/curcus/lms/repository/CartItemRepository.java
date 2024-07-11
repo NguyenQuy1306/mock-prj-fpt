@@ -8,5 +8,4 @@ import com.curcus.lms.model.entity.CartItemsId;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItems, CartItemsId> {
-    // CartItems getCartItemByCompositeId(Long cartId, Long CourseId);
 }

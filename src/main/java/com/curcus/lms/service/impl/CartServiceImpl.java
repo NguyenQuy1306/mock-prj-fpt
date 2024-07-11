@@ -48,20 +48,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartById(Long studentId) {
-        boolean isPaid = false;
-        return cartRepository.getCartNotPaidByStudentId(studentId, isPaid);
+        return cartRepository.getCartNotPaidByStudentId(studentId);
     }
 
     @Override
     public CartItems getById(Long cartId, Long courseId) {
         CartItemsId cartItemsId = new CartItemsId(cartId, courseId);
         return cartItemRepository.findById(cartItemsId).orElse(null);
-    }
-
-    @Override
-    public Long updateTotalPrice(Cart cart, Long priceOfCourseAdded) {
-        Long newTotalPrice = cart.getTotalPrice() + priceOfCourseAdded;
-        return newTotalPrice;
     }
 
     @Override
@@ -88,8 +81,6 @@ public class CartServiceImpl implements CartService {
                 cart = new Cart();
                 Student student = studentRepository.findById(studentId).get();
                 cart.setStudent(student);
-                cart.setIsPaid(false);
-                cart.setTotalPrice(0L);
                 cartRepository.save(cart);
             }
             // check course alreay in cart
@@ -105,9 +96,6 @@ public class CartServiceImpl implements CartService {
             cartItems.setCart(cart);
             cartItems.setCourse(course);
             cartItemRepository.save(cartItems);
-            // Update totalPriceOfCart
-            cart.setTotalPrice(updateTotalPrice(cart, course.getPrice()));
-            cartRepository.save(cart);
             return cartItems;
         } catch (NotFoundException ex) {
             throw ex;

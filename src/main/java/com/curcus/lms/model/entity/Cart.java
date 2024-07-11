@@ -19,6 +19,4 @@ public class Cart {
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "studentId")
     private Student student;
-    private Boolean isPaid;
-    private Long totalPrice;
 }
