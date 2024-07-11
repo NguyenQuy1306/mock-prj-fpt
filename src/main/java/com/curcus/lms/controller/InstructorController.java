@@ -45,7 +45,15 @@ public class InstructorController {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findAll());
             if (instructorService.findAll().size()==0) throw new NotFoundException("Instructor not found.");
-        }catch(NotFoundException ex){}
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+
     }
 
     @GetMapping(value = {"/name/{name}"})
