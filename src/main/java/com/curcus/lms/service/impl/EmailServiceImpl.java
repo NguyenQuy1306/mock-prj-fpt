@@ -54,13 +54,11 @@ public class EmailServiceImpl implements EmailService {
                     .orElseThrow(() -> new IllegalArgumentException("Token generation failed"));
             // Create email content
             String subject = "Xác nhận địa chỉ email của bạn";
-            String template = String.format("<p>Dear %s,</p>"
-                    + "<p>Để xác thực địa chỉ email đã đăng ký vui lòng ấn "
-                    + "<a href=\"http://localhost:8080/api/v1/auth/is-expired-verification?token=%s\">vào đây</a>.</p>"
-                    + "<p>Best regards,</p>"
-                    + "<p>FSA Backend</p>", to, token);
+            String body1 = "Để xác thực địa chỉ email đã đăng ký vui lòng ấn";
+            String body2 = "";
+            String link = "http://localhost:8080/api/v1/auth/is-expired-verification?token=" + token;
 
-            return sendEmail(to, subject, template);
+            return sendHtmlEmailWithButton(to, subject, body1, body2, link);
         } catch (RuntimeException r) {
             r.printStackTrace();
             return false;
@@ -70,16 +68,15 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public Boolean sendEmailToInstructor(String to) {
         try {
+            String token = verificationTokenServiceImpl.createVerificationToken(to)
+                    .orElseThrow(() -> new IllegalArgumentException("Token generation failed"));
             // Create email content
-            String subject = "Chúc mừng bạn đã trở thành giáo viên tại Cursus.";
-            String template = String.format("<p>Dear %s,</p>"
-                    + "<p>Chúc mừng bạn đã trở thành giáo viên tại Cursus. " +
-                    "Hãy truy cập vào hệ thống để tiến hành cung cấp," +
-                    "phát triển khóa học của bạn.</p>"
-                    + "<p>Best regards,</p>"
-                    + "<p>FSA Backend</p>", to);
+            String subject = "Xác nhận địa chỉ email của bạn";
+            String body1 = "Để xác thực địa chỉ email đã đăng ký vui lòng ấn";
+            String body2 = "";
+            String link = "http://localhost:8080/api/v1/auth/is-expired-verification?token=" + token;
 
-            return sendEmail(to, subject, template);
+            return sendHtmlEmailWithButton(to, subject, body1, body2, link);
         } catch (RuntimeException r) {
             r.printStackTrace();
             return false;
