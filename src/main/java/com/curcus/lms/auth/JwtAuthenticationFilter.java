@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         String jwt = "";
         String userEmail = "";
         Cookie[] cookies = request.getCookies();
-        System.out.println(Arrays.stream(cookies).toList());
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
