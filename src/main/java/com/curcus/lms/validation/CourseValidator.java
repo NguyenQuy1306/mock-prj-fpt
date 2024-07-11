@@ -27,11 +27,13 @@ public class CourseValidator implements Validator {
         CourseRequest product = (CourseRequest) target;
         Category category = categoryService.findById(product.getCategoryId());
         if (category == null) {
-            errors.rejectValue("categoryId", "error.categoryId", "Category not found!");
+            errors.rejectValue("categoryId", "error.categoryId",
+                    "Category has not existed with id " + product.getCategoryId());
         }
         Instructor instructor = instructorService.findById(product.getInstructorId());
         if (instructor == null) {
-            errors.rejectValue("instructorId", "error.instructorId", "Instructor does not found!");
+            errors.rejectValue("instructorId", "error.instructorId",
+                    "Instructor has not existed with id " + product.getInstructorId());
         }
 
     }

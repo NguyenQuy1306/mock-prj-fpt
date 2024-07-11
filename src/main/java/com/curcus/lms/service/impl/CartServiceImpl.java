@@ -63,11 +63,11 @@ public class CartServiceImpl implements CartService {
             // check valid courseId
             Course course = courseService.findById(courseId);
             if (course == null) {
-                throw new NotFoundException("course not found");
+                throw new NotFoundException("Course has not existed with id " + courseId);
             }
             // check valid studentId
             if (studentService.findById(studentId) == null) {
-                throw new NotFoundException("student not found");
+                throw new NotFoundException("Student has not existed with id " + studentId);
             }
             // check enrolled course
             Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId);

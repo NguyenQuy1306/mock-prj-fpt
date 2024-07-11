@@ -80,7 +80,7 @@ public class CourseServiceImpl implements CourseService {
     public void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult) {
         // Get id of course
         if (findById(courseRequest.getCourseId()) == null) {
-            throw new NotFoundException("Course not found.");
+            throw new NotFoundException("Course has not existed with id " + courseRequest.getCourseId());
         }
         // Validator to check category and instructor of course
         courseValidator.validate(courseRequest, bindingResult);

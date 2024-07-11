@@ -47,7 +47,7 @@ public class CourseController {
                 course = courseService.findByCategory(Integer.parseInt(category));
             }
             if (course.size() == 0) {
-                throw new NotFoundException("Course not found.");
+                throw new NotFoundException("Course not found");
             }
             ApiResponse apiResponse = new ApiResponse<>();
             apiResponse.ok(course);
@@ -64,7 +64,7 @@ public class CourseController {
         try {
             Course course = courseService.findById(courseId);
             if (course == null) {
-                throw new NotFoundException("Course not found");
+                throw new NotFoundException("Course has not existed with id " + courseId);
             }
             CourseResponse courseResponse = courseMapper.toResponse(course);
             ApiResponse apiResponse = new ApiResponse<>();

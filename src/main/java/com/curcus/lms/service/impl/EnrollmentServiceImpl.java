@@ -17,7 +17,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public Enrollment findById(Long studentId, Long courseId) {
         Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId);
         if (enrollment == null) {
-            throw new NotFoundException("Enrollment not found");
+            throw new NotFoundException(
+                    "Enrollment has not existed with studentId " + studentId + "and courseId " + courseId);
         }
         return enrollment;
     }
