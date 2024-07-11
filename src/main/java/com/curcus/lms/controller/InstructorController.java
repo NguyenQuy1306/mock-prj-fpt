@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,15 +45,7 @@ public class InstructorController {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findAll());
             if (instructorService.findAll().size()==0) throw new NotFoundException("Instructor not found.");
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (ValidationException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
-        }
-
+        }catch(NotFoundException ex){}
     }
 
     @GetMapping(value = {"/name/{name}"})

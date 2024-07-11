@@ -21,7 +21,6 @@ public class InstructorResponse implements Serializable{
     }
     public void setName(String name) {
         this.name = name;
-    }
     public String getEmail() {
         return email;
     }
@@ -56,13 +55,6 @@ public class InstructorResponse implements Serializable{
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
         if (o == null || getClass() != o.getClass())
             return false;
         InstructorResponse that = (InstructorResponse) o;

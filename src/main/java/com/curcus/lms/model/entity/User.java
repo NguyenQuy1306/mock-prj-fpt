@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -21,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue
     private Long userId;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false, unique = true)
     private String email;
@@ -32,4 +31,20 @@ public class User {
     private String lastName;
     @Column(nullable = false, unique = true)
     private String phoneNumber;
+
+    private boolean activated;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<RefreshToken> refreshTokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<VerificationToken> verificationTokens;
+
+    @Transient
+    public String getDiscriminatorValue() {
+        return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 }

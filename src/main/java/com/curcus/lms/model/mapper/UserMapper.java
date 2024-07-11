@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    // Map Student Entity to StudentResponse
+//    Map Student Entity to StudentResponse
     @Mapping(source = "userId", target = "studentId")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "email", target = "email")

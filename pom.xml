@@ -82,14 +82,14 @@
 				spring-boot-starter-mail
 			</artifactId>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>
 				org.springframework.boot
 			</groupId>
 			<artifactId>
 				spring-boot-starter-security
 			</artifactId>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -215,7 +215,7 @@
 				2.5.0
 			</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>
 				org.springframework.security
 			</groupId>
@@ -225,11 +225,26 @@
 			<scope>
 				test
 			</scope>
-		</dependency> -->
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-			<version>2.4.5</version>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.cloudinary</groupId>
@@ -241,6 +256,14 @@
 			<artifactId>cloudinary-taglib</artifactId>
 			<version>1.36.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.5.2.RELEASE</version>
+		</dependency>
+
 
 	</dependencies>
 	<build>
