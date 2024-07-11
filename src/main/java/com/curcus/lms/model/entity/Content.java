@@ -1,8 +1,6 @@
 package com.curcus.lms.model.entity;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.curcus.lms.constants.ContentType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,16 +15,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Section {
+public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sectionId;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", referencedColumnName = "courseId")
-    private Course course;
+    @JoinColumn(name = "section_id")
+    private Section section;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String sectionName;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "section")
-    private List<Content> contents;
+    private ContentType type;
+
+    @Column(nullable = false)
+    private String url;
+
+    @Column(nullable = false)
+    private Long position;
 }
