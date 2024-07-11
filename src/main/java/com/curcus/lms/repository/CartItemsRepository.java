@@ -6,7 +6,10 @@ import org.springframework.stereotype.Repository;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.CartItemsId;
 
+import java.util.List;
+
 @Repository
 public interface CartItemsRepository extends JpaRepository<CartItems, CartItemsId> {
     // CartItems getCartItemByCompositeId(Long cartId, Long CourseId);
+    List<CartItems> findAllByCart_CartId(Long cartId);
 }

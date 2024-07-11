@@ -5,13 +5,17 @@ import org.springframework.validation.BindingResult;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.request.CourseRequest;
+import com.curcus.lms.model.response.CartItemsResponse;
+import com.curcus.lms.model.response.CartResponse;
+import com.curcus.lms.model.response.CourseResponse;
+
+import java.util.List;
 
 public interface CartService {
-    CartItems addCourseToCart(Long studentId, Long courseId);
 
-    CartItems getById(Long cartId, Long courseId);
+    CartResponse getById(Long cartId);
 
-    Cart getCartById(Long studentId);
+    CartResponse getCartByStudentId(Long studentId);
 
-    Long updateTotalPrice(Cart cart, Long priceOfCourseAdded);
+    List<CourseResponse> getListCourseFromCart(Long studentId);
 }

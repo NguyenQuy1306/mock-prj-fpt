@@ -10,4 +10,5 @@ import com.curcus.lms.model.entity.Cart;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select a from Cart a join a.student b where b.userId = :studentId and a.isPaid = :isPaid")
     Cart getCartNotPaidByStudentId(@Param("studentId") Long studentId, @Param("isPaid") boolean isPaid);
+    Cart findCartByStudent_StudentId(Long studentId);
 }
