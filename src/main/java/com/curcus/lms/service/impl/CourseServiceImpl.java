@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,19 +82,12 @@ public class CourseServiceImpl implements CourseService {
         if (findById(courseRequest.getCourseId()) == null) {
             throw new NotFoundException("Course not found.");
         }
-        // Validator to check category of course
+        // Validator to check category and instructor of course
         courseValidator.validate(courseRequest, bindingResult);
         if (bindingResult.hasErrors()) {
+            throw new NotFoundException(bindingResult.getFieldError().getDefaultMessage());
+        }
 
-            Map<String, String> validationException = validatorUtil.toErrors(bindingResult.getFieldErrors());
-            throw new ValidationException(validationException);
-        }
-        // Validator to check instructor of course
-        courseValidator.validate(courseRequest, bindingResult);
-        if (bindingResult.hasErrors()) {
-            Map<String, String> validationExceptionInstructor = validatorUtil.toErrors(bindingResult.getFieldErrors());
-            throw new ValidationException(validationExceptionInstructor);
-        }
     }
 
     @Override

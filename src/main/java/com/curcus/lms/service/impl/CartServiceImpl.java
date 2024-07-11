@@ -79,7 +79,7 @@ public class CartServiceImpl implements CartService {
             Cart cart = getCartById(studentId);
             if (cart == null) {
                 cart = new Cart();
-                Student student = studentRepository.findById(studentId).get();
+                Student student = studentRepository.findById(studentId).orElse(null);
                 cart.setStudent(student);
                 cartRepository.save(cart);
             }

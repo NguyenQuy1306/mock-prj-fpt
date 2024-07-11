@@ -17,7 +17,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findById(int id) {
         try {
-            return ((categoryRepository.findById(id)).get());
+            return ((categoryRepository.findById(id)).orElse(null));
         } catch (Exception ex) {
             throw new ApplicationException();
         }

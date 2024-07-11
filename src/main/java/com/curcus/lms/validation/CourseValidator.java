@@ -25,14 +25,13 @@ public class CourseValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         CourseRequest product = (CourseRequest) target;
-
         Category category = categoryService.findById(product.getCategoryId());
         if (category == null) {
-            errors.rejectValue("categoryId", "error.categoryId", "Category does not exist!");
+            errors.rejectValue("categoryId", "error.categoryId", "Category not found!");
         }
         Instructor instructor = instructorService.findById(product.getInstructorId());
         if (instructor == null) {
-            errors.rejectValue("instructorId", "error.instructorId", "Instructor does not exist!");
+            errors.rejectValue("instructorId", "error.instructorId", "Instructor does not found!");
         }
 
     }

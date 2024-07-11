@@ -17,7 +17,9 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     public Instructor findById(Long id) {
         try {
-            return instructorRepository.findById(id).get();
+            System.out.println("instructorinstructorinstructor+ ");
+            Instructor instructor = instructorRepository.findById(id).orElse(null);
+            return instructor;
         } catch (Exception ex) {
             throw new ApplicationException();
         }
