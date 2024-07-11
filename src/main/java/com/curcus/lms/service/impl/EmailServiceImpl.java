@@ -123,6 +123,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
+            helper.setFrom(mailProperties.getUsername(), "Curcus");
             helper.setTo(to);
             helper.setSubject(subject);
             String htmlContent = templateEngine.process("email-with-button", context);
@@ -145,6 +146,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
+            helper.setFrom(mailProperties.getUsername(), "Curcus");
             helper.setTo(to);
             helper.setSubject(subject);
             String htmlContent = templateEngine.process("email-without-button", context);
