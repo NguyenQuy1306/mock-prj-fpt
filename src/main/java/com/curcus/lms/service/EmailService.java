@@ -9,4 +9,6 @@ public interface EmailService {
     Boolean sendEmailToInstructor(String to);
     Boolean sendPasswordResetConfirmation(String to, String token);
     Boolean sendPassword(String to, String password);
+    Boolean sendHtmlEmailWithButton(String to, String subject, String body1, String body2, String link);
+    Boolean sendHtmlEmailWithoutButton(String to, String subject, String body1, String body2);
 }
