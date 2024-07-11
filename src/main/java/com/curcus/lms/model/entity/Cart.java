@@ -21,5 +21,4 @@ public class Cart {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    private Boolean isPaid;
 }

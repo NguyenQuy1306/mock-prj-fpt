@@ -2,8 +2,11 @@ package com.curcus.lms.model.mapper;
 
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Student;
+<<<<<<< HEAD
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.InstructorResponse;
+=======
+>>>>>>> student-merge
 import com.curcus.lms.model.response.StudentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

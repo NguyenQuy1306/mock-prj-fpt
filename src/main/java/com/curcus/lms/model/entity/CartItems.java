@@ -11,13 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"cart_id", "course_id"})
+})
 public class CartItems {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long cartItemsId;
+
     @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "cartId")
     private Cart cart;
-    @Id
+
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
