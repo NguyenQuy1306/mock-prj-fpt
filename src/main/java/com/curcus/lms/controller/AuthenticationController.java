@@ -10,6 +10,7 @@ import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
+import com.curcus.lms.service.impl.CookieServiceImpl;
 import com.curcus.lms.service.impl.EmailServiceImpl;
 import com.curcus.lms.service.impl.VerificationTokenServiceImpl;
 import jakarta.servlet.http.Cookie;
@@ -35,10 +36,11 @@ public class AuthenticationController {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final VerificationTokenServiceImpl verificationTokenServiceImpl;
+    private final CookieServiceImpl cookieServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Boolean>> register(@Valid @RequestBody RegisterRequest request,
-                                           BindingResult bindingResult) {
+                                                         BindingResult bindingResult) {
 
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
 
@@ -51,7 +53,7 @@ public class AuthenticationController {
         }
         try {
             if (userRepository.findByEmail(request.getEmail()).isPresent()
-            || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+                    || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
                 apiResponse.error(ResponseCode.getError(2));
                 return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
             }
@@ -102,18 +104,17 @@ public class AuthenticationController {
 
         try {
             AuthenticationResponse tokens = service.authenticate(request);
-            Cookie accessTokenCookie = new Cookie("accessToken", tokens.getAccessToken());
-            accessTokenCookie.setHttpOnly(true);
-//            accessTokenCookie.setSecure(true); // Set to true in production
-            accessTokenCookie.setPath("/");
-//            accessTokenCookie.setMaxAge(86400000);
-            response.addCookie(accessTokenCookie);
-
-//            Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
-//            refreshTokenCookie.setHttpOnly(true);
-//            refreshTokenCookie.setSecure(true); // Set to true in production
-//            refreshTokenCookie.setPath("/");
-//            refreshTokenCookie.setMaxAge(604800000);
+            if (!(cookieServiceImpl.addCookie(response,
+                    "accessToken",
+                    tokens.getAccessToken()).orElse(false)
+                    && cookieServiceImpl.addCookie(response,
+                    "refreshToken",
+                    tokens.getRefreshToken()).orElse(false))) {
+                apiResponse.error(ResponseCode.getError(23));
+                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            System.out.println(tokens.getAccessToken());
+            System.out.println(tokens.getRefreshToken());
             apiResponse.ok(true);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (UserNotFoundException e) {
@@ -154,14 +155,14 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping("/successful")
-    public ResponseEntity<String> successfulAuthentication() {
-        return ResponseEntity.status(HttpStatus.OK).body("Successful authentication");
-    }
-
-    @GetMapping("/unsuccessful")
-    public ResponseEntity<String> unsuccessfulAuthentication() {
-        return ResponseEntity.status(HttpStatus.OK).body("Unsuccessful authentication");
-    }
+//    @GetMapping("/successful")
+//    public ResponseEntity<String> successfulAuthentication() {
+//        return ResponseEntity.status(HttpStatus.OK).body("Successful authentication");
+//    }
+//
+//    @GetMapping("/unsuccessful")
+//    public ResponseEntity<String> unsuccessfulAuthentication() {
+//        return ResponseEntity.status(HttpStatus.OK).body("Unsuccessful authentication");
+//    }
 
 }

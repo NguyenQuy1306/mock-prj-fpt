@@ -38,6 +38,9 @@ public class User {
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user")
+    private List<RefreshToken> refreshTokens;
+
+    @OneToMany(mappedBy = "user")
     private List<VerificationToken> verificationTokens;
 
     @Transient

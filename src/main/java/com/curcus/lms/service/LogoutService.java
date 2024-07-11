@@ -1,5 +1,6 @@
 package com.curcus.lms.service;
 
+import com.curcus.lms.service.impl.CookieServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 public class LogoutService implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
+    private final CookieServiceImpl cookieServiceImpl;
 
     @Override
     public void logout(
@@ -34,8 +36,7 @@ public class LogoutService implements LogoutHandler {
                 }
             }
         }
-        Cookie cookie = new Cookie("accessToken", null);
-        response.addCookie(cookie);
+        cookieServiceImpl.removeCookie(response, "accessToken");
         var storedToken = tokenRepository.findByToken(jwt)
                 .orElse(null);
         if (storedToken != null) {

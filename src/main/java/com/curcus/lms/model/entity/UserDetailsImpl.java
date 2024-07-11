@@ -1,10 +1,7 @@
 package com.curcus.lms.model.entity;
 
 import com.curcus.lms.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class UserDetailsImpl implements UserDetails {
     private User user;
     private Role role;
