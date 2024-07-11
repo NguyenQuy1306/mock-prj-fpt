@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -68,15 +70,37 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> findByCategory(Long categoryId) {
+    public Page<CourseResponse> findByCategory(Long categoryId, Pageable pageable) {
         try {
             Category category = new Category();
             category.setCategoryId(categoryId);
-            return courseMapper.toResponseList(courseRepository.findByCategory(category));
-        } catch (ApplicationException ex) {
-            throw ex;
+            Page<Course> coursesPage = courseRepository.findByCategory(category, pageable);
+            return coursesPage.map(courseMapper::toResponse);
+        } catch (Exception ex) {
+            throw new ApplicationException();
         }
     }
+
+    @Override
+    public Page<CourseResponse> findAll(Pageable pageable) {
+        try {
+            Page<Course> coursesPage = courseRepository.findAll(pageable);
+            return coursesPage.map(courseMapper::toResponse);
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+//    @Override
+//    public List<CourseResponse> findByCategory(Long categoryId) {
+//        try {
+//            Category category = new Category();
+//            category.setCategoryId(categoryId);
+//            return courseMapper.toResponseList(courseRepository.findByCategory(category));
+//        } catch (ApplicationException ex) {
+//            throw ex;
+//        }
+//    }
 
     @Override
     public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {

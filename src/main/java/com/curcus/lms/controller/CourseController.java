@@ -1,6 +1,10 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.response.MetadataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -36,43 +40,40 @@ public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
 
-    @GetMapping(value = { "", "/list" })
+    @GetMapping(value = {"", "/list"})
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
-            @RequestParam(value = "category", required = false) Long category) {
+            @RequestParam(value = "category", required = false) Long category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CourseResponse> course = null;
+            Pageable pageable = PageRequest.of(page, size);
+            Page<CourseResponse> coursePage;
+
             if (category == null) {
-                course = courseService.findAll();
+                coursePage = courseService.findAll(pageable);
             } else {
-                course = courseService.findByCategory(category);
+                coursePage = courseService.findByCategory(category, pageable);
             }
-            if (course.size() == 0) {
+
+            if (coursePage.isEmpty()) {
                 throw new NotFoundException("Course not found.");
             }
-            ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(course);
+
+            MetadataResponse metadata = new MetadataResponse(
+                    coursePage.getTotalElements(),
+                    coursePage.getTotalPages(),
+                    coursePage.getNumber(),
+                    coursePage.getSize(),
+                    (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
+                    (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
+                    "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
+                    "/api/courses/list?page=0"
+            );
+
+            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(coursePage.getContent(), metadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
-        }
-    }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<ApiResponse<CourseResponse>> getCourseById(@RequestParam Long courseId) {
-        try {
-            Course course = courseService.findById(courseId);
-            if (course == null) {
-                throw new NotFoundException("Course not found");
-            }
-            CourseResponse courseResponse = courseMapper.toResponse(course);
-            ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(courseResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        }
-
-        catch (NotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException();
