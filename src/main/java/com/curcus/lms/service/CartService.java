@@ -13,5 +13,9 @@ public interface CartService {
 
     Cart getCartById(Long studentId);
 
-    Long updateTotalPrice(Cart cart, Long priceOfCourseAdded);
+    void deleteCourseFromCart(Long studentId, Long cartId, Long courseId);
+
+    void deleteAllCourseFromCart(Long studentId, Long cartId);
+
+    void deleteCart(Long studentId);
 }
