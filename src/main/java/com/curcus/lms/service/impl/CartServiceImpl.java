@@ -58,6 +58,33 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public Cart createCart(Long studentId) {
+        // check valid studentId
+        try {
+            if (studentService.findById(studentId) == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
+            System.out.println("studentIdstudentId" + studentId);
+            Cart cart = getCartById(studentId);
+            if (cart == null) {
+                cart = new Cart();
+                Student student = studentRepository.findById(studentId).orElse(null);
+                cart.setStudent(student);
+                cartRepository.save(cart);
+            } else {
+                throw new ValidationException("Cart has already created for studentId " + studentId);
+            }
+            return cart;
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @Override
     public CartItems addCourseToCart(Long studentId, Long courseId) {
         try {
             // check valid courseId
@@ -85,7 +112,7 @@ public class CartServiceImpl implements CartService {
             }
             // check course alreay in cart
             if (getById(cart.getCartId(), courseId) != null) {
-                throw new ValidationException("Course already in cart");
+                throw new ValidationException("CourseId " + courseId + " already in cart");
             }
 
             // add course

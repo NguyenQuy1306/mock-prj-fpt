@@ -13,4 +13,6 @@ public interface CartService {
 
     Cart getCartById(Long studentId);
 
+    Cart createCart(Long studentId);
+
 }

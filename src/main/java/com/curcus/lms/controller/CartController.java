@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
@@ -22,6 +23,7 @@ import com.curcus.lms.service.StudentService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("api/cart")
@@ -32,6 +34,22 @@ public class CartController {
     private StudentService studentService;
     @Autowired
     private CourseService courseService;
+
+    @PostMapping(value = "/createCart")
+    public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
+        try {
+            Cart cart = cartService.createCart(studentId);
+            ApiResponse apiResponse = new ApiResponse<>();
+            apiResponse.ok(cart);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
 
     @PostMapping(value = "/addCourse")
     public ResponseEntity<ApiResponse<CartItems>> addCourseToCart(@RequestParam Long studentId,
