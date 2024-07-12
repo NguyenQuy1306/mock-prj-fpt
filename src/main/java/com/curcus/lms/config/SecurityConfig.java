@@ -72,8 +72,11 @@ public class SecurityConfig {
                                 .requestMatchers(GET, "/api/students").hasAnyAuthority(STUDENT_READ.getPermission())
                                 .requestMatchers(POST, "/api/students").hasAnyAuthority(STUDENT_CREATE.getPermission())
 
-                                // TODO  /api/students/{studentId}/courses/{courseId} và /api/students/{studentId}/enrollFromCart
-                                // 2 cái này chưa biết phân sao tại còn dính tới phần payment
+                                // /api/students/{studentId}/courses/{courseId}
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/courses/[0-9]+")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
+
+                                // /api/students/{studentId}/enrollFromCart
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/enrollFromCart")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
 
                                 // /api/students/{id}/courses
                                 .requestMatchers(GET, "/api/students/[0-9]+/courses").hasAnyAuthority(COURSE_READ.getPermission())
