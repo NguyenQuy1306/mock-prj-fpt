@@ -84,6 +84,10 @@ public class SecurityConfig {
                                 // /api/students/list
                                 .requestMatchers(GET, "/api/students/list").hasAnyAuthority(STUDENT_READ.getPermission())
 
+                                // ------------------------------------- ADMIN ------------------------------------
+                                .requestMatchers(GET, "/api/admins/[0-9]+").hasAnyAuthority(ADMIN_READ.getPermission())
+                                .requestMatchers(GET, "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
+
                                 .anyRequest()
                                 .authenticated()
                 )

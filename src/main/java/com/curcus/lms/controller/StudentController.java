@@ -166,7 +166,7 @@ public class StudentController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
+//    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
     @GetMapping("/{id}/cart")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long id) {
         try {

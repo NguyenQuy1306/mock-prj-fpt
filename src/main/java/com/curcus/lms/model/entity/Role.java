@@ -46,7 +46,10 @@ public enum Role {
             STUDENT_UPDATE,
             COURSE_READ,
             ENROLLMENT_CREATE,
-            ENROLLMENT_READ
+            ENROLLMENT_READ,
+            CART_READ,
+            CART_UPDATE,
+            CART_DELETE
     )),
     INSTRUCTOR(Set.of(
             INSTRUCTOR_READ,

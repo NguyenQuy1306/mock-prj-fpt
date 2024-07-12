@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class AdminController {
     @Autowired
     private CategorySevice categorySevice;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') and authentication.principal.getId() == #id")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AdminResponse>> getAdminById(@PathVariable Long id) {
         try {
@@ -52,6 +54,7 @@ public class AdminController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add-category")
     public ResponseEntity<ApiResponse<CategoryResponse>> addCategory(
             @Valid @RequestBody CategoryRequest categoryRequest,

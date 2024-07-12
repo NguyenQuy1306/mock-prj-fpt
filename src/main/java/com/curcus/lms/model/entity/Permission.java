@@ -29,6 +29,10 @@ public enum Permission {
     CART_READ("cart:read"),
     CART_UPDATE("cart:update"),
     CART_DELETE("cart:delete"),
+    CATEGORY_CREATE("category:create"),
+    CATEGORY_READ("category:read"),
+    CATEGORY_UPDATE("category:update"),
+    CATEGORY_DELETE("category:delete"),
     ;
 
     @Getter
