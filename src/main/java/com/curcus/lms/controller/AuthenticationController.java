@@ -58,6 +58,7 @@ public class AuthenticationController {
                 return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
             }
             if (!service.register(request)) {
+                System.out.println("---------LOI TAO USER--------------------");
                 apiResponse.error(ResponseCode.getError(23));
                 return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -71,6 +72,9 @@ public class AuthenticationController {
             } else if ("I".equals(request.getUserRole())) {
                 emailSent = emailServiceImpl.sendEmailToInstructor(request.getEmail());
                 successMessage = "Đăng ký thành công. Vui lòng kiểm tra email.";
+            } else if ("A".equals(request.getUserRole())) {
+                apiResponse.ok(true);
+                return new ResponseEntity<>(apiResponse, HttpStatus.OK);
             }
 
             if (emailSent) {
