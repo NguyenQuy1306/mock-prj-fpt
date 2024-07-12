@@ -166,7 +166,7 @@ public class StudentController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
     @GetMapping("/{id}/cart")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long id) {
         try {
@@ -183,7 +183,7 @@ public class StudentController {
         }
     }
 
-    // TODO: add @PreAuthorize
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PostMapping("/{studentId}/courses/{courseId}")
     public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
         try {
@@ -200,7 +200,7 @@ public class StudentController {
         }
     }
 
-    // TODO: add @PreAuthorize
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PostMapping("/{studentId}/enrollFromCart")
     public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> addStudentToCoursesFromCart(@PathVariable Long studentId) {
         try {
