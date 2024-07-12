@@ -21,6 +21,14 @@ public enum Permission {
     COURSE_READ("course:read"),
     COURSE_UPDATE("course:update"),
     COURSE_DELETE("course:delete"),
+    ENROLLMENT_CREATE("enrollment:create"),
+    ENROLLMENT_READ("enrollment:read"),
+    ENROLLMENT_UPDATE("enrollment:update"),
+    ENROLLMENT_DELETE("enrollment:delete"),
+    CART_CREATE("cart:create"),
+    CART_READ("cart:read"),
+    CART_UPDATE("cart:update"),
+    CART_DELETE("cart:delete"),
     ;
 
     @Getter
