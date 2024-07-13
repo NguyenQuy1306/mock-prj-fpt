@@ -80,10 +80,14 @@ public class CourseController {
         }
     }
 
-    @PutMapping(value = "/updateCourse")
-    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
+    @PutMapping(value = "/{course_id}/updateCourse")
+    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@PathVariable Long course_id,
+            @Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
+            if (course_id != courseRequest.getCourseId()) {
+                throw new ValidationException("CourseId for parameter of api updateCourse is wrong");
+            }
             CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
             apiResponse.ok(courseResponse);
@@ -92,10 +96,10 @@ public class CourseController {
             throw ex;
         } catch (ValidationException ex) {
             throw ex;
-            // other exception throw application() (not exception of user)
         } catch (Exception ex) {
             throw new ApplicationException();
         }
     }
+
 
 }
