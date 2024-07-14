@@ -18,4 +18,6 @@ public interface CartService {
     CartResponse getCartByStudentId(Long studentId);
 
     List<CourseResponse> getListCourseFromCart(Long studentId);
+
+    void copyCartToOrder(Long studentId);
 }

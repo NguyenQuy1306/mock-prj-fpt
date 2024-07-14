@@ -40,4 +40,20 @@ public class CartController {
         }
     }
 
+    @PostMapping("/{studentId}/checkout")
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@PathVariable Long studentId) {
+        try {
+            cartService.copyCartToOrder(studentId);
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.ok();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

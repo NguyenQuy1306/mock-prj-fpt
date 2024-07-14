@@ -1,25 +1,25 @@
 package com.curcus.lms.service.impl;
 
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.NotFoundException;
-import com.curcus.lms.model.entity.Cart;
-import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.CartResponse;
 import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.repository.CartItemsRepository;
-import com.curcus.lms.repository.CartRepository;
-import com.curcus.lms.repository.EnrollmentRepository;
-import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.EnrollmentService;
 import com.curcus.lms.service.StudentService;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -66,6 +66,45 @@ public class CartServiceImpl implements CartService {
             return courseResponses;
         } catch (Exception ex) {
             throw ex;
+        }
+    }
+
+    @Transactional
+    public void copyCartToOrder(Long studentId) {
+        try {
+            Cart cart = cartRepository.findCartByStudent_StudentId(studentId);
+            if (cart == null) {
+                throw new NotFoundException("Cart not found");
+            }
+            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
+
+            if (cartItems.isEmpty()) {
+                throw new NotFoundException("No items in the cart");
+            }
+
+            Long totalPrice = cartItems.stream()
+                    .map(cartItem -> cartItem.getCourse().getPrice())
+                    .reduce(0L, Long::sum);
+
+            Order order = Order.builder()
+                    .student(cart.getStudent())
+                    .paymentDate(new Date())
+                    .totalPrice(totalPrice)
+                    .build();
+
+            List<OrderItems> orderItemsList = new ArrayList<>();
+            for (CartItems cartItem : cartItems) {
+                OrderItems orderItem = OrderItems.builder()
+                        .id(new OrderItemsId(order.getOrderId(), cartItem.getCourse().getCourseId()))
+                        .order(order)
+                        .course(cartItem.getCourse())
+                        .price(cartItem.getCourse().getPrice())
+                        .build();
+                orderItemsList.add(orderItem);
+            }
+
+        } catch (Exception ex) {
+            throw new RuntimeException("An error occurred while copying the cart to the order", ex);
         }
     }
 }
