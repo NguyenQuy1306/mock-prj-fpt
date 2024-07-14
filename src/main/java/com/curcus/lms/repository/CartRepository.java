@@ -17,6 +17,10 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select a from Cart a join a.student b where b.userId = :studentId  order by b.id desc limit 1")
     Cart getCartByStudentId(@Param("studentId") Long studentId);
 
+    @Query(value = "select * from carts a where a.cart_id = :cartId and a.student_id = :studentId", nativeQuery = true)
+    Cart getCartByCartIdAndStudentId(@Param("studentId") Long studentId, @Param("cartId") Long cartId);
+    
+
     // @Modifying
     // @Transactional
     // @Query("delete from Cart a where a.id.studentid = :studentId")

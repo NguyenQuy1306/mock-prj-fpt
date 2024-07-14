@@ -127,7 +127,7 @@ public class CartServiceImpl implements CartService {
                 throw new ValidationException("Course already enrolled");
             }
             // Check cart is created or not
-            if ( cartRepository.findById(cartId) == null) { throw new ValidationException("Cart doesn't exist");}
+            if ( cartRepository.getCartByCartIdAndStudentId(studentId,cartId) == null) { throw new ValidationException("Cart doesn't exist");}
             // Check if course is in cart
             if (getById(cartId, courseId) == null) {
                 throw new ValidationException("Course not in cart");
@@ -152,9 +152,11 @@ public class CartServiceImpl implements CartService {
             if (studentService.findById(studentId) == null) {
                 throw new NotFoundException("student not found");
             }
+            System.out.println("1212"+ cartRepository.getCartByCartIdAndStudentId(studentId,cartId));
             // Check cart is created or not
-            if (cartRepository.findById(cartId) == null) { throw new ValidationException("Cart doesn't exist");}
+            if (cartRepository.getCartByCartIdAndStudentId(studentId,cartId) == null) { throw new ValidationException("Cart doesn't exist");}
             // delete cart 
+            System.out.println(1234456);
             cartItemRepository.deleteCartItemsById(cartId);
             cartRepository.deleteById(cartId);
         } catch (NotFoundException ex) {
