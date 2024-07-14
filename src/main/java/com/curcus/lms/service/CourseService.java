@@ -11,7 +11,7 @@ import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseResponse;
-
+import com.curcus.lms.model.response.SectionCreateResponse;
 
 import jakarta.validation.Valid;
 
@@ -21,7 +21,7 @@ public interface CourseService {
 
     CourseResponse deleteCourse(Long id);
 
-    Section createSection(SectionRequest sectionRequest);
+    SectionCreateResponse createSection(SectionRequest sectionRequest);
 
     List<CourseResponse> findByCategory(int categoryId);
 

@@ -29,7 +29,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
+	
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -49,42 +49,43 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
-
-                                .requestMatchers("/api/v1/test/**").hasAnyRole(ADMIN.name(), STUDENT.name())
-                                .requestMatchers(GET, "/api/v1/test/**").hasAuthority(STUDENT_READ.name())
-                                .requestMatchers(POST, "/api/v1/test/**").hasAuthority(STUDENT_CREATE.name())
-                                .requestMatchers(PUT, "/api/v1/test/**").hasAuthority(STUDENT_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/v1/test/**").hasAuthority(STUDENT_DELETE.name())
-
-                                .requestMatchers("/api/students/**").hasAnyRole(ADMIN.name(), STUDENT.name())
-                                .requestMatchers(GET, "/api/students/**").hasAnyAuthority(ADMIN_READ.name(), STUDENT_READ.name())
-                                .requestMatchers(POST, "/api/students/**").hasAnyAuthority(ADMIN_CREATE.name(), STUDENT_CREATE.name())
-                                .requestMatchers(PUT, "/api/students/**").hasAnyAuthority(ADMIN_UPDATE.name(), STUDENT_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/students/**").hasAnyAuthority(ADMIN_DELETE.name(), STUDENT_DELETE.name())
-
-                                .requestMatchers("/api/instructors/**").hasAnyRole(ADMIN.name(), INSTRUCTOR.name())
-                                .requestMatchers(GET, "/api/instructors/**").hasAnyAuthority(ADMIN_READ.name(), INSTRUCTOR_READ.name())
-                                .requestMatchers(POST, "/api/instructors/**").hasAnyAuthority(ADMIN_CREATE.name(), INSTRUCTOR_CREATE.name())
-                                .requestMatchers(PUT, "/api/instructors/**").hasAnyAuthority(ADMIN_UPDATE.name(), INSTRUCTOR_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/instructors/**").hasAnyAuthority(ADMIN_DELETE.name(), INSTRUCTOR_DELETE.name())
-
-                                .requestMatchers("/api/courses/**").hasAnyRole(ADMIN.name(), INSTRUCTOR.name())
-                                .requestMatchers(GET, "/api/courses/**").hasAnyAuthority(COURSE_READ.name())
-                                .requestMatchers(POST, "/api/courses/**").hasAnyAuthority(COURSE_CREATE.name())
-                                .requestMatchers(PUT, "/api/courses/**").hasAnyAuthority(COURSE_UPDATE.name())
-                                .requestMatchers(DELETE, "/api/courses/**").hasAnyAuthority(COURSE_DELETE.name())
-
-                                .anyRequest()
-                                .authenticated()
-                )
+                .authorizeHttpRequests(req -> req.anyRequest().permitAll())
+//                .authorizeHttpRequests(req ->
+//                        req.requestMatchers(WHITE_LIST_URL)
+//                                .permitAll()
+//
+//                                .requestMatchers("/api/v1/test/**").hasAnyRole(ADMIN.name(), STUDENT.name())
+//                                .requestMatchers(GET, "/api/v1/test/**").hasAuthority(STUDENT_READ.name())
+//                                .requestMatchers(POST, "/api/v1/test/**").hasAuthority(STUDENT_CREATE.name())
+//                                .requestMatchers(PUT, "/api/v1/test/**").hasAuthority(STUDENT_UPDATE.name())
+//                                .requestMatchers(DELETE, "/api/v1/test/**").hasAuthority(STUDENT_DELETE.name())
+//
+//                                .requestMatchers("/api/students/**").hasAnyRole(ADMIN.name(), STUDENT.name())
+//                                .requestMatchers(GET, "/api/students/**").hasAnyAuthority(ADMIN_READ.name(), STUDENT_READ.name())
+//                                .requestMatchers(POST, "/api/students/**").hasAnyAuthority(ADMIN_CREATE.name(), STUDENT_CREATE.name())
+//                                .requestMatchers(PUT, "/api/students/**").hasAnyAuthority(ADMIN_UPDATE.name(), STUDENT_UPDATE.name())
+//                                .requestMatchers(DELETE, "/api/students/**").hasAnyAuthority(ADMIN_DELETE.name(), STUDENT_DELETE.name())
+//
+//                                .requestMatchers("/api/instructors/**").hasAnyRole(ADMIN.name(), INSTRUCTOR.name())
+//                                .requestMatchers(GET, "/api/instructors/**").hasAnyAuthority(ADMIN_READ.name(), INSTRUCTOR_READ.name())
+//                                .requestMatchers(POST, "/api/instructors/**").hasAnyAuthority(ADMIN_CREATE.name(), INSTRUCTOR_CREATE.name())
+//                                .requestMatchers(PUT, "/api/instructors/**").hasAnyAuthority(ADMIN_UPDATE.name(), INSTRUCTOR_UPDATE.name())
+//                                .requestMatchers(DELETE, "/api/instructors/**").hasAnyAuthority(ADMIN_DELETE.name(), INSTRUCTOR_DELETE.name())
+//
+//                                .requestMatchers("/api/courses/**").hasAnyRole(ADMIN.name(), INSTRUCTOR.name())
+//                                .requestMatchers(GET, "/api/courses/**").hasAnyAuthority(COURSE_READ.name())
+//                                .requestMatchers(POST, "/api/courses/**").hasAnyAuthority(COURSE_CREATE.name())
+//                                .requestMatchers(PUT, "/api/courses/**").hasAnyAuthority(COURSE_UPDATE.name())
+//                                .requestMatchers(DELETE, "/api/courses/**").hasAnyAuthority(COURSE_DELETE.name())
+//
+//                                .anyRequest()
+//                                .authenticated()
+//                )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

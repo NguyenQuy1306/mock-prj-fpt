@@ -17,14 +17,14 @@ import com.curcus.lms.model.entity.Section;
 
 import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.mapper.CourseMapper;
-
+import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseResponse;
-
+import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -49,6 +49,8 @@ public class CourseServiceImpl implements CourseService {
     private CourseMapper courseMapper;
     @Autowired
     private ContentMapper contentMapper;
+    @Autowired
+    private SectionMapper sectionMapper;
 
     @Override
     public List<CourseResponse> findAll() {
@@ -109,14 +111,13 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
-        System.out.println("contentCreateRequest is " + contentCreateRequest);
         Content content = contentMapper.toEntity(contentCreateRequest);
         content = contentRepository.save(content);
         return contentMapper.toResponse(content);
     }
 
     @Override
-    public Section createSection(SectionRequest sectionRequest) {
+    public SectionCreateResponse createSection(SectionRequest sectionRequest) {
         Section section = new Section();
         Course course = courseRepository.findById(sectionRequest.getCourseId())
                 .orElseThrow(() -> new NotFoundException(
@@ -124,6 +125,7 @@ public class CourseServiceImpl implements CourseService {
 
         section.setCourse(course);
         section.setSectionName(sectionRequest.getSectionName());
-        return sectionRepository.save(section);
+        SectionCreateResponse sectionCreateResponse=sectionMapper.toResponse(sectionRepository.save(section));
+        return sectionCreateResponse;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.Course;
@@ -57,9 +58,9 @@ public class CourseController {
         }
     }
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<CourseResponse>> createCourse(
-            @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
+    		@ModelAttribute @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
         CourseResponse courseResponse = courseService.saveCourse(courseCreateRequest);
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseResponse);
@@ -74,7 +75,7 @@ public class CourseController {
     }
 
     @PostMapping(value = "/addSection")
-    public ResponseEntity<ApiResponse<Section>> createSection(@RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<ApiResponse<SectionCreateResponse>> createSection(@RequestBody SectionRequest sectionRequest) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseService.createSection(sectionRequest));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

@@ -23,6 +23,9 @@ public class Course {
     private Long courseId;
 
     @Column(nullable = false)
+    private String courseThumbnail;
+    
+    @Column(nullable = false)
     private String title;
 
     @Column

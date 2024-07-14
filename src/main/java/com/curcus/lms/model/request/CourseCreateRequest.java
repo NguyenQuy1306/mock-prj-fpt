@@ -1,5 +1,7 @@
 package com.curcus.lms.model.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 @Data
 public class CourseCreateRequest {
+	@NotNull(message = "course thumbnail cannot be null")
+    private MultipartFile courseThumbnail;
 	@NotBlank(message = "Title is mandatory")
     @Size(max = 255, message = "Title must be less than 255 characters")
 	private String title;

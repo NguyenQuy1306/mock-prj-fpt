@@ -62,10 +62,16 @@ public abstract class ContentMapper {
 
     protected ContentType getContentType(MultipartFile file) {
         String contentType = file.getContentType();
-        if (contentType != null && contentType.startsWith("video")) {
-            return ContentType.VIDEO;
+        if (contentType != null) {
+            if (contentType.startsWith("video")) {
+                return ContentType.VIDEO;
+            } else if (contentType.startsWith("image")) {
+                return ContentType.IMAGE;
+            } else {
+                return ContentType.DOCUMENT;
+            }
         } else {
-            return ContentType.DOCUMENT;
+            return ContentType.UNKNOWN;
         }
     }
 

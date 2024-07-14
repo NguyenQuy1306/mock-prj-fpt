@@ -14,6 +14,8 @@ import java.util.Set;
 @Setter
 public class CourseResponse implements Serializable {
     private Long courseId;
+    
+    private String courseThumbnail;
 
     private String title;
 

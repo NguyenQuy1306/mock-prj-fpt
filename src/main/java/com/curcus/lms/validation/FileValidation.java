@@ -60,8 +60,8 @@ public class FileValidation {
     }
 
     public static void validateImageType(String fileName) throws InvalidFileTypeException {
-        if (!isValidVideoType(fileName)) {
-            throw new InvalidFileTypeException("Invalid video type. Allowed type is: " + ALLOWED_IMAGE_TYPES);
+        if (!isValidImageType(fileName)) {
+            throw new InvalidFileTypeException("Invalid image type. Allowed type is: " + ALLOWED_IMAGE_TYPES);
         }
     }
 

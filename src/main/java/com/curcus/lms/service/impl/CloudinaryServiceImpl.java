@@ -25,7 +25,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     }
 
     public String uploadImage(MultipartFile file) throws IOException, InvalidFileTypeException {
-        FileValidation.validateFileType(file.getOriginalFilename());
+        FileValidation.validateImageType(file.getOriginalFilename());
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                 "resource_type", "raw"
         ));
