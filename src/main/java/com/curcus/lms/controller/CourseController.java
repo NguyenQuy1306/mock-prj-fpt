@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/api/courses")
@@ -90,6 +92,15 @@ public class CourseController {
         apiResponse.ok(contentCreateResponse);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
+    }
+
+    @PutMapping("/{id}/updateContent")
+    public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
+            @PathVariable Long id, @RequestBody ContentCreateRequest contentCreateRequest) {
+        ContentCreateResponse contentCreateResponse = courseService.updateContent(id, contentCreateRequest);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(contentCreateResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
 }
