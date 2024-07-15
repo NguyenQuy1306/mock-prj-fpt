@@ -23,7 +23,7 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @PostMapping(value = "/{Id}/cart")
+    @PostMapping(value = "/{studentId}/cart")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
         try {
             List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);

@@ -43,7 +43,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse getCartByStudentId(Long studentId){
         try {
-            Cart cart = cartRepository.findCartByStudent_StudentId(studentId);
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if(cart == null) {
                 throw new NotFoundException("Cart not found");
             }
@@ -57,11 +57,14 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CourseResponse> getListCourseFromCart(Long studentId){
         try{
-            Cart cart = cartRepository.findCartByStudent_StudentId(studentId);
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if(cart == null) {
                 throw new NotFoundException("Cart not found");
             }
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
+            if(cartItems == null){
+                return List.of();
+            }
             List<CourseResponse> courseResponses = courseMapper.toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
             return courseResponses;
         } catch (Exception ex) {
@@ -72,7 +75,7 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void copyCartToOrder(Long studentId) {
         try {
-            Cart cart = cartRepository.findCartByStudent_StudentId(studentId);
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if (cart == null) {
                 throw new NotFoundException("Cart not found");
             }
