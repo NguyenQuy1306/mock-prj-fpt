@@ -26,6 +26,8 @@ public interface CourseService {
     List<CourseResponse> findByCategory(int categoryId);
 
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
+    
+    List<CourseResponse> searchCoursesByName(String name);
 
     ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
     

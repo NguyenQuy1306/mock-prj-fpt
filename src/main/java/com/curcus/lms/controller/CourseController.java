@@ -91,5 +91,10 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     }
+    
+    @GetMapping("/courses/search")
+    public List<CourseResponse> searchCourses(@RequestParam String name) {
+        return courseService.searchCoursesByName(name);
+    }
 
 }

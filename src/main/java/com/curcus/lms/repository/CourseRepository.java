@@ -5,9 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.response.CourseResponse;
+
 import java.util.List;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findByCategory(Category category);
+    List<Course> findByTitleContainingIgnoreCase(String name);
 }

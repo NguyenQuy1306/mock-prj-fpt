@@ -128,4 +128,12 @@ public class CourseServiceImpl implements CourseService {
         SectionCreateResponse sectionCreateResponse=sectionMapper.toResponse(sectionRepository.save(section));
         return sectionCreateResponse;
     }
+
+	@Override
+	public List<CourseResponse> searchCoursesByName(String name) {
+		// TODO Auto-generated method stub
+		List<Course> listCourseByNameCourses=courseRepository.findByTitleContainingIgnoreCase(name);
+		return courseMapper.toResponseList(listCourseByNameCourses);
+	}
+    
 }

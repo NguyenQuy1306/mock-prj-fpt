@@ -52,7 +52,7 @@ public abstract class CourseMapper {
     @Mapping(target = "category", expression = "java(findCategoryById(courseCreateRequest.getCategoryId()))")
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-
+    
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));
