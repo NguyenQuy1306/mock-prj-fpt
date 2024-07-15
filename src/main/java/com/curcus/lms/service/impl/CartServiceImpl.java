@@ -17,7 +17,7 @@ import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.repository.CartItemRepository;
+import com.curcus.lms.repository.CartItemsRepository;
 import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
-    private CartItemRepository cartItemRepository;
+    private CartItemsRepository cartItemRepository;
 
     @Override
     public Cart getCartById(Long studentId) {
@@ -58,6 +58,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+<<<<<<< HEAD
     public Cart createCart(Long studentId) {
         // check valid studentId
         try {
@@ -85,6 +86,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+=======
+>>>>>>> origin/studentDeleteCourseFromCart
     public CartItems addCourseToCart(Long studentId, Long courseId) {
         try {
             // check valid courseId
@@ -123,7 +126,100 @@ public class CartServiceImpl implements CartService {
             cartItems.setCart(cart);
             cartItems.setCourse(course);
             cartItemRepository.save(cartItems);
+<<<<<<< HEAD
+=======
+            // Update totalPriceOfCart
+            cartRepository.save(cart);
+>>>>>>> origin/studentDeleteCourseFromCart
             return cartItems;
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @Override
+    public void deleteCourseFromCart(Long studentId, Long cartId, Long courseId) {
+        try {
+            // check valid courseId
+            Course course = courseService.findById(courseId);
+            if (course == null) {
+                throw new NotFoundException("course not found");
+            }
+            // check valid studentId
+            if (studentService.findById(studentId) == null) {
+                throw new NotFoundException("student not found");
+            }
+            // check enrolled course
+            Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId);
+
+            if (enrollment != null) {
+                throw new ValidationException("Course already enrolled");
+            }
+            // Check cart is created or not
+            if ( cartRepository.getCartByCartIdAndStudentId(studentId,cartId) == null) { throw new ValidationException("Cart doesn't exist");}
+            // Check if course is in cart
+            if (getById(cartId, courseId) == null) {
+                throw new ValidationException("Course not in cart");
+            }
+            // delete cart 
+            CartItemsId cartItemsId = new CartItemsId(cartId, courseId);
+            cartItemRepository.deleteById(cartItemsId);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @Override
+    public void deleteAllCourseFromCart(Long studentId, Long cartId) {
+        try {
+            // check valid courseId
+            // check valid studentId
+            if (studentService.findById(studentId) == null) {
+                throw new NotFoundException("student not found");
+            }
+            System.out.println("1212"+ cartRepository.getCartByCartIdAndStudentId(studentId,cartId));
+            // Check cart is created or not
+            if (cartRepository.getCartByCartIdAndStudentId(studentId,cartId) == null) { throw new ValidationException("Cart doesn't exist");}
+            // delete cart 
+            System.out.println(1234456);
+            cartItemRepository.deleteCartItemsById(cartId);
+            cartRepository.deleteById(cartId);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @Override
+    public void deleteCart(Long studentId) {
+        try {
+            // check valid courseId
+            // check valid studentId
+            if (studentService.findById(studentId) == null) {
+                throw new NotFoundException("student not found");
+            }
+
+            Cart cart = cartRepository.getCartByStudentId(studentId);
+            if (cart == null) {
+                throw new NotFoundException("cart not found");
+            }
+            do{
+                Long cartId=cart.getCartId();
+                cartItemRepository.deleteCartItemsById(cartId);
+                cartRepository.deleteById(cartId);
+                cart = cartRepository.getCartByStudentId(studentId);
+            }while (cart!=null);
         } catch (NotFoundException ex) {
             throw ex;
         } catch (ValidationException ex) {

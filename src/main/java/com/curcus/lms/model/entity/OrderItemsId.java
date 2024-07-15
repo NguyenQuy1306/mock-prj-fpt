@@ -13,7 +13,7 @@ import jakarta.persistence.Embeddable;
 @NoArgsConstructor
 @Builder
 @Embeddable
-public class CartItemsId implements Serializable {
-    private Long cartId;
+public class OrderItemsId implements Serializable {
+    private Long orderId;
     private Long courseId;
 }

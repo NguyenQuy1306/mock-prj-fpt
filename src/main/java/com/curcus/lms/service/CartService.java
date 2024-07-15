@@ -13,6 +13,14 @@ public interface CartService {
 
     Cart getCartById(Long studentId);
 
+<<<<<<< HEAD
     Cart createCart(Long studentId);
 
+=======
+    void deleteCourseFromCart(Long studentId, Long cartId, Long courseId);
+
+    void deleteAllCourseFromCart(Long studentId, Long cartId);
+
+    void deleteCart(Long studentId);
+>>>>>>> origin/studentDeleteCourseFromCart
 }
