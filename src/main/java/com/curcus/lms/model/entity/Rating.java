@@ -13,7 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings", uniqueConstraints={
+        @UniqueConstraint(columnNames = {"student_id", "course_id"})
+})
 public class Rating {
 
     @Id

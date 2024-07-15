@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
     Rating findByStudent_UserIdAndCourse_CourseId(Long studentId, Long courseId);
+    boolean existsByStudent_UserIdAndCourse_CourseId(Long studentId, Long courseId);
 }
