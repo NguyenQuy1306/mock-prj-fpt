@@ -20,8 +20,8 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ratingId;
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
+    @JoinColumn(name = "student_id", referencedColumnName = "user_Id")
+    private Student student;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
