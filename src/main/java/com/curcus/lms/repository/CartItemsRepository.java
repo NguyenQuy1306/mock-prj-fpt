@@ -6,14 +6,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.CartItemsId;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface CartItemsRepository extends JpaRepository<CartItems, CartItemsId> {
-    // CartItems getCartItemByCompositeId(Long cartId, Long CourseId);
+    @Query("select a from CartItems a join a.cart b join a.course c where b.cartId = :cartId")
+    List<Cart> findAllCourseWithCartId(@Param("cartId") Long cartId);
+
     @Modifying
     @Transactional
     @Query("delete from CartItems a where a.id.cartId = :cartId")

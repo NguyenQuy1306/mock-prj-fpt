@@ -26,6 +26,7 @@ import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.EnrollmentService;
 import com.curcus.lms.service.StudentService;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -141,25 +142,19 @@ public class CartServiceImpl implements CartService {
             // check valid courseId
             Course course = courseService.findById(courseId);
             if (course == null) {
-                throw new NotFoundException("course not found");
+                throw new NotFoundException("Course has not existed with id " + courseId);
             }
             // check valid studentId
             if (studentService.findById(studentId) == null) {
-                throw new NotFoundException("student not found");
-            }
-            // check enrolled course
-            Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId);
-
-            if (enrollment != null) {
-                throw new ValidationException("Course already enrolled");
+                throw new NotFoundException("Student has not existed with id " + studentId);
             }
             // Check cart is created or not
             if (cartRepository.getCartByCartIdAndStudentId(studentId, cartId) == null) {
-                throw new ValidationException("Cart doesn't exist");
+                throw new ValidationException("Cart doesn't exist for studentId: " + studentId);
             }
             // Check if course is in cart
             if (getById(cartId, courseId) == null) {
-                throw new ValidationException("Course not in cart");
+                throw new ValidationException("CourseId " + courseId + " not found in cart");
             }
             // delete cart
             CartItemsId cartItemsId = new CartItemsId(cartId, courseId);
@@ -179,17 +174,18 @@ public class CartServiceImpl implements CartService {
             // check valid courseId
             // check valid studentId
             if (studentService.findById(studentId) == null) {
-                throw new NotFoundException("student not found");
+                throw new NotFoundException("Student has not existed with id " + studentId);
             }
-            System.out.println("1212" + cartRepository.getCartByCartIdAndStudentId(studentId, cartId));
             // Check cart is created or not
             if (cartRepository.getCartByCartIdAndStudentId(studentId, cartId) == null) {
-                throw new ValidationException("Cart doesn't exist");
+                throw new ValidationException("Cart doesn't exist for studentId " + studentId);
             }
-            // delete cart
-            System.out.println(1234456);
+            List<Cart> carts = cartItemRepository.findAllCourseWithCartId(cartId);
+            if (carts.isEmpty()) {
+                throw new NotFoundException("No course exists in cartId " + cartId);
+            }
+            // delete allCourseInCart
             cartItemRepository.deleteCartItemsById(cartId);
-            cartRepository.deleteById(cartId);
         } catch (NotFoundException ex) {
             throw ex;
         } catch (ValidationException ex) {
@@ -205,12 +201,12 @@ public class CartServiceImpl implements CartService {
             // check valid courseId
             // check valid studentId
             if (studentService.findById(studentId) == null) {
-                throw new NotFoundException("student not found");
+                throw new NotFoundException("Student has not existed with id " + studentId);
             }
 
             Cart cart = cartRepository.getCartByStudentId(studentId);
             if (cart == null) {
-                throw new NotFoundException("cart not found");
+                throw new NotFoundException("Cart doesn't exist for studentId " + studentId);
             }
             do {
                 Long cartId = cart.getCartId();
