@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @ComponentScan(basePackages = "com.curcus.lms")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class CurcusApplication {
