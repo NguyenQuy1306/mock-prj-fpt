@@ -1,6 +1,5 @@
-package com.curcus.lms.service;
+package com.curcus.lms.service.impl;
 
-import com.curcus.lms.service.impl.CookieServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +14,7 @@ import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
-public class LogoutService implements LogoutHandler {
+public class LogoutServiceImpl implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
     private final CookieServiceImpl cookieServiceImpl;
