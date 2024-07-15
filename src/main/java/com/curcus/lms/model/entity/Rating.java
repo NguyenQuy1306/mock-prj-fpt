@@ -18,7 +18,7 @@ public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ratingId;
+    private Long ratingId;
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "user_Id")
     private Student student;
@@ -27,6 +27,6 @@ public class Rating {
     private Course course;
     @Column(nullable = false)
     private Long rating;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String comment;
 }
