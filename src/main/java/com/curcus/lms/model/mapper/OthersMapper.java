@@ -10,22 +10,22 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface OthersMapper {
+public abstract class OthersMapper {
 
     // Category
     @Mapping(source = "categoryId", target = "categoryId")
     @Mapping(source = "categoryName", target = "categoryName")
-    CategoryResponse toCategoryResponse(Category category);
+    public abstract CategoryResponse toCategoryResponse(Category category);
 
-    List<CategoryResponse> toCategoryResponseList(List<Category> categories);
+    public abstract List<CategoryResponse> toCategoryResponseList(List<Category> categories);
 
     // Rating
     @Mapping(source = "ratingId", target = "ratingId")
-    @Mapping(source = "studentId", target = "studentId")
-    @Mapping(source = "courseId", target = "courseId")
+    @Mapping(source = "student.userId", target = "studentId")
+    @Mapping(source = "course.courseId", target = "courseId")
     @Mapping(source = "rating", target = "rating")
     @Mapping(source = "comment", target = "comment")
-    RatingResponse toRatingResponse(Rating rating);
+    public abstract RatingResponse toRatingResponse(Rating rating);
 
-    List<RatingResponse> toRatingResponseList(List<Rating> ratings);
+    public abstract List<RatingResponse> toRatingResponseList(List<Rating> ratings);
 }
