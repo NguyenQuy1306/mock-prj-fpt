@@ -28,7 +28,7 @@ public class Course {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
