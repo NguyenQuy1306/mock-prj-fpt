@@ -111,11 +111,12 @@ public class CartServiceImpl implements CartService {
                         .course(cartItem.getCourse())
                         .price(cartItem.getCourse().getPrice())
                         .build();
+                StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
                 orderItemsList.add(orderItem);
             }
 
             orderItemsRepository.saveAll(orderItemsList);
-            StudentService.addStudentToCoursesFromCart(studentId);
+            //StudentService.addStudentToCoursesFromCart(studentId);
             //add delete cart method
 
         } catch (Exception ex) {
