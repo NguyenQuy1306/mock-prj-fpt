@@ -3,15 +3,13 @@ package com.curcus.lms.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import org.hibernate.mapping.Set;
-
 import com.curcus.lms.model.entity.UserRole.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Setter
 @Getter
-// @AllArgsConstructor
-// @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @DiscriminatorValue(value = Role.STUDENT)
 @Table(name = "students") // Define table name explicitly
