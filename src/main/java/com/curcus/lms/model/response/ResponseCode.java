@@ -20,7 +20,10 @@ public class ResponseCode {
                 map.put("MSG 8", "Tài khoản không tồn tại");
                 break;
             case 9:
-                map.put("MSG 9", "Sai mật khẩu.");
+                map.put("MSG 9", "Incorrect password");
+                break;
+            case 10:
+                map.put("MSG 10", "Course not found");
                 break;
             // TODO case 4 - 22
             case 21:
