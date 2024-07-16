@@ -2,6 +2,7 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.CourseException;
+import com.curcus.lms.exception.EnrollmentException;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Rating;
@@ -16,10 +17,12 @@ import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class RatingServiceImpl implements RatingService {
     @Autowired
     private RatingRepository ratingRepository;
@@ -68,10 +71,10 @@ public class RatingServiceImpl implements RatingService {
                             studentId,
                             courseId
                     );
-            if (newRating != null) {
-                return othersMapper.toRatingResponse(newRating);
+            if (newRating == null) {
+                throw new EnrollmentException("This student has not registered this course");
             } else
-                return null;
+                return othersMapper.toRatingResponse(newRating);
         } catch (ApplicationException e) {
             throw e;
         }
@@ -85,6 +88,27 @@ public class RatingServiceImpl implements RatingService {
             return othersMapper.toRatingResponseList(ratingRepository.findAllByCourse_CourseId(courseId));
         }
         catch (ApplicationException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteRatingByStudentIdAndCourseId(Long studentId, Long courseId) {
+        try {
+            if (!userRepository.existsById(studentId))
+                throw new UserNotFoundException("Student not found");
+            if (!courseRepository.existsById(courseId))
+                throw new CourseException("Course not found");
+            Rating newRating = ratingRepository
+                    .findByStudent_UserIdAndCourse_CourseId(
+                            studentId,
+                            courseId
+                    );
+            if (newRating == null) {
+                throw new EnrollmentException("This student has not registered this course");
+            } else
+                ratingRepository.deleteByStudent_UserIdAndCourse_CourseId(studentId, courseId);
+        } catch (ApplicationException e) {
             throw e;
         }
     }

@@ -12,4 +12,6 @@ public interface RatingService {
     RatingResponse getRatingByStudentIdAndCourseId(Long studentId, Long courseId);
 
     List<RatingResponse> getRatingByCourseId(Long courseId);
+
+    void deleteRatingByStudentIdAndCourseId(Long studentId, Long courseId);
 }

@@ -1,12 +1,8 @@
 package com.curcus.lms.controller;
 
-
-import com.curcus.lms.model.entity.Student;
-import com.curcus.lms.model.request.CategoryRequest;
+import com.curcus.lms.exception.*;
 import com.curcus.lms.model.request.RatingRequest;
-import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.EnrollmentRepository;
-import com.curcus.lms.repository.RatingRepository;
 import com.curcus.lms.service.RatingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.CourseException;
-import com.curcus.lms.exception.UserNotFoundException;
-import com.curcus.lms.model.request.RatingRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.RatingResponse;
 import com.curcus.lms.model.response.ResponseCode;
-import com.curcus.lms.service.RatingService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +29,8 @@ import java.util.stream.Collectors;
 public class RatingController {
     @Autowired
     private RatingService ratingService;
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<RatingResponse>> updateRating(
@@ -94,11 +82,13 @@ public class RatingController {
         } catch (CourseException c) {
             apiResponse.error(ResponseCode.getError(10));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        } catch (ApplicationException e) {
+        } catch (EnrollmentException e) {
             Map<String, String> error = new HashMap<>();
             error.put("message", "Student has not been registered yet");
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (ValidationException e) {
+            throw e;
         }
     }
 
@@ -117,10 +107,6 @@ public class RatingController {
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
     }
-
-
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
 
     @PostMapping
     public ResponseEntity<ApiResponse<RatingResponse>> createRating(
@@ -147,6 +133,35 @@ public class RatingController {
         } catch(Exception e) {
             apiResponse.error(ResponseCode.getError(23));
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("student/{studentId}/course/{courseId}")
+    public ResponseEntity<ApiResponse<Boolean>> deleteRatingByStudentIdAndCourseId(
+            @PathVariable Long studentId,
+            @PathVariable Long courseId
+    ) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        Map<String, String> errors = new HashMap<>();
+
+        try {
+            ratingService.deleteRatingByStudentIdAndCourseId(studentId, courseId);
+            apiResponse.ok(true);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (UserNotFoundException u) {
+            errors.put("message", "Student not found");
+            apiResponse.error(errors);
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (CourseException c) {
+            errors.put("message", "Course not found");
+            apiResponse.error(errors);
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (EnrollmentException e) {
+            errors.put("message", "This student has not registered this course");
+            apiResponse.error(errors);
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (ValidationException e) {
+            throw e;
         }
     }
 }
