@@ -39,5 +39,7 @@ public interface CourseService {
 
     Instructor findByIdInstructor(Long id);
 
+    SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
+
 //    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
 }

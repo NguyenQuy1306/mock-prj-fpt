@@ -169,6 +169,17 @@ public class CourseServiceImpl implements CourseService {
         return sectionCreateResponse;
     }
 
+    @Override
+    public SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest) {
+        Section section = sectionRepository.findById(sectionId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Section not found with id " + sectionId));
+
+        section.setSectionName(sectionRequest.getSectionName());
+        SectionCreateResponse sectionUpdateResponse = sectionMapper.toResponse(sectionRepository.save(section));
+        return sectionUpdateResponse;
+    }
+
 //    @Override
 //    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
 //        // Get id of course

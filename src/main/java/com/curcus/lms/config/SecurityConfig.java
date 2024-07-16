@@ -46,6 +46,7 @@ public class SecurityConfig {
             "/api/v1/auth/authenticate",
             "/api/password-reset/request",
             "/api/password-reset/reset",
+            "/api/courses/**",
             "/api/ratings/**"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;

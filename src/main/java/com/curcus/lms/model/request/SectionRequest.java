@@ -11,5 +11,5 @@ public class SectionRequest {
     private Long CourseId;
     @NotNull(message = "Section name cannot be null")
     private String sectionName;
-
+    private Long sectionId;
 }

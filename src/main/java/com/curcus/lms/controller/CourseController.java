@@ -43,7 +43,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -87,7 +90,9 @@ public class CourseController {
             );
 
             ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(coursePage.getContent(), metadata);
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
+            apiResponse.ok(coursePage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
