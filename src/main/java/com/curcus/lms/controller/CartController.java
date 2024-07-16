@@ -80,7 +80,7 @@ public class CartController {
     }
 
     @DeleteMapping(value = "/deleteAllCourseFromCart")
-    public ResponseEntity<ApiResponse<Void>> deleteCourseFromCart(@RequestParam Long studentId,
+    public ResponseEntity<ApiResponse<Void>> deleteAllCourseFromCart(@RequestParam Long studentId,
             @RequestParam Long cartId) {
         try {
             cartService.deleteAllCourseFromCart(studentId, cartId);
