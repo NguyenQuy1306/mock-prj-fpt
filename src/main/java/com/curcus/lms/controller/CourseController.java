@@ -1,6 +1,10 @@
 package com.curcus.lms.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
@@ -31,7 +37,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -92,9 +101,56 @@ public class CourseController {
 
     }
     
-    @GetMapping("/courses/search")
-    public List<CourseResponse> searchCourses(@RequestParam String name) {
-        return courseService.searchCoursesByName(name);
+    @GetMapping("courses/search")
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> searchCourses(
+            @RequestParam(required = false) Long instructorId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long minPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String direction // parameter for sorting direction
+    ) {
+        // Validate direction parameter
+        Sort.Direction sortDirection = Sort.Direction.ASC; // default to ascending
+        if (direction != null && direction.equalsIgnoreCase("desc")) {
+            sortDirection = Sort.Direction.DESC;
+        }
+
+        // Build pageable with sorting
+        Pageable pageable;
+        if (sort != null && !sort.isEmpty()) {
+            pageable = PageRequest.of(page, size, sortDirection, sort);
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
+
+        // Call service method to search courses
+        Page<CourseResponse> coursePage = courseService.searchCourses(instructorId, categoryId, title, minPrice, pageable);
+
+        // Handle empty result
+        if (coursePage.isEmpty()) {
+            throw new NotFoundException("Course not found.");
+        }
+
+        // Create metadata for pagination
+        MetadataResponse metadata = new MetadataResponse(
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                (coursePage.hasNext() ? "/api/courses/courses/search?page=" + (coursePage.getNumber() + 1) : null),
+                (coursePage.hasPrevious() ? "/api/courses/courses/search?page=" + (coursePage.getNumber() - 1) : null),
+                "/api/courses/courses/search?page=" + (coursePage.getTotalPages() - 1),
+                "/api/courses/courses/search?page=0"
+        );
+
+        // Create API response
+        ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(coursePage.getContent(), metadata);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+    
 
 }

@@ -3,6 +3,9 @@ package com.curcus.lms.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
@@ -27,7 +30,9 @@ public interface CourseService {
 
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
     
-    List<CourseResponse> searchCoursesByName(String name);
+//    Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
+//    Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long minPrice, Long maxPrice, Pageable pageable);
+    Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable);
 
     ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
     

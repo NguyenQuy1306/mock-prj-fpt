@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.ApplicationException;
@@ -32,6 +35,7 @@ import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
 
 import com.curcus.lms.service.CourseService;
+import com.curcus.lms.specification.CourseSpecifications;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -130,10 +134,26 @@ public class CourseServiceImpl implements CourseService {
     }
 
 	@Override
-	public List<CourseResponse> searchCoursesByName(String name) {
+	public Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable) {
 		// TODO Auto-generated method stub
-		List<Course> listCourseByNameCourses=courseRepository.findByTitleContainingIgnoreCase(name);
-		return courseMapper.toResponseList(listCourseByNameCourses);
+		Specification<Course> spec = Specification.where(null);
+		if (instructorId != null) {
+            spec = spec.and(CourseSpecifications.hasInstructorId(instructorId));
+        }
+
+        if (categoryId != null) {
+            spec = spec.and(CourseSpecifications.hasCategoryId(categoryId));
+        }
+
+        if (title != null) {
+            spec = spec.and(CourseSpecifications.hasTitleLike(title));
+        }
+
+        if (price != null) {
+            spec = spec.and(CourseSpecifications.hasPriceGreaterThanOrEqualTo(price));
+        }
+        Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
+		return coursePage.map(courseMapper::toResponse);
 	}
     
 }
