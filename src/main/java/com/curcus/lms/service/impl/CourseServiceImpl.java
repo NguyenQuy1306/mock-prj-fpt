@@ -1,8 +1,11 @@
 package com.curcus.lms.service.impl;
 
 import java.io.Console;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,8 @@ import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
@@ -127,5 +132,71 @@ public class CourseServiceImpl implements CourseService {
         section.setSectionName(sectionRequest.getSectionName());
         SectionCreateResponse sectionCreateResponse=sectionMapper.toResponse(sectionRepository.save(section));
         return sectionCreateResponse;
+    }
+
+    @Override
+    public ContentCreateResponse updateContent(Long id, ContentUpdateRequest contentUpdateRequest) {
+        try{
+            if(contentRepository.findById(id)==null) throw new ApplicationException("Content is invalid");
+            Content content = contentRepository.findById(id).get();
+            if(contentUpdateRequest.getType()!=null) content.setType(contentUpdateRequest.getType());
+            if(contentUpdateRequest.getUrl()!=null) content.setUrl(contentUpdateRequest.getUrl());
+            return contentMapper.toResponse(contentRepository.save(content));
+        }catch(ApplicationException ex){
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<ContentCreateResponse> updateContentPositions(Long id, List<ContentUpdatePositionRequest> positionUpdates){
+        try{
+            Section section = sectionRepository.findById(id)
+            .orElseThrow(() -> new ApplicationException("Section not found with id: " + id));
+            
+            List<Content> updatedContents = new ArrayList<>();
+            for (ContentUpdatePositionRequest update : positionUpdates) {
+                Content content = contentRepository.findById(update.getContentId())
+                    .orElseThrow(() -> new ApplicationException("Content not found"));
+        
+                content.setPosition(update.getNewPosition());
+                updatedContents.add(content);
+                contentRepository.save(content);
+            }
+            updatedContents.sort(Comparator.comparingLong(Content::getPosition));
+            boolean needsAdjustment = false;
+            for (int i = 0; i < updatedContents.size()-1; i++) {
+                if (updatedContents.get(i).getPosition()==updatedContents.get(i+1).getPosition()) {
+                    throw new ApplicationException("Position is invalid");
+                }
+            }
+            for (int i = 0; i < updatedContents.size(); i++) {
+                if (updatedContents.get(i).getPosition() != i + 1) {
+                    needsAdjustment = true;
+                    break;
+                }
+            }
+
+            if (needsAdjustment) {
+                for (int i = 0; i < updatedContents.size(); i++) {
+                    Content content = updatedContents.get(i);
+                    content.setPosition((long) (i + 1));
+                    contentRepository.save(content);
+                }
+            }
+
+            // Chuyển đổi danh sách Content thành danh sách ContentCreateResponse
+            List<ContentCreateResponse> responseList = new ArrayList<>();
+            for (Content content : updatedContents) {
+                ContentCreateResponse response = contentMapper.toResponse(content);
+                responseList.add(response);
+            }
+
+            return responseList;
+            // return updatedContents.stream()
+            //                         .map(contentMapper::toResponse)
+            //                         .collect(Collectors.toList());
+        }catch(ApplicationException ex){
+            throw ex;
+        }
     }
 }

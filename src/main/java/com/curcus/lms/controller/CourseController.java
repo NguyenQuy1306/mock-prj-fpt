@@ -14,11 +14,14 @@ import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
@@ -94,13 +97,23 @@ public class CourseController {
 
     }
 
-    @PutMapping("/{id}/updateContent")
+    @PutMapping(value="sections/{id}/updateContent")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
-            @PathVariable Long id, @RequestBody ContentCreateRequest contentCreateRequest) {
-        ContentCreateResponse contentCreateResponse = courseService.updateContent(id, contentCreateRequest);
+                @PathVariable Long id,
+            @RequestBody @Valid ContentUpdateRequest contentUpdateRequest) {
+        ContentCreateResponse contentUpdateResponse = courseService.updateContent(id, contentUpdateRequest);
         ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.ok(contentCreateResponse);
+        apiResponse.ok(contentUpdateResponse);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PutMapping("/sections/{sectionId}/contents/positions")
+    public ResponseEntity<ApiResponse<List<ContentCreateResponse>>> updateContentPositions(
+            @PathVariable Long sectionId,
+            @RequestBody @Valid ContentPositionUpdateWrapper wrapper) {
+        List<ContentCreateResponse> updatedContents = courseService.updateContentPositions(sectionId, wrapper.getUpdates());
+        ApiResponse<List<ContentCreateResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(updatedContents);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }
