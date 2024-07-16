@@ -46,7 +46,9 @@ public class SecurityConfig {
             "/api/v1/auth/authenticate",
             "/api/password-reset/request",
             "/api/password-reset/reset",
-            "/api/ratings/**"
+            "/api/ratings/**",
+            "/api/courses",
+            "/api/courses/list"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -80,20 +82,41 @@ public class SecurityConfig {
                                 .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/enrollFromCart")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
 
                                 // /api/students/{id}/courses
-                                .requestMatchers(GET, "/api/students/[0-9]+/courses").hasAnyAuthority(COURSE_READ.getPermission())
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(GET, "/api/students/[0-9]+/courses")).hasAnyAuthority(COURSE_READ.getPermission())
 
                                 // /api/students/{id}/cart
-                                .requestMatchers(GET, "/api/students/[0-9]+/cart").hasAnyAuthority(CART_READ.getPermission())
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(GET, "/api/students/[0-9]+/cart")).hasAnyAuthority(CART_READ.getPermission())
 
                                 // /api/students/list
                                 .requestMatchers(GET, "/api/students/list").hasAnyAuthority(STUDENT_READ.getPermission())
 
                                 // ------------------------------------- ADMIN ------------------------------------
-                                .requestMatchers(GET, "/api/admins/[0-9]+").hasAnyAuthority(ADMIN_READ.getPermission())
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(GET, "/api/admins/[0-9]+")).hasAnyAuthority(ADMIN_READ.getPermission())
                                 .requestMatchers(GET, "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
 
+                                // ------------------------- COURSE -----------------------------------
+                                // /api/courses/create
+                                .requestMatchers(POST, "/api/courses/create").hasAnyAuthority(COURSE_CREATE.getPermission())
+
+                                // /api/courses/addSection
+                                .requestMatchers(POST, "/api/courses/addSection").hasAnyAuthority(SECTION_CREATE.getPermission())
+
+                                // /api/courses/addContent
+                                .requestMatchers(POST, "/api/courses/addContent").hasAnyAuthority(CONTENT_CREATE.getPermission())
+
+                                // /api/courses/list
+                                .requestMatchers(GET, "/api/courses/list").hasAnyAuthority(COURSE_READ.getPermission())
+
+                                // /api/courses
+                                .requestMatchers(GET, "/api/courses").hasAnyAuthority(COURSE_READ.getPermission())
+
+                                // /api/courses/{id}
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(DELETE, "/api/courses/[0-9]+")).hasAnyAuthority(COURSE_DELETE.getPermission())
+
                                 .anyRequest()
-                                .authenticated()
+                                .denyAll()
+
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

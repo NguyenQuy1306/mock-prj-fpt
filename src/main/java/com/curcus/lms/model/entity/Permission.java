@@ -33,6 +33,18 @@ public enum Permission {
     CATEGORY_READ("category:read"),
     CATEGORY_UPDATE("category:update"),
     CATEGORY_DELETE("category:delete"),
+    RATING_CREATE("rating:create"),
+    RATING_READ("rating:read"),
+    RATING_UPDATE("rating:update"),
+    RATING_DELETE("rating:delete"),
+    SECTION_CREATE("section:create"),
+    SECTION_READ("section:read"),
+    SECTION_UPDATE("section:update"),
+    SECTION_DELETE("section:delete"),
+    CONTENT_CREATE("content:create"),
+    CONTENT_READ("content:read"),
+    CONTENT_UPDATE("content:update"),
+    CONTENT_DELETE("content:delete"),
     ;
 
     @Getter

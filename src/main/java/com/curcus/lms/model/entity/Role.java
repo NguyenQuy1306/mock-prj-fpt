@@ -39,7 +39,19 @@ public enum Role {
             CART_CREATE,
             CART_READ,
             CART_UPDATE,
-            CART_DELETE
+            CART_DELETE,
+            RATING_CREATE,
+            RATING_READ,
+            RATING_UPDATE,
+            RATING_DELETE,
+            SECTION_CREATE,
+            SECTION_READ,
+            SECTION_UPDATE,
+            SECTION_DELETE,
+            CONTENT_CREATE,
+            CONTENT_READ,
+            CONTENT_UPDATE,
+            CONTENT_DELETE
     )),
     STUDENT(Set.of(
             STUDENT_READ,
@@ -49,7 +61,13 @@ public enum Role {
             ENROLLMENT_READ,
             CART_READ,
             CART_UPDATE,
-            CART_DELETE
+            CART_DELETE,
+            RATING_CREATE,
+            RATING_READ,
+            RATING_UPDATE,
+            RATING_DELETE,
+            SECTION_READ,
+            CONTENT_READ
     )),
     INSTRUCTOR(Set.of(
             INSTRUCTOR_READ,
@@ -58,7 +76,16 @@ public enum Role {
             COURSE_READ,
             COURSE_UPDATE,
             COURSE_DELETE,
-            ENROLLMENT_READ
+            ENROLLMENT_READ,
+            RATING_READ,
+            SECTION_CREATE,
+            SECTION_READ,
+            SECTION_UPDATE,
+            SECTION_DELETE,
+            CONTENT_CREATE,
+            CONTENT_READ,
+            CONTENT_UPDATE,
+            CONTENT_DELETE
     ))
 
     ;
