@@ -6,6 +6,7 @@ import com.curcus.lms.model.response.RatingResponse;
 import java.util.List;
 
 public interface RatingService {
+    RatingResponse createRating(RatingRequest ratingRequest);
     RatingResponse updateRating(RatingRequest ratingRequest);
 
     RatingResponse getRatingByStudentIdAndCourseId(Long studentId, Long courseId);

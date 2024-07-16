@@ -3,12 +3,15 @@ package com.curcus.lms.service.impl;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.CourseException;
 import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Rating;
+import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.OthersMapper;
 import com.curcus.lms.model.request.RatingRequest;
 import com.curcus.lms.model.response.RatingResponse;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.RatingRepository;
+import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ public class RatingServiceImpl implements RatingService {
     private CourseRepository courseRepository;
     @Autowired
     private OthersMapper othersMapper;
+    @Autowired
+    private StudentRepository studentRepository;
     @Override
     public RatingResponse updateRating(RatingRequest ratingRequest) {
         try {
@@ -82,5 +87,17 @@ public class RatingServiceImpl implements RatingService {
         catch (ApplicationException e) {
             throw e;
         }
+    }
+
+    @Override
+    public RatingResponse createRating(RatingRequest ratingRequest) {
+        Student student = studentRepository.findById(ratingRequest.getStudentId()).orElseThrow();
+        Course course = courseRepository.findById(ratingRequest.getCourseId()).orElseThrow();
+        Rating rating = new Rating();
+        rating.setStudent(student);
+        rating.setCourse(course);
+        rating.setComment(ratingRequest.getComment());
+        rating.setRating(ratingRequest.getRating());
+        return othersMapper.toRatingResponse(ratingRepository.save(rating));
     }
 }
