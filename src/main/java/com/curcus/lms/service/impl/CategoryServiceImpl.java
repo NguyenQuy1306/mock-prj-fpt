@@ -8,6 +8,9 @@ import com.curcus.lms.model.response.CategoryResponse;
 import com.curcus.lms.repository.AdminRepository;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.service.CategorySevice;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,4 +39,11 @@ public class CategoryServiceImpl implements CategorySevice {
             throw ex;
         }
     }
+
+    @Override
+    public List<Category> getAllCategory() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories;
+    }
+
 }
