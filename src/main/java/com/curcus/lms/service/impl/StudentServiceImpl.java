@@ -154,7 +154,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<CourseResponse> getListCourseFromCart(Long studentId) {
         try {
-            Cart cart = cartRepository.findByStudent_UserId(studentId);
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if (cart == null) throw new ApplicationException("Giỏ hàng không tồn tại");
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
             List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());

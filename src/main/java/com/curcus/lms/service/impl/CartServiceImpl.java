@@ -34,6 +34,8 @@ public class CartServiceImpl implements CartService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemsRepository orderItemsRepository;
+    @Autowired
+    private StudentService StudentService;
 
 
     @Override
@@ -113,7 +115,7 @@ public class CartServiceImpl implements CartService {
             }
 
             orderItemsRepository.saveAll(orderItemsList);
-
+            StudentService.addStudentToCoursesFromCart(studentId);
             //add delete cart method
 
         } catch (Exception ex) {
