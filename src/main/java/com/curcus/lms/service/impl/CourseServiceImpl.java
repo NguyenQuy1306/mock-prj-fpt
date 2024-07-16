@@ -141,9 +141,10 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "Course has not existed with id " + id));
+        System.err.println("LLL" + course.getEnrollment().isEmpty());
         if (!course.getEnrollment().isEmpty())
             throw new ValidationException("The course cannot be deleted because someone is currently enrolled");
-        courseRepository.deleteById(id);
+        // courseRepository.deleteById(id);
 
         return courseMapper.toResponse(course);
     }
@@ -173,7 +174,7 @@ public class CourseServiceImpl implements CourseService {
 
         section.setCourse(course);
         section.setSectionName(sectionRequest.getSectionName());
-        SectionCreateResponse sectionCreateResponse=sectionMapper.toResponse(sectionRepository.save(section));
+        SectionCreateResponse sectionCreateResponse = sectionMapper.toResponse(sectionRepository.save(section));
         return sectionCreateResponse;
     }
 
