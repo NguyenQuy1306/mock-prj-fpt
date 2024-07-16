@@ -112,7 +112,7 @@ public class CartServiceImpl implements CartService {
                         .course(cartItem.getCourse())
                         .price(cartItem.getCourse().getPrice())
                         .build();
-                if (enrollmentRepository.findByStudentIdAndCourseId(studentId, cartItem.getCourse().getCourseId()) == null){
+                if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, cartItem.getCourse().getCourseId()) == null){
                     StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
                     orderItemsList.add(orderItem);
                 }
