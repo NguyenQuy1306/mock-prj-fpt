@@ -24,6 +24,15 @@ public class CategoryServiceImpl implements CategorySevice {
     private AdminRepository adminRepository;
 
     @Override
+    public Category findById(int id) {
+        try {
+            return ((categoryRepository.findById(id)).get());
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
+    @Override
     public CategoryResponse createCategory(CategoryRequest categoryRequest) {
         try {
 
@@ -39,7 +48,6 @@ public class CategoryServiceImpl implements CategorySevice {
             throw ex;
         }
     }
-
     @Override
     public List<Category> getAllCategory() {
         List<Category> categories = categoryRepository.findAll();

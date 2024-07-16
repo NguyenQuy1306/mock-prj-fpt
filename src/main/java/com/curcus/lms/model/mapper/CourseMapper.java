@@ -2,6 +2,7 @@ package com.curcus.lms.model.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,6 +11,9 @@ import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.entity.Student;
+import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
@@ -26,7 +30,7 @@ import java.util.List;
 public abstract class CourseMapper {
 	@Autowired
     protected CloudinaryService cloudinaryService;
-	
+
     @Autowired
     protected InstructorRepository instructorRepository;
 
