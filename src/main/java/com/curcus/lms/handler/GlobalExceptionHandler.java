@@ -50,8 +50,11 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "400");
         error.put("errorMessage", "BAD_REQUEST");
+        error.put("details", ex.getMessage());
 
-        error.putAll(ex.getErrors());
+        if (ex.getErrors() != null) {
+            error.putAll(ex.getErrors());
+        }
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);

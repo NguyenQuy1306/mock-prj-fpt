@@ -28,5 +28,5 @@ public interface CourseService {
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
 
     ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
-    
+
 }

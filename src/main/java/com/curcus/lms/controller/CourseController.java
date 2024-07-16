@@ -60,7 +60,7 @@ public class CourseController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<CourseResponse>> createCourse(
-    		@ModelAttribute @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
+            @ModelAttribute @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
         CourseResponse courseResponse = courseService.saveCourse(courseCreateRequest);
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseResponse);
@@ -69,13 +69,15 @@ public class CourseController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<CourseResponse>> deleteCourse(@Valid @PathVariable("id") Long id) {
+        System.err.println("deleteCourse");
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseService.deleteCourse(id));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @PostMapping(value = "/addSection")
-    public ResponseEntity<ApiResponse<SectionCreateResponse>> createSection(@RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<ApiResponse<SectionCreateResponse>> createSection(
+            @RequestBody SectionRequest sectionRequest) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseService.createSection(sectionRequest));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
