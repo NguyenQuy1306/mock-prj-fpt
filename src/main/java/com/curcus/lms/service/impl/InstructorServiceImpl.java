@@ -19,7 +19,7 @@ import com.curcus.lms.service.InstructorService;
 import jakarta.validation.ValidationException;
 
 @Service
-public class InstructorServiceImpl implements InstructorService{
+public class InstructorServiceImpl implements InstructorService {
     @Autowired
     private InstructorRepository instructorRepository;
 
@@ -27,7 +27,7 @@ public class InstructorServiceImpl implements InstructorService{
     private UserMapper userMapper;
 
     @Override
-    public List<InstructorResponse> findAll(){
+    public List<InstructorResponse> findAll() {
         try {
             return userMapper.toInstructorResponseList(instructorRepository.findAll());
         } catch (ApplicationException ex) {
@@ -36,7 +36,7 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public List<InstructorResponse> findByName(String name){
+    public List<InstructorResponse> findByName(String name) {
         try {
             return userMapper.toInstructorResponseList(instructorRepository.findByName(name));
         } catch (ApplicationException ex) {
@@ -45,7 +45,7 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public Optional<InstructorResponse> findById(Long instructorId){
+    public Optional<InstructorResponse> findById(Long instructorId) {
         try {
             return instructorRepository.findById(instructorId).map(userMapper::toInstructorResponse);
         } catch (ApplicationException ex) {
@@ -58,12 +58,14 @@ public class InstructorServiceImpl implements InstructorService{
         try {
             Instructor newInstructor = new Instructor();
             newInstructor.setName(instructorRequest.getName());
-            if (instructorRepository.findByEmail(instructorRequest.getEmail())!=null) throw new ValidationException("Email already exists");
+            if (instructorRepository.findByEmail(instructorRequest.getEmail()) != null)
+                throw new ValidationException("Email already exists");
             newInstructor.setEmail(instructorRequest.getEmail());
             newInstructor.setPassword(instructorRequest.getPassword());
             newInstructor.setFirstName(instructorRequest.getFirstName());
             newInstructor.setLastName(instructorRequest.getLastName());
-            if (instructorRepository.findByEmail(instructorRequest.getPhoneNumber())!=null) throw new ApplicationException("PhoneNumber already exists");
+            if (instructorRepository.findByEmail(instructorRequest.getPhoneNumber()) != null)
+                throw new ApplicationException("PhoneNumber already exists");
             newInstructor.setPhoneNumber(instructorRequest.getPhoneNumber());
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
@@ -75,13 +77,16 @@ public class InstructorServiceImpl implements InstructorService{
     @Override
     public InstructorResponse updateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
         try {
-            if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
+            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (instructorUpdateRequest.getName()!=null) newInstructor.setName(instructorUpdateRequest.getName());
-            if (instructorUpdateRequest.getFirstName()!=null) newInstructor.setFirstName(instructorUpdateRequest.getFirstName());
-            if (instructorUpdateRequest.getLastName()!=null) newInstructor.setLastName(instructorUpdateRequest.getLastName());
-            if (instructorUpdateRequest.getPhoneNumber()!=null) {
-                if (instructorRepository.findByEmail(instructorUpdateRequest.getPhoneNumber())!=null) throw new ApplicationException("PhoneNumber already exists");
+            if (instructorUpdateRequest.getName() != null) newInstructor.setName(instructorUpdateRequest.getName());
+            if (instructorUpdateRequest.getFirstName() != null)
+                newInstructor.setFirstName(instructorUpdateRequest.getFirstName());
+            if (instructorUpdateRequest.getLastName() != null)
+                newInstructor.setLastName(instructorUpdateRequest.getLastName());
+            if (instructorUpdateRequest.getPhoneNumber() != null) {
+                if (instructorRepository.findByEmail(instructorUpdateRequest.getPhoneNumber()) != null)
+                    throw new ApplicationException("PhoneNumber already exists");
                 newInstructor.setPhoneNumber(instructorUpdateRequest.getPhoneNumber());
             }
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
@@ -94,9 +99,10 @@ public class InstructorServiceImpl implements InstructorService{
     @Override
     public InstructorResponse updateInstructorPassword(Long id, String password) {
         try {
-            if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
+            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (newInstructor.getPassword().equals(password)) throw new ApplicationException("Password already exists in your account");
+            if (newInstructor.getPassword().equals(password))
+                throw new ApplicationException("Password already exists in your account");
             newInstructor.setPassword(password);
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
@@ -108,7 +114,7 @@ public class InstructorServiceImpl implements InstructorService{
     @Override
     public InstructorResponse recoverInstructorPassword(Long id, String password) {
         try {
-            if (instructorRepository.findById(id)==null) throw new ApplicationException("Unknown account"); 
+            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
             newInstructor.setPassword(password);
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
@@ -118,17 +124,17 @@ public class InstructorServiceImpl implements InstructorService{
     }
 
     @Override
-    public void deleteInstructor(Long instructorId){
+    public void deleteInstructor(Long instructorId) {
         try {
             System.out.println(123);
             if (instructorRepository.findById(instructorId).isPresent()) instructorRepository.deleteById(instructorId);
             else throw new NotFoundException("Unknown account");
             System.out.println(9999);
-            
+
         } catch (ApplicationException ex) {
             throw ex;
         }
 
     }
-    
+
 }

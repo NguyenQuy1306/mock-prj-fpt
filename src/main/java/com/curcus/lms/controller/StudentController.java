@@ -4,9 +4,11 @@ import com.curcus.lms.model.request.StudentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +33,7 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {
         try {
@@ -42,6 +45,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<StudentResponse>> getStudentById(@PathVariable Long id) {
         try {
@@ -65,6 +69,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
@@ -82,6 +87,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
@@ -99,6 +105,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PutMapping("/{id}/changePassword")
     public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
         try {
@@ -115,6 +122,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteStudent(@PathVariable Long id) {
         try {
@@ -130,6 +138,8 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @GetMapping("/{id}/courses")
     public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id){
         try{
@@ -157,6 +167,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
     @GetMapping("/{id}/cart")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long id) {
         try {
@@ -172,8 +183,8 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping("/{studentId}/courses/{courseId}")
     public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
         try {
@@ -190,6 +201,7 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping("/{studentId}/enrollFromCart")
     public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> addStudentToCoursesFromCart(@PathVariable Long studentId) {
         try {

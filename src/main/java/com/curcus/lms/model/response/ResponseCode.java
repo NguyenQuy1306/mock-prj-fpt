@@ -20,13 +20,21 @@ public class ResponseCode {
                 map.put("MSG 8", "Tài khoản không tồn tại");
                 break;
             case 9:
-                map.put("MSG 9", "Sai mật khẩu.");
+                map.put("MSG 9", "Incorrect password");
+                break;
+            case 10:
+                map.put("MSG 10", "Course not found");
                 break;
             // TODO case 4 - 22
             case 21:
                 map.put("MSG 21", "Đã xảy ra lỗi, vui lòng thử lại sau");
+                break;
             case 23:
                 map.put("MSG 23", "Internal Server Error");
+                break;
+            case 24:
+                map.put("MSG 24", "Permission Denied");
+                break;
             default:
                 map.put("MSG ?", "Lỗi không xác định");
                 break;

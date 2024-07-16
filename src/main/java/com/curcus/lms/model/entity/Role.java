@@ -31,23 +31,34 @@ public enum Role {
             COURSE_CREATE,
             COURSE_READ,
             COURSE_UPDATE,
-            COURSE_DELETE
+            COURSE_DELETE,
+            ENROLLMENT_CREATE,
+            ENROLLMENT_READ,
+            ENROLLMENT_UPDATE,
+            ENROLLMENT_DELETE,
+            CART_CREATE,
+            CART_READ,
+            CART_UPDATE,
+            CART_DELETE
     )),
     STUDENT(Set.of(
-            STUDENT_CREATE,
             STUDENT_READ,
             STUDENT_UPDATE,
-            STUDENT_DELETE
+            COURSE_READ,
+            ENROLLMENT_CREATE,
+            ENROLLMENT_READ,
+            CART_READ,
+            CART_UPDATE,
+            CART_DELETE
     )),
     INSTRUCTOR(Set.of(
-            INSTRUCTOR_CREATE,
             INSTRUCTOR_READ,
             INSTRUCTOR_UPDATE,
-            INSTRUCTOR_DELETE,
             COURSE_CREATE,
             COURSE_READ,
             COURSE_UPDATE,
-            COURSE_DELETE
+            COURSE_DELETE,
+            ENROLLMENT_READ
     ))
 
     ;

@@ -1,5 +1,7 @@
 package com.curcus.lms.model.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,4 +26,5 @@ public class Cart {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    private boolean isPaid;
 }

@@ -24,7 +24,7 @@ public class Course {
 
     @Column(nullable = false)
     private String courseThumbnail;
-    
+
     @Column(nullable = false)
     private String title;
 
@@ -34,7 +34,7 @@ public class Course {
     @Column(nullable = false)
     private Long price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;
 
@@ -42,7 +42,7 @@ public class Course {
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private Category category;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course", cascade = CascadeType.ALL)
     Set<Enrollment> enrollment;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "course")

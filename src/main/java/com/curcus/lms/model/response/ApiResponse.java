@@ -12,7 +12,7 @@ public class ApiResponse<T> {
     private StatusEnum status;
     private T payload;
     private Map<String, String> error;
-    private MetadataResponse metadata;
+    private Map<String, Object> metadata;
 
     public void ok() {
         this.status = StatusEnum.SUCCESS;
@@ -23,7 +23,7 @@ public class ApiResponse<T> {
         this.payload = data;
     }
 
-    public void ok(T data, MetadataResponse metadata) {
+    public void ok(T data, Map<String, Object> metadata) {
         this.status = StatusEnum.SUCCESS;
         this.payload = data;
         this.metadata = metadata;

@@ -1,6 +1,7 @@
 package com.curcus.lms.controller;
 
 
+import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.exception.IncorrectPasswordException;
@@ -25,11 +26,14 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AuthenticationController {
     private final AuthenticationService service;
     private final EmailServiceImpl emailServiceImpl;
@@ -39,25 +43,39 @@ public class AuthenticationController {
     private final CookieServiceImpl cookieServiceImpl;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Boolean>> register(@Valid @RequestBody RegisterRequest request,
+    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request,
                                                          BindingResult bindingResult) {
 
-        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-//            String errorMessage = bindingResult.getAllErrors().stream()
-//                    .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
-//                    .collect(Collectors.joining(", "));
-            apiResponse.error(ResponseCode.getError(1));
+            errors = bindingResult.getAllErrors().stream()
+                    .collect(Collectors.toMap(
+                            error -> ((FieldError) error).getField(),
+                            error -> error.getDefaultMessage()
+                    ));
+            apiResponse.error(errors);
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
         try {
-            if (userRepository.findByEmail(request.getEmail()).isPresent()
-                    || userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
-                apiResponse.error(ResponseCode.getError(2));
+            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                errors.put("message", "Email has already been used");
+                apiResponse.error(errors);
                 return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
             }
-            if (!service.register(request)) {
+//            if (userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
+//                errors.put("message", "Email has already been used");
+//                apiResponse.error(errors);
+//                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+//            }
+            if (userRepository.findByName(request.getName()).isPresent()) {
+                errors.put("message", "Name has already been used");
+                apiResponse.error(errors);
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            }
+            UserResponse userResponse = service.register(request);
+            if (userResponse == null) {
+                System.out.println("---------LOI TAO USER--------------------");
                 apiResponse.error(ResponseCode.getError(23));
                 return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -67,61 +85,63 @@ public class AuthenticationController {
 
             if ("S".equals(request.getUserRole())) {
                 emailSent = emailServiceImpl.sendEmailToStudent(request.getEmail());
-                successMessage = "Đăng ký thành công. Vui lòng kiểm tra email để hoàn thành xác nhận tài khoản. Nếu bạn không nhận được email, ấn vào đây.";
+//                successMessage = "Registration successful. Please check your email to complete account verification.";
             } else if ("I".equals(request.getUserRole())) {
                 emailSent = emailServiceImpl.sendEmailToInstructor(request.getEmail());
-                successMessage = "Đăng ký thành công. Vui lòng kiểm tra email.";
+//                successMessage = "Registration successful. Please check your email to complete account verification.";
             }
 
             if (emailSent) {
-                apiResponse.ok(true);
+                apiResponse.ok(userResponse);
                 return new ResponseEntity<>(apiResponse, HttpStatus.OK);
             } else {
-                apiResponse.error(ResponseCode.getError(21));
+                errors.put("message", "Email has already been used");
+                apiResponse.error(errors);
                 return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException i) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Invalid user role");
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
             apiResponse.error(ResponseCode.getError(23));
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<ApiResponse<Boolean>> authenticate(
+    public ResponseEntity<ApiResponse<UserResponse>> authenticate(
             @Valid @RequestBody AuthenticationRequest request,
             BindingResult bindingResult,
             HttpServletResponse response
     ) {
-        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().stream()
-                    .map(error -> ((FieldError) error).getField() + ": " + error.getDefaultMessage())
-                    .collect(Collectors.joining(", "));
-            apiResponse.error(ResponseCode.getError(1));
+            errors = bindingResult.getAllErrors().stream()
+                    .collect(Collectors.toMap(
+                            error -> ((FieldError) error).getField(),
+                            error -> error.getDefaultMessage()
+                    ));
+            apiResponse.error(errors);
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            AuthenticationResponse tokens = service.authenticate(request);
-            if (!(cookieServiceImpl.addCookie(response,
-                    "accessToken",
-                    tokens.getAccessToken()).orElse(false)
-                    && cookieServiceImpl.addCookie(response,
-                    "refreshToken",
-                    tokens.getRefreshToken()).orElse(false))) {
-                apiResponse.error(ResponseCode.getError(23));
-                return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            System.out.println(tokens.getAccessToken());
-            System.out.println(tokens.getRefreshToken());
-            apiResponse.ok(true);
+            UserResponse userResponse = service.authenticate(request, response);
+
+            apiResponse.ok(userResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             apiResponse.error(ResponseCode.getError(8));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch (IncorrectPasswordException e) {
             apiResponse.error(ResponseCode.getError(9));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (ApplicationException e) {
+            errors.put("message", e.getMessage());
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
     }

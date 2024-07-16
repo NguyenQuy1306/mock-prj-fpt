@@ -21,4 +21,5 @@ public class Category {
     private long categoryId;
     @Column(unique = true, nullable = false)
     private String categoryName;
+
 }

@@ -2,6 +2,7 @@ package com.curcus.lms.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,8 @@ import java.util.List;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long>,JpaSpecificationExecutor<Course> {
-    List<Course> findByCategory(Category category);
+    Page<Course> findByCategory(Category category, Pageable pageable);
+    Page<Course> findAll(Pageable pageable);
 //    Page<Course> findByTitleContainingIgnoreCase(String name,Pageable pageable);
 
 }

@@ -10,7 +10,7 @@ import com.curcus.lms.model.response.InstructorResponse;
 
 public interface InstructorService {
     List<InstructorResponse> findAll();
-    
+
     List<InstructorResponse> findByName(String name);
 
     Optional<InstructorResponse> findById(Long instructorId);
@@ -24,5 +24,4 @@ public interface InstructorService {
     InstructorResponse recoverInstructorPassword(Long id, String password);
 
     void deleteInstructor(Long instructorId);
-
 }
