@@ -100,9 +100,9 @@ public class CourseController {
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
+//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(courseResponse);
+//            apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;

@@ -1,17 +1,17 @@
 package com.curcus.lms.validation;
 
+import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.service.CategoryService;
 
 @Component
 public class CourseValidator implements Validator {
     @Autowired
-    private CategoryService categoryService;
+    private CategorySevice categorySevice;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -22,7 +22,7 @@ public class CourseValidator implements Validator {
     public void validate(Object target, Errors errors) {
         CourseRequest product = (CourseRequest) target;
 
-        Category category = categoryService.findById(product.getCategoryId());
+        Category category = categorySevice.findById(product.getCategoryId());
         if (category == null) {
             errors.rejectValue("categoryId", "error.categoryId", "Category does not exist!");
         }
