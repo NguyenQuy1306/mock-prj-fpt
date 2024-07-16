@@ -30,6 +30,10 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
     @Autowired
     private CartItemsRepository cartItemsRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderItemsRepository orderItemsRepository;
 
 
     @Override
@@ -95,16 +99,22 @@ public class CartServiceImpl implements CartService {
                     .totalPrice(totalPrice)
                     .build();
 
+            Order savedOrder = orderRepository.save(order);
+
             List<OrderItems> orderItemsList = new ArrayList<>();
             for (CartItems cartItem : cartItems) {
                 OrderItems orderItem = OrderItems.builder()
-                        .id(new OrderItemsId(order.getOrderId(), cartItem.getCourse().getCourseId()))
-                        .order(order)
+                        .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
+                        .order(savedOrder)
                         .course(cartItem.getCourse())
                         .price(cartItem.getCourse().getPrice())
                         .build();
                 orderItemsList.add(orderItem);
             }
+
+            orderItemsRepository.saveAll(orderItemsList);
+
+            //add delete cart method
 
         } catch (Exception ex) {
             throw new RuntimeException("An error occurred while copying the cart to the order", ex);
