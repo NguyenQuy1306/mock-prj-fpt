@@ -95,6 +95,9 @@ public class SecurityConfig {
                                 .requestMatchers(GET, "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
 
                                 // ------------------------- COURSE -----------------------------------
+                                // /api/courses/updateCourse
+                                .requestMatchers(PUT, "/api/courses/updateCourse").hasAnyAuthority(COURSE_UPDATE.getPermission())
+
                                 // /api/courses/create
                                 .requestMatchers(POST, "/api/courses/create").hasAnyAuthority(COURSE_CREATE.getPermission())
 
