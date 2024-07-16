@@ -106,13 +106,13 @@ public class CartServiceImpl implements CartService {
 
             List<OrderItems> orderItemsList = new ArrayList<>();
             for (CartItems cartItem : cartItems) {
-                OrderItems orderItem = OrderItems.builder()
-                        .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
-                        .order(savedOrder)
-                        .course(cartItem.getCourse())
-                        .price(cartItem.getCourse().getPrice())
-                        .build();
                 if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, cartItem.getCourse().getCourseId()) == null){
+                    OrderItems orderItem = OrderItems.builder()
+                            .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
+                            .order(savedOrder)
+                            .course(cartItem.getCourse())
+                            .price(cartItem.getCourse().getPrice())
+                            .build();
                     StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
                     orderItemsList.add(orderItem);
                 }
