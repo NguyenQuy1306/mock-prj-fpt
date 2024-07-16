@@ -34,7 +34,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/instructor")
+@RequestMapping("/api/instructors")
 public class InstructorController {
     @Autowired
     private InstructorService instructorService;
