@@ -36,7 +36,8 @@ public class CartServiceImpl implements CartService {
     private OrderItemsRepository orderItemsRepository;
     @Autowired
     private StudentService StudentService;
-
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     @Override
     public CartResponse getById(Long cartId) {
@@ -111,8 +112,10 @@ public class CartServiceImpl implements CartService {
                         .course(cartItem.getCourse())
                         .price(cartItem.getCourse().getPrice())
                         .build();
-                StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
-                orderItemsList.add(orderItem);
+                if (enrollmentRepository.findByStudentIdAndCourseId(studentId, cartItem.getCourse().getCourseId()) == null){
+                    StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
+                    orderItemsList.add(orderItem);
+                }
             }
 
             orderItemsRepository.saveAll(orderItemsList);
