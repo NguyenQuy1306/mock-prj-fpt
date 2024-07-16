@@ -7,6 +7,7 @@ import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.AdminResponse;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.model.response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import java.util.List;
@@ -42,4 +43,20 @@ public interface UserMapper {
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     AdminResponse toAdminResponse(Admin admin);
+
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
+    UserResponse toUserResponse(Student student);
+
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
+    UserResponse toUserResponse(Instructor instructor);
 }

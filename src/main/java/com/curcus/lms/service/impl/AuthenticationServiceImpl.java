@@ -1,21 +1,28 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;
+import com.curcus.lms.model.response.ResponseCode;
+import com.curcus.lms.model.response.UserResponse;
 import com.curcus.lms.repository.RefreshTokenRepository;
 import com.curcus.lms.repository.TokenRepository;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.AuthenticationService;
+import com.curcus.lms.service.CookieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,46 +32,44 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-@AllArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final UserRepository repository;
-    private final TokenRepository tokenRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JWTServiceImpl jwtServiceImpl;
-    private final AuthenticationManager authenticationManager;
-    private final RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private UserRepository repository;
+    @Autowired
+    private TokenRepository tokenRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JWTServiceImpl jwtServiceImpl;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private CookieService cookieService;
     @Override
-    public Boolean register(RegisterRequest request) {
+    public UserResponse register(RegisterRequest request) {
         try {
             User user = switch (request.getUserRole().toUpperCase()) {
                 case "I" -> new Instructor();
                 case "S" -> new Student();
-                case "A" -> new Admin();
                 default -> throw new IllegalArgumentException("Invalid user role: " + request.getUserRole());
             };
             user.setName(request.getName());
-            user.setFirstName(request.getFirstname());
-            user.setLastName(request.getLastname());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
-            user.setPhoneNumber(request.getPhoneNumber());
-            repository.save(user);
 
-//            var userDetails = UserDetailsImpl.builder()
-//                    .user(user)
-//                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
-//                    .build();
-//            var jwtToken = jwtService.generateToken(userDetails);
-//            var refreshToken = jwtService.generateRefreshToken(userDetails);
-//            saveUserToken(savedUser, jwtToken);
-//            return AuthenticationResponse.builder()
-//                    .accessToken(jwtToken)
-//                    .refreshToken(refreshToken)
-//                    .build();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            if (user instanceof Instructor) {
+                System.out.println("The user is an Instructor.");
+                return userMapper.toUserResponse((Instructor) repository.save(user));
+            } else {
+                System.out.println("The user is a Student.");
+                return userMapper.toUserResponse((Student) repository.save(user));
+            }
+        } catch (ApplicationException e) {
+            throw e;
         }
     }
 
@@ -91,7 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public UserResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
 
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Account does not exist"));
@@ -107,20 +112,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IncorrectPasswordException("Incorrect password");
         }
 
-        var userDetails = UserDetailsImpl.builder()
-                .user(user)
-                .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
-                .build();
-        var jwtToken = jwtServiceImpl.generateToken(userDetails);
-        var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);
-        revokeAllUserTokens(user);
-        revokeAllUserRefreshTokens(user);
-        saveUserToken(user, jwtToken);
-        saveUserRefreshToken(user, refreshToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        try {
+            var userDetails = UserDetailsImpl.builder()
+                    .user(user)
+                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                    .build();
+            var jwtToken = jwtServiceImpl.generateToken(userDetails);
+            var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);
+            revokeAllUserTokens(user);
+            revokeAllUserRefreshTokens(user);
+            saveUserToken(user, jwtToken);
+            saveUserRefreshToken(user, refreshToken);
+
+            if (!(cookieService.addCookie(response,
+                    "accessToken",
+                    jwtToken).orElse(false)
+                    && cookieService.addCookie(response,
+                    "refreshToken",
+                    refreshToken).orElse(false))) {
+                throw new ApplicationException();
+            }
+            if (user instanceof Instructor) {
+//                System.out.println("The user is an Instructor.");
+                return userMapper.toUserResponse((Instructor) repository.save(user));
+            } else {
+//                System.out.println("The user is a Student.");
+                return userMapper.toUserResponse((Student) repository.save(user));
+            }
+        } catch (ApplicationException e) {
+            throw e;
+        }
     }
 
     private void revokeAllUserTokens(User user) {
