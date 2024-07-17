@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -101,6 +103,7 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #courseRequest.instructorId)")
     @PutMapping(value = "/updateCourse")
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
@@ -119,6 +122,7 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #courseCreateRequest.instructorId)")
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<CourseResponse>> createCourse(
             @ModelAttribute @Valid @RequestBody CourseCreateRequest courseCreateRequest) {
@@ -128,6 +132,8 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #id))")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<CourseResponse>> deleteCourse(@Valid @PathVariable("id") Long id) {
         System.err.println("deleteCourse");
@@ -136,6 +142,8 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #sectionRequest.courseId))")
     @PostMapping(value = "/addSection")
     public ResponseEntity<ApiResponse<SectionCreateResponse>> createSection(
             @RequestBody SectionRequest sectionRequest) {
@@ -144,6 +152,8 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createContent(
             @ModelAttribute @Valid ContentCreateRequest contentCreateRequest) {

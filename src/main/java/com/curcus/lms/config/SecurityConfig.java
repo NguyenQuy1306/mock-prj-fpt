@@ -2,6 +2,8 @@ package com.curcus.lms.config;
 
 import com.curcus.lms.auth.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,25 +15,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
-
-import static com.curcus.lms.model.entity.Permission.*;
-import static com.curcus.lms.model.entity.Role.ADMIN;
-import static com.curcus.lms.model.entity.Role.STUDENT;
-import static com.curcus.lms.model.entity.Role.INSTRUCTOR;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
+    @Value("${security.enabled:true}")
+    private boolean securityEnabled;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+    private static final String[] WHITE_LIST_URL = {
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -42,12 +35,15 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
+
+            "/api/v1/auth/**",
             "/api/v1/auth/register",
             "/api/v1/auth/authenticate",
             "/api/password-reset/request",
             "/api/password-reset/reset",
-            "/api/courses/**",
-            "/api/ratings/**"
+            "/api/ratings/**",
+            "/api/courses",
+            "/api/courses/list"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -55,58 +51,35 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.anyRequest().permitAll())
-//                .authorizeHttpRequests(req ->
-//                        req.requestMatchers(WHITE_LIST_URL)
-//                                .permitAll()
-//
-//                                /// --------------------- STUDENT --------------------------------
-//                                // /api/students/{id}
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(GET, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_READ.getPermission())
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(PUT, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(DELETE, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_DELETE.getPermission())
-//
-//                                // /api/students/{id}/changePassword
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(PUT, "/api/students/[0-9]+/changePassword")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
-//
-//                                // /api/students
-//                                .requestMatchers(GET, "/api/students").hasAnyAuthority(STUDENT_READ.getPermission())
-//                                .requestMatchers(POST, "/api/students").hasAnyAuthority(STUDENT_CREATE.getPermission())
-//
-//                                // /api/students/{studentId}/courses/{courseId}
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/courses/[0-9]+")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
-//
-//                                // /api/students/{studentId}/enrollFromCart
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/enrollFromCart")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
-//
-//                                // /api/students/{id}/courses
-//                                .requestMatchers(GET, "/api/students/[0-9]+/courses").hasAnyAuthority(COURSE_READ.getPermission())
-//
-//                                // /api/students/{id}/cart
-//                                .requestMatchers(GET, "/api/students/[0-9]+/cart").hasAnyAuthority(CART_READ.getPermission())
-//
-//                                // /api/students/list
-//                                .requestMatchers(GET, "/api/students/list").hasAnyAuthority(STUDENT_READ.getPermission())
-//
-//                                // ------------------------------------- ADMIN ------------------------------------
-//                                .requestMatchers(GET, "/api/admins/[0-9]+").hasAnyAuthority(ADMIN_READ.getPermission())
-//                                .requestMatchers(GET, "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
-//
-//                                .anyRequest()
-//                                .authenticated()
-//                )
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
+        http.csrf(AbstractHttpConfigurer::disable);
 
+        if (securityEnabled) {
+             http.authorizeHttpRequests(req ->
+                    req.requestMatchers(WHITE_LIST_URL)
+                            .permitAll()
+                            .anyRequest()
+                            .authenticated());
+        } else {
+            http.authorizeHttpRequests(req -> req.anyRequest().permitAll());
+        }
+
+        http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(logout ->
+                    logout.logoutUrl("/api/v1/auth/logout")
+                            .addLogoutHandler(logoutHandler)
+                            .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+            );
         return http.build();
+    }
+
+
+    // enable method security
+    @ConditionalOnProperty(prefix = "security",
+            name = "enabled",
+            havingValue = "true")
+    @EnableMethodSecurity
+    static class Dummy {
     }
 }

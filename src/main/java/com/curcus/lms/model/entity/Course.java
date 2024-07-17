@@ -28,11 +28,13 @@ public class Course {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
     private Long price;
+
+    private Double avgRating;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
