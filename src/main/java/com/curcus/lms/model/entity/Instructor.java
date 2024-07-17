@@ -11,8 +11,9 @@ import lombok.*;
 // @NoArgsConstructor
 @Entity
 @DiscriminatorValue(value = Role.INSTRUCTOR)
-@Table(name="instructors")
-//@PrimaryKeyJoinColumn(name="instructorId",referencedColumnName = "userId")
+@Table(name = "instructors")
+// @PrimaryKeyJoinColumn(name="instructorId",referencedColumnName = "userId")
+@PrimaryKeyJoinColumn(name = "userId")
 public class Instructor extends User {
 
 }

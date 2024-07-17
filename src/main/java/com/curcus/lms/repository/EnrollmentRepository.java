@@ -11,12 +11,12 @@ import java.util.List;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    List<Enrollment> findByStudent_UserId(Long studentId);
+    List<Enrollment> findByStudent_UserId(Long userId);
 
-    @Query("select e from Enrollment e join e.student s join e.course c where s.userId = :studentId and c.courseId = :courseId")
-    Enrollment findByStudentIdAndCourseId(@Param("studentId") Long studentId, @Param("courseId") Long courseId);
+    @Query("select e from Enrollment e join e.student s join e.course c where s.userId = :userId and c.courseId = :courseId")
+    Enrollment findByStudentIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);
 
-    Enrollment findByStudent_UserIdAndCourse_CourseId(Long studentId, Long courseId);
+    Enrollment findByStudent_UserIdAndCourse_CourseId(Long userId, Long courseId);
 
-    boolean existsByStudent_UserIdAndCourse_CourseId(Long studentId, Long courseId);
+    boolean existsByStudent_UserIdAndCourse_CourseId(Long userId, Long courseId);
 }

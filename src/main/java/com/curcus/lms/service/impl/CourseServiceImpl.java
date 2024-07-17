@@ -1,11 +1,5 @@
 package com.curcus.lms.service.impl;
 
-import static org.antlr.v4.runtime.misc.Utils.numNonnull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -70,9 +64,10 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CategorySevice categoryService;
     @Autowired
+    private InstructorValidator instructorValidator;
+    @Autowired
     private InstructorService instructorService;
 
-    @Autowired
     @Override
     public Page<CourseResponse> findAll(Pageable pageable) {
         try {
@@ -102,57 +97,6 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> findByCategory(Long categoryId) {
-        try {
-            Category category = new Category();
-            category.setCategoryId(categoryId);
-            return courseMapper.toResponseList(courseRepository.findByCategory(category));
-        } catch (ApplicationException ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult) {
-        // Get id of course
-        if (findById(courseRequest.getCourseId()) == null) {
-            throw new NotFoundException("Course has not existed with id " + courseRequest.getCourseId());
-        }
-        // Validator to check category and instructor of course
-        courseValidator.validate(courseRequest, bindingResult);
-        if (bindingResult.hasErrors()) {
-            throw new NotFoundException(bindingResult.getFieldError().getDefaultMessage());
-        }
-
-    }
-
-    @Override
-    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
-        try {
-            // call method check course
-            checkCourseRequest(courseRequest, bindingResult);
-            // set category entity to course
-            Course course = courseMapper.toRequest(courseRequest);
-            Category category = categoryService.findById(courseRequest.getCategoryId());
-            course.setCategory(category);
-            // set instructor entity to course
-            Instructor instructor = instructorRepository.findById(courseRequest.getInstructorId()).orElse(null);
-            if (instructor == null) {
-                throw new NotFoundException("Intructor has not existed with id " + courseRequest.getInstructorId());
-            }
-            course.setInstructor(instructor);
-            // Save update course
-            courseRepository.save(course);
-            // Mapping course to courseResponse
-            CourseResponse courseResponse = courseMapper.toResponse(course);
-            return courseResponse;
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (ValidationException ex) {
-            throw ex;
-        }
-    }
-
     public Page<CourseResponse> findByCategory(Long categoryId, Pageable pageable) {
         try {
             Category category = new Category();
@@ -237,45 +181,47 @@ public class CourseServiceImpl implements CourseService {
         return sectionUpdateResponse;
     }
 
-    // @Override
-    // public CourseResponse update(CourseRequest courseRequest, BindingResult
-    // bindingResult) {
-    // // Get id of course
-    // if (findById(courseRequest.getCourseId()) == null) {
-    // throw new NotFoundException("Course not found.");
-    // }
-    // // Validator to check category of course
-    // courseValidator.validate(courseRequest, bindingResult);
-    // if (bindingResult.hasErrors()) {
-    //
-    // Map<String, String> validationException =
-    // validatorUtil.toErrors(bindingResult.getFieldErrors());
-    // throw new ValidationException(validationException);
-    // }
-    // // Get id of instructor
-    // if (findByIdInstructor(courseRequest.getInstructorId()) == null) {
-    // throw new NotFoundException("Instructor not found");
-    // }
-    // // Validator to check instructor of course
-    // instructorValidator.validate(courseRequest, bindingResult);
-    // if (bindingResult.hasErrors()) {
-    // Map<String, String> validationExceptionInstructor =
-    // validatorUtil.toErrors(bindingResult.getFieldErrors());
-    // throw new ValidationException(validationExceptionInstructor);
-    // }
-    //
-    // // set category entity to course
-    // Course course = courseMapper.toRequest(courseRequest);
-    // Category category = categoryService.findById(courseRequest.getCategoryId());
-    // course.setCategory(category);
-    // // set instructor entity to course
-    // Instructor instructor =
-    // instructorService.findById(courseRequest.getInstructorId());
-    // course.setInstructor(instructor);
-    // // Save update course
-    // courseRepository.save(course);
-    // // Mapping course to courseResponse
-    // CourseResponse courseResponse = courseMapper.toResponse(course);
-    // return courseResponse;
-    // }
+    @Override
+    public void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult) {
+        // Get id of course
+        if (findById(courseRequest.getCourseId()) == null) {
+            throw new NotFoundException("Course has not existed with id " + courseRequest.getCourseId());
+        }
+        // Validator to check category and instructor of course
+        courseValidator.validate(courseRequest, bindingResult);
+        if (bindingResult.hasErrors()) {
+            throw new NotFoundException(bindingResult.getFieldError().getDefaultMessage());
+        }
+
+    }
+
+    @Override
+    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
+        try {
+            // call method check course
+            checkCourseRequest(courseRequest, bindingResult);
+            // set category entity to course
+            Course course = courseMapper.toRequest(courseRequest);
+            Category category = categoryService.findById(courseRequest.getCategoryId());
+            course.setCategory(category);
+            // set instructor entity to course
+            Instructor instructor = instructorRepository.findById(courseRequest.getInstructorId()).orElse(null);
+            if (instructor == null) {
+                throw new NotFoundException("instructor not found with id " + courseRequest.getInstructorId());
+            }
+            course.setInstructor(instructor);
+            // Save update course
+            courseRepository.save(course);
+            // Mapping course to courseResponse
+            CourseResponse courseResponse = courseMapper.toResponse(course);
+            return courseResponse;
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
+    }
+
 }

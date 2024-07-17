@@ -23,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 
 public interface CourseService {
-    List<CourseResponse> findByCategory(Long categoryId);
+    // List<CourseResponse> findByCategory(Long categoryId);
 
     CourseResponse deleteCourse(Long id);
 

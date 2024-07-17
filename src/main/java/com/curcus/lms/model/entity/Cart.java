@@ -23,7 +23,7 @@ public class Cart {
     private Long cartId;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "studentId")
+    @JoinColumn(name = "student_id")
     private Student student;
 
     private boolean isPaid;

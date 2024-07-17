@@ -61,7 +61,6 @@ public class CourseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CourseResponse> course = null;
             Pageable pageable = PageRequest.of(page, size);
             Page<CourseResponse> coursePage;
 
@@ -70,9 +69,7 @@ public class CourseController {
             } else {
                 coursePage = courseService.findByCategory(category, pageable);
             }
-            if (course.size() == 0) {
-                throw new NotFoundException("Course not found");
-            }
+
             if (coursePage.isEmpty()) {
                 throw new NotFoundException("Course not found.");
             }
@@ -92,47 +89,21 @@ public class CourseController {
             responseMetadata.put("pagination", metadata);
             apiResponse.ok(coursePage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-
-        } catch (
-
-        NotFoundException ex) {
+        } catch (NotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException();
         }
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<ApiResponse<CourseResponse>> getCourseById(@RequestParam Long courseId) {
-        try {
-            Course course = courseService.findById(courseId);
-            if (course == null) {
-                throw new NotFoundException("Course has not existed with id " + courseId);
-            }
-            CourseResponse courseResponse = courseMapper.toResponse(course);
-            ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(courseResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        }
-
-        catch (NotFoundException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
-        }
-    }
-
-    @PutMapping(value = "/{course_id}/updateCourse")
-    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@PathVariable Long course_id,
-            @Valid @RequestBody CourseRequest courseRequest,
+    @PutMapping(value = "/updateCourse")
+    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-            if (course_id != courseRequest.getCourseId()) {
-                throw new ValidationException("CourseId for parameter of api updateCourse is wrong");
-            }
-            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
+            // CourseResponse courseResponse = courseService.update(courseRequest,
+            // bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-            apiResponse.ok(courseResponse);
+            // apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;

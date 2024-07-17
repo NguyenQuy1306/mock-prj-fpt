@@ -1,7 +1,5 @@
 package com.curcus.lms.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,14 +26,12 @@ public class User {
     private String name;
     @Column(nullable = false, unique = true)
     private String email;
-    // @JsonIgnore
-    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
     private String firstName;
     private String lastName;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
     private boolean activated;
