@@ -11,19 +11,19 @@ import lombok.Setter;
 @Data
 public class StudentRequest {
 
-    @NotBlank(message = "Vui lòng điền đầy đủ thông tin")
+    @NotBlank(message = "Please enter all required fields")
     private String name;
 
-    @NotBlank(message = "Vui lòng điền đầy đủ thông tin")
-    @Email(message = "Vui lòng điền đầy đủ thông tin")
+    @NotBlank(message = "Please enter all required fields")
+    @Email(message = "Email is not valid")
     private String email;
 
-    @NotBlank(message = "Vui lòng điền đầy đủ thông tin")
+    @NotBlank(message = "Please enter all required fields")
     private String password;
 
     private String firstName;
     private String lastName;
 
-    @NotBlank(message = "Vui lòng điền đầy đủ thông tin")
+    @NotBlank(message = "Please enter all required fields")
     private String phoneNumber;
 }

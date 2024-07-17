@@ -74,7 +74,7 @@ public class StudentController {
             BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors())
-                throw new Exception("Request không hợp lệ");
+                throw new Exception("Request is not valid");
             StudentResponse studentResponse = studentService.createStudent(studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
@@ -94,7 +94,7 @@ public class StudentController {
             @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors())
-                throw new Exception("Request không hợp lệ");
+                throw new Exception("Request is not valid");
             StudentResponse studentResponse = studentService.updateStudent(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
