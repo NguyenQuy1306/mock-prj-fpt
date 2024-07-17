@@ -92,9 +92,7 @@ public class CartServiceImpl implements CartService {
                 throw new NotFoundException("No items in the cart");
             }
 
-            Long totalPrice = cartItems.stream()
-                    .map(cartItem -> cartItem.getCourse().getPrice())
-                    .reduce(0L, Long::sum);
+            Long totalPrice = 0L;
 
             Order order = Order.builder()
                     .student(cart.getStudent())
@@ -115,6 +113,7 @@ public class CartServiceImpl implements CartService {
                             .build();
                     StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
                     orderItemsList.add(orderItem);
+                    totalPrice += cartItem.getCourse().getPrice();
                 }
             }
 
