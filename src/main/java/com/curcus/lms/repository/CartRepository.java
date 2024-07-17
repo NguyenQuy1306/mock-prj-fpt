@@ -24,4 +24,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     // @Transactional
     // @Query("delete from Cart a where a.id.studentid = :studentId")
     // void deleteStudentCart(@Param("studentId") Long studentId);
+    // @Query("select a from Cart a join a.student b where b.userId = :studentId and a.isPaid = :isPaid")
+    // Cart getCartNotPaidByStudentId(@Param("studentId") Long studentId, @Param("isPaid") boolean isPaid);
+    Cart findCartByStudent_UserId(Long studentId);
 }

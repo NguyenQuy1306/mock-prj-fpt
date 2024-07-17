@@ -1,5 +1,6 @@
 package com.curcus.lms.model.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import com.curcus.lms.model.entity.Student;
 import java.io.Serializable;
 import java.util.Objects;
 
+@AllArgsConstructor
 @Setter
 @Getter
 public class CartResponse implements Serializable {
