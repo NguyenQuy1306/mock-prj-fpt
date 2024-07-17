@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
+import com.curcus.lms.model.response.StatusEnum;
 import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
@@ -171,6 +174,13 @@ public class CourseController {
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String direction // parameter for sorting direction
     ) {
+    	if (sort != null && !CourseSearchOptions.SORT_OPTIONS.contains(sort)) {
+            throw new SearchOptionsException( "Invalid sort parameter.");
+        }
+
+        if (direction != null && !CourseSearchOptions.DIRECTION_OPTIONS.contains(direction.toLowerCase())) {
+        	throw new SearchOptionsException(  "Invalid direction parameter.");
+        }
         // Validate direction parameter
         Sort.Direction sortDirection = Sort.Direction.ASC; // default to ascending
         if (direction != null && direction.equalsIgnoreCase("desc")) {
@@ -204,10 +214,15 @@ public class CourseController {
                 "/api/courses/courses/search?page=" + (coursePage.getTotalPages() - 1),
                 "/api/courses/courses/search?page=0"
         );
-
+        
         // Create API response
         ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.ok(coursePage.getContent(), metadata);
+        Map<String, Object> responseMetadata = new HashMap<>();
+        
+        responseMetadata.put("pagination", metadata);
+        responseMetadata.put("searchOptions", CourseSearchOptions.HINTS_MAP);
+        
+        apiResponse.ok(coursePage.getContent(), responseMetadata);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
     
