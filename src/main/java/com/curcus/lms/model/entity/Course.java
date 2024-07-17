@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -15,8 +19,11 @@ import java.util.Set;
 @Table(name = "courses")
 public class Course {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long courseId;
+
+    @Column(nullable = false)
+    private String courseThumbnail;
 
     @Column(nullable = false)
     private String title;
@@ -34,6 +41,18 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private Category category;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course", cascade = CascadeType.ALL)
     Set<Enrollment> enrollment;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "course")
+    Set<Section> sections;
+
+    @Override
+    public String toString() {
+        return "Course [courseId=" + courseId + ", title=" + title + ", description=" + description + ", price=" + price
+                + ", instructor=" + instructor.getUserId() + ", category=" + category + ", enrollment=" + enrollment
+                + "]";
+    }
+
 }

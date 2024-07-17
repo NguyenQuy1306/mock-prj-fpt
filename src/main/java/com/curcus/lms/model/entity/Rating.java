@@ -3,28 +3,32 @@ package com.curcus.lms.model.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings", uniqueConstraints={
+        @UniqueConstraint(columnNames = {"student_id", "course_id"})
+})
 public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ratingId;
+    private Long ratingId;
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
+    @JoinColumn(name = "student_id", referencedColumnName = "user_Id")
+    private Student student;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
     @Column(nullable = false)
     private Long rating;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String comment;
 }

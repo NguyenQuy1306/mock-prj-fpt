@@ -82,6 +82,19 @@
 				spring-boot-starter-mail
 			</artifactId>
 		</dependency>
+<<<<<<< HEAD
+=======
+
+		<dependency>
+		<groupId>
+		org.springframework.boot
+		</groupId>
+		<artifactId>
+		spring-boot-starter-security
+		</artifactId>
+		</dependency>
+
+>>>>>>> origin/merge
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -207,6 +220,49 @@
 				2.5.0
 			</version>
 		</dependency>
+<<<<<<< HEAD
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-taglib</artifactId>
+			<version>1.36.0</version>
+=======
+		<dependency>
+			<groupId>
+				org.springframework.security
+			</groupId>
+			<artifactId>
+				spring-security-test
+			</artifactId>
+			<scope>
+				test
+			</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+>>>>>>> origin/merge
+		</dependency>
 		<dependency>
 			<groupId>com.cloudinary</groupId>
 			<artifactId>cloudinary-http44</artifactId>
@@ -217,6 +273,14 @@
 			<artifactId>cloudinary-taglib</artifactId>
 			<version>1.36.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.5.2.RELEASE</version>
+		</dependency>
+
 
 	</dependencies>
 	<build>
@@ -384,6 +448,25 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+<<<<<<< HEAD
+=======
+			<plugin>
+	            <groupId>com.google.cloud.tools</groupId>
+	            <artifactId>jib-maven-plugin</artifactId>
+	            <version>3.2.1</version>
+	            <configuration>
+	                <from>
+	                    <image>openjdk:17-alpine</image>
+	                </from>
+	                <container>
+	                    <ports>
+	                        <port>8080</port>
+	                    </ports>
+	                    <format>OCI</format>
+	                </container>
+	            </configuration>
+	        </plugin>
+>>>>>>> origin/merge
 		</plugins>
 	</build>
 </project>

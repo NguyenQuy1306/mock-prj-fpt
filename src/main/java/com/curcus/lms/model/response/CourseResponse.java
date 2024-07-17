@@ -3,6 +3,10 @@ package com.curcus.lms.model.response;
 import java.io.Serializable;
 import java.util.Objects;
 
+<<<<<<< HEAD
+=======
+import com.curcus.lms.model.entity.Enrollment;
+>>>>>>> origin/merge
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.entity.Category;
 
@@ -13,6 +17,8 @@ import java.util.Set;
 @Setter
 public class CourseResponse implements Serializable {
     private Long courseId;
+    
+    private String courseThumbnail;
 
     private String title;
 
@@ -20,12 +26,22 @@ public class CourseResponse implements Serializable {
 
     private Long price;
 
+<<<<<<< HEAD
     private User instructor;
+=======
+
+
+>>>>>>> origin/merge
     private Long instructorId;
 
-    private Category category;
+
     private int categoryId;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/merge
     @Override
     public String toString() {
         return "CourseResponse{" +
