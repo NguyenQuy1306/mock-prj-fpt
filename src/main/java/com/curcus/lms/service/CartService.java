@@ -13,6 +13,12 @@ import java.util.List;
 
 public interface CartService {
 
+    CartItems addCourseToCart(Long studentId, Long courseId);
+
+    Cart getCartById(Long studentId);
+
+    CartItems getById(Long cartId, Long courseId);
+
     CartResponse getById(Long cartId);
 
     CartResponse getCartByStudentId(Long studentId);
@@ -24,6 +30,7 @@ public interface CartService {
     void deleteAllCourseFromCart(Long studentId, Long cartId);
 
     void deleteCart(Long studentId);
+
     List<CourseResponse> getListCourseFromCart(Long studentId);
 
     void copyCartToOrder(Long studentId);

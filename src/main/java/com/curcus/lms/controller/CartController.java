@@ -7,31 +7,26 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
-import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.service.CartService;
-import com.curcus.lms.service.CourseService;
-import com.curcus.lms.service.StudentService;
 
-import jakarta.validation.Valid;
-
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("api/cart")
 public class CartController {
+
     @Autowired
     private CartService cartService;
 
@@ -39,7 +34,7 @@ public class CartController {
     public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
         try {
             Cart cart = cartService.createCart(studentId);
-            ApiResponse apiResponse = new ApiResponse<>();
+            ApiResponse<Cart> apiResponse = new ApiResponse<>();
             apiResponse.ok(cart);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
@@ -47,14 +42,28 @@ public class CartController {
         } catch (ValidationException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new ApplicationException();
+            throw new ApplicationException(ex.getMessage());
         }
     }
 
     @PostMapping(value = "/addCourse")
     public ResponseEntity<ApiResponse<CartItems>> addCourseToCart(@RequestParam Long studentId,
             @RequestParam Long courseId) {
-    @PostMapping(value = "/{studentId}/cart")
+        try {
+            CartItems cartItem = cartService.addCourseToCart(studentId, courseId);
+            ApiResponse<CartItems> apiResponse = new ApiResponse<>();
+            apiResponse.ok(cartItem);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/{studentId}/listCourse")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
         try {
             List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
@@ -67,7 +76,6 @@ public class CartController {
             ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
     }
 
@@ -93,7 +101,7 @@ public class CartController {
             @RequestParam Long courseId) {
         try {
             cartService.deleteCourseFromCart(studentId, cartId, courseId);
-            ApiResponse apiResponse = new ApiResponse<>();
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (ValidationException ex) {
@@ -106,7 +114,7 @@ public class CartController {
             @RequestParam Long cartId) {
         try {
             cartService.deleteAllCourseFromCart(studentId, cartId);
-            ApiResponse apiResponse = new ApiResponse<>();
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (ValidationException ex) {
@@ -118,12 +126,11 @@ public class CartController {
     public ResponseEntity<ApiResponse<Void>> deleteCart(@RequestParam Long studentId) {
         try {
             cartService.deleteCart(studentId);
-            ApiResponse apiResponse = new ApiResponse<>();
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (ValidationException ex) {
             throw ex;
         }
     }
-
 }

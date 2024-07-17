@@ -9,7 +9,9 @@ import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.CartResponse;
@@ -40,6 +42,14 @@ public class CartServiceImpl implements CartService {
     private StudentService StudentService;
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+    @Autowired
+    private CartItemsRepository cartItemRepository;
+    @Autowired
+    private StudentService studentService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Override
     public Cart getCartById(Long studentId) {
@@ -56,14 +66,13 @@ public class CartServiceImpl implements CartService {
     public Cart createCart(Long studentId) {
         // check valid studentId
         try {
-            if (studentService.findById(studentId) == null) {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
                 throw new NotFoundException("Student has not existed with id " + studentId);
             }
-            System.out.println("studentIdstudentId" + studentId);
             Cart cart = getCartById(studentId);
             if (cart == null) {
                 cart = new Cart();
-                Student student = studentRepository.findById(studentId).orElse(null);
                 cart.setStudent(student);
                 cartRepository.save(cart);
             } else {
@@ -125,6 +134,9 @@ public class CartServiceImpl implements CartService {
             throw ex;
         } catch (ValidationException ex) {
             throw ex;
+        }
+    }
+
     public CartResponse getById(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElse(null);
         CartResponse cartResponse = new CartResponse(cart.getCartId(), cart.getStudent());
@@ -133,10 +145,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse getCartByStudentId(Long studentId){
+    public CartResponse getCartByStudentId(Long studentId) {
         try {
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if(cart == null) {
+            if (cart == null) {
                 throw new NotFoundException("Cart not found");
             }
             CartResponse cartResponse = new CartResponse(cart.getCartId(), cart.getStudent());
@@ -147,17 +159,22 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CourseResponse> getListCourseFromCart(Long studentId){
-        try{
+    public List<CourseResponse> getListCourseFromCart(Long studentId) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if(cart == null) {
+            if (cart == null) {
                 throw new NotFoundException("Cart not found");
             }
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            if(cartItems == null){
+            if (cartItems == null) {
                 return List.of();
             }
-            List<CourseResponse> courseResponses = courseMapper.toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
+            List<CourseResponse> courseResponses = courseMapper
+                    .toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
             return courseResponses;
         } catch (Exception ex) {
             throw ex;
@@ -167,6 +184,11 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void copyCartToOrder(Long studentId) {
         try {
+
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if (cart == null) {
                 throw new NotFoundException("Cart not found");
@@ -191,7 +213,8 @@ public class CartServiceImpl implements CartService {
 
             List<OrderItems> orderItemsList = new ArrayList<>();
             for (CartItems cartItem : cartItems) {
-                if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, cartItem.getCourse().getCourseId()) == null){
+                if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId,
+                        cartItem.getCourse().getCourseId()) == null) {
                     OrderItems orderItem = OrderItems.builder()
                             .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
                             .order(savedOrder)
@@ -204,9 +227,11 @@ public class CartServiceImpl implements CartService {
             }
 
             orderItemsRepository.saveAll(orderItemsList);
-            //StudentService.addStudentToCoursesFromCart(studentId);
-            //add delete cart method
+            // StudentService.addStudentToCoursesFromCart(studentId);
+            // add delete cart method
 
+        } catch (NotFoundException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException("An error occurred while copying the cart to the order", ex);
         }
