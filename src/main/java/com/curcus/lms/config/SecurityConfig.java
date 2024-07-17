@@ -58,7 +58,7 @@ public class SecurityConfig {
                     req.requestMatchers(WHITE_LIST_URL)
                             .permitAll()
                             .anyRequest()
-                            .denyAll());
+                            .authenticated());
         } else {
             http.authorizeHttpRequests(req -> req.anyRequest().permitAll());
         }
