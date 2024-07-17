@@ -82,8 +82,6 @@
 				spring-boot-starter-mail
 			</artifactId>
 		</dependency>
-<<<<<<< HEAD
-=======
 
 		<dependency>
 		<groupId>
@@ -94,7 +92,6 @@
 		</artifactId>
 		</dependency>
 
->>>>>>> origin/merge
 		<dependency>
 			<groupId>
 				org.springframework.boot
@@ -220,17 +217,6 @@
 				2.5.0
 			</version>
 		</dependency>
-<<<<<<< HEAD
-		<dependency>
-			<groupId>com.cloudinary</groupId>
-			<artifactId>cloudinary-http44</artifactId>
-			<version>1.36.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.cloudinary</groupId>
-			<artifactId>cloudinary-taglib</artifactId>
-			<version>1.36.0</version>
-=======
 		<dependency>
 			<groupId>
 				org.springframework.security
@@ -261,7 +247,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
->>>>>>> origin/merge
 		</dependency>
 		<dependency>
 			<groupId>com.cloudinary</groupId>
@@ -448,8 +433,6 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-<<<<<<< HEAD
-=======
 			<plugin>
 	            <groupId>com.google.cloud.tools</groupId>
 	            <artifactId>jib-maven-plugin</artifactId>
@@ -466,7 +449,6 @@
 	                </container>
 	            </configuration>
 	        </plugin>
->>>>>>> origin/merge
 		</plugins>
 	</build>
 </project>

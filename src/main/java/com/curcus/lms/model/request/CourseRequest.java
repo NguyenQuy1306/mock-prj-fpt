@@ -24,6 +24,6 @@ public class CourseRequest implements Serializable {
 
     private Long instructorId;
 
-    private int categoryId;
+    private Long categoryId;
 
 }

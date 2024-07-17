@@ -35,12 +35,8 @@ public class GlobalExceptionHandler {
     public ApiResponse handleNotFoundException(NotFoundException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "404");
-<<<<<<< HEAD
-        error.put("errorMessage", ex.getMessage());
-=======
         String errorMessage = (ex.getMessage() == null) ? "NOT_FOUND" : ex.getMessage();
         error.put("errorMessage", errorMessage);
->>>>>>> origin/merge
 
         ApiResponse<Void> apiResponse = new ApiResponse<>();
         apiResponse.error(error);
@@ -53,15 +49,9 @@ public class GlobalExceptionHandler {
     public ApiResponse handleValidationException(ValidationException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "400");
-<<<<<<< HEAD
-        error.put("errorMessage", ex.getMessage());
-
-        // error.putAll(ex.getErrors());
-=======
         error.put("errorMessage", "BAD_REQUEST");
         error.put("details", ex.getMessage());
 
->>>>>>> origin/merge
         if (ex.getErrors() != null) {
             error.putAll(ex.getErrors());
         }

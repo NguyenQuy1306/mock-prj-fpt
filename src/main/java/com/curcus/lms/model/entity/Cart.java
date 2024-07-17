@@ -21,13 +21,10 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cartId;
-    
+
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "studentId")
     private Student student;
-<<<<<<< HEAD
-=======
 
     private boolean isPaid;
->>>>>>> origin/merge
 }

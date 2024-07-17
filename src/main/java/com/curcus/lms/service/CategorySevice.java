@@ -8,7 +8,9 @@ import com.curcus.lms.model.response.CategoryResponse;
 
 public interface CategorySevice {
     CategoryResponse createCategory(CategoryRequest categoryRequest);
-    Category findById(int id);
+
+    Category findById(Long id);
+
     List<Category> getAllCategory();
 
 }

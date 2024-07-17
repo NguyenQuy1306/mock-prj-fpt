@@ -14,12 +14,9 @@ import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.request.CourseRequest;
-<<<<<<< HEAD
-=======
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
->>>>>>> origin/merge
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.InstructorRepository;
@@ -31,20 +28,12 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class CourseMapper {
-	@Autowired
+    @Autowired
     protected CloudinaryService cloudinaryService;
 
     @Autowired
     protected InstructorRepository instructorRepository;
 
-<<<<<<< HEAD
-    // @Mapping(target = "instructor", ignore = true)
-    @Mapping(target = "instructor.userId", source = "instructorId")
-    @Mapping(target = "category.categoryId", source = "categoryId")
-    Course toRequest(CourseRequest courseRequest);
-
-    List<CourseResponse> toResponseList(List<Course> courses);
-=======
     @Autowired
     protected CategoryRepository categoryRepository;
 
@@ -60,6 +49,9 @@ public abstract class CourseMapper {
     // @Mapping(target = "category", expression =
     // "java(findCategoryById(courseCreateRequest.getCategoryId()))")
     // public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
+    @Mapping(target = "instructor.userId", source = "instructorId")
+    @Mapping(target = "category.categoryId", source = "categoryId")
+    public abstract Course toRequest(CourseRequest courseRequest);
 
     // protected User findUserById(Long id) {
     // return userRepository.findById(id).orElse(null);
@@ -77,6 +69,7 @@ public abstract class CourseMapper {
         return categoryRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Category has not existed with id " + id));
     }
+
     protected String uploadAndGetUrl(MultipartFile file) {
         ContentType contentType = getContentType(file);
         try {
@@ -90,6 +83,7 @@ public abstract class CourseMapper {
             throw new InvalidFileTypeException("Unsupported file type");
         }
     }
+
     protected ContentType getContentType(MultipartFile file) {
         String contentType = file.getContentType();
         if (contentType != null) {
@@ -104,5 +98,4 @@ public abstract class CourseMapper {
             return ContentType.UNKNOWN;
         }
     }
->>>>>>> origin/merge
 }

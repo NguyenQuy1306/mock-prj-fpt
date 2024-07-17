@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Category {
     @Id
     @GeneratedValue
-    private long categoryId;
+    private Long categoryId;
     @Column(unique = true, nullable = false)
     private String categoryName;
 

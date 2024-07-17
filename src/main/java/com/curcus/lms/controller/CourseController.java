@@ -10,10 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-<<<<<<< HEAD
-=======
 import org.springframework.validation.annotation.Validated;
->>>>>>> origin/merge
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,14 +33,9 @@ import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
 
-
-
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-<<<<<<< HEAD
-=======
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,8 +46,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PutMapping;
 
->>>>>>> origin/merge
-
 @RestController
 @RequestMapping("/api/courses")
 @Validated
@@ -65,32 +55,26 @@ public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
 
-    @GetMapping(value = {"", "/list"})
+    @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
             @RequestParam(value = "category", required = false) Long category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-<<<<<<< HEAD
             List<CourseResponse> course = null;
-=======
             Pageable pageable = PageRequest.of(page, size);
             Page<CourseResponse> coursePage;
 
->>>>>>> origin/merge
             if (category == null) {
                 coursePage = courseService.findAll(pageable);
             } else {
                 coursePage = courseService.findByCategory(category, pageable);
             }
-<<<<<<< HEAD
             if (course.size() == 0) {
                 throw new NotFoundException("Course not found");
-=======
-
+            }
             if (coursePage.isEmpty()) {
                 throw new NotFoundException("Course not found.");
->>>>>>> origin/merge
             }
 
             MetadataResponse metadata = new MetadataResponse(
@@ -101,22 +85,23 @@ public class CourseController {
                     (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
                     (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
                     "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
-                    "/api/courses/list?page=0"
-            );
+                    "/api/courses/list?page=0");
 
             ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
             Map<String, Object> responseMetadata = new HashMap<>();
             responseMetadata.put("pagination", metadata);
             apiResponse.ok(coursePage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (NotFoundException ex) {
+
+        } catch (
+
+        NotFoundException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException();
         }
     }
 
-<<<<<<< HEAD
     @GetMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<CourseResponse>> getCourseById(@RequestParam Long courseId) {
         try {
@@ -146,24 +131,14 @@ public class CourseController {
                 throw new ValidationException("CourseId for parameter of api updateCourse is wrong");
             }
             CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
-=======
-    @PutMapping(value = "/updateCourse")
-    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
-            BindingResult bindingResult) {
-        try {
-//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
->>>>>>> origin/merge
             ApiResponse apiResponse = new ApiResponse<>();
-//            apiResponse.ok(courseResponse);
+            apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
         } catch (ValidationException ex) {
             throw ex;
-<<<<<<< HEAD
-=======
             // other exception throw application() (not exception of user)
->>>>>>> origin/merge
         } catch (Exception ex) {
             throw new ApplicationException();
         }

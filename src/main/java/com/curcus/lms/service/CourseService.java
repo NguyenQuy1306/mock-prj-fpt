@@ -1,12 +1,9 @@
 package com.curcus.lms.service;
 
 import java.util.List;
-<<<<<<< HEAD
 
 import org.springframework.validation.BindingResult;
-=======
 import java.util.Optional;
->>>>>>> origin/merge
 
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
@@ -14,12 +11,9 @@ import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
-<<<<<<< HEAD
-=======
 import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
->>>>>>> origin/merge
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 
@@ -29,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 
 public interface CourseService {
-
+    List<CourseResponse> findByCategory(Long categoryId);
 
     CourseResponse deleteCourse(Long id);
 
@@ -47,13 +41,12 @@ public interface CourseService {
 
     Instructor findByIdInstructor(Long id);
 
-<<<<<<< HEAD
     CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
 
     void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
-=======
+
     SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
 
-//    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
->>>>>>> origin/merge
+    // CourseResponse update(CourseRequest courseRequest, BindingResult
+    // bindingResult);
 }
