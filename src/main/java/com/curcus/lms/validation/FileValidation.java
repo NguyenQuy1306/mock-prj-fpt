@@ -6,9 +6,9 @@ import com.curcus.lms.exception.InvalidFileTypeException;
 
 public class FileValidation {
 
-    private static final Set<String> ALLOWED_FILE_TYPES = new HashSet<>();
-    private static final Set<String> ALLOWED_IMAGE_TYPES = new HashSet<>();
-    private static final Set<String> ALLOWED_VIDEO_TYPES = new HashSet<>();
+    public static final Set<String> ALLOWED_FILE_TYPES = new HashSet<>();
+    public static final Set<String> ALLOWED_IMAGE_TYPES = new HashSet<>();
+    public static final Set<String> ALLOWED_VIDEO_TYPES = new HashSet<>();
 
     static {
         ALLOWED_FILE_TYPES.add("docx");
@@ -53,19 +53,19 @@ public class FileValidation {
         return fileName.substring(lastIndexOfDot + 1);
     }
 
-    public static void validateFileType(String fileName) throws InvalidFileTypeException {
+    public static void validateFileType(String fileName) {
         if (!isValidFileType(fileName)) {
             throw new InvalidFileTypeException("Invalid file type. Allowed types are: " + ALLOWED_FILE_TYPES);
         }
     }
 
-    public static void validateImageType(String fileName) throws InvalidFileTypeException {
+    public static void validateImageType(String fileName)  {
         if (!isValidImageType(fileName)) {
             throw new InvalidFileTypeException("Invalid image type. Allowed type is: " + ALLOWED_IMAGE_TYPES);
         }
     }
 
-    public static void validateVideoType(String fileName) throws InvalidFileTypeException {
+    public static void validateVideoType(String fileName) {
         if (!isValidVideoType(fileName)) {
             throw new InvalidFileTypeException("Invalid video type. Allowed type is: " + ALLOWED_VIDEO_TYPES);
         }
