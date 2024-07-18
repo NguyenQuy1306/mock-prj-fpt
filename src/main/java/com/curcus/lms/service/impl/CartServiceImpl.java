@@ -184,11 +184,6 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice) {
         try {
-
-            Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) {
-                throw new NotFoundException("Student has not existed with id " + studentId);
-            }
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
             if (cart == null) {
                 throw new NotFoundException("Cart not found");
@@ -211,14 +206,10 @@ public class CartServiceImpl implements CartService {
             List<CartItems> cartItemsToDelete = new ArrayList<>();
 
             for (CartItems cartItem : cartItems) {
-<<<<<<< HEAD
-                if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId,
-                        cartItem.getCourse().getCourseId()) == null) {
-=======
                 if (courseIds.contains(cartItem.getCourse().getCourseId()) &&
-                        enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, cartItem.getCourse().getCourseId()) == null) {
+                        enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId,
+                                cartItem.getCourse().getCourseId()) == null) {
 
->>>>>>> origin/Cart_ii
                     OrderItems orderItem = OrderItems.builder()
                             .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
                             .order(savedOrder)
@@ -232,16 +223,8 @@ public class CartServiceImpl implements CartService {
             }
 
             orderItemsRepository.saveAll(orderItemsList);
-<<<<<<< HEAD
-            // StudentService.addStudentToCoursesFromCart(studentId);
-            // add delete cart method
-
-        } catch (NotFoundException ex) {
-            throw ex;
-=======
 
             cartItemsRepository.deleteAll(cartItemsToDelete);
->>>>>>> origin/Cart_ii
         } catch (Exception ex) {
             throw new RuntimeException("An error occurred while copying the cart to the order", ex);
         }
@@ -261,7 +244,7 @@ public class CartServiceImpl implements CartService {
             }
 
             // Check cart is created or not
-            Cart cart=cartRepository.getCartByStudentId(studentId);
+            Cart cart = cartRepository.getCartByStudentId(studentId);
             if (cart == null) {
                 throw new ValidationException("Cart doesn't exist for studentId: " + studentId);
             }
@@ -284,13 +267,13 @@ public class CartServiceImpl implements CartService {
     @Override
     public void deleteAllCourseFromCart(Long studentId) {
         try {
-            Student student=studentRepository.findById(studentId).orElse(null);
+            Student student = studentRepository.findById(studentId).orElse(null);
 
             if (student == null) {
                 throw new NotFoundException("Student has not existed with id " + studentId);
             }
             // Check cart is created or not
-            Cart cart=cartRepository.getCartByStudentId(studentId);
+            Cart cart = cartRepository.getCartByStudentId(studentId);
             if (cart == null) {
                 throw new ValidationException("Cart doesn't exist for studentId: " + studentId);
             }
@@ -309,13 +292,13 @@ public class CartServiceImpl implements CartService {
     public void deleteCart(Long studentId) {
         try {
             // check valid studentId
-            Student student=studentRepository.findById(studentId).orElse(null);
+            Student student = studentRepository.findById(studentId).orElse(null);
 
             if (student == null) {
                 throw new NotFoundException("Student has not existed with id " + studentId);
             }
 
-            Cart cart=cartRepository.getCartByStudentId(studentId);
+            Cart cart = cartRepository.getCartByStudentId(studentId);
             if (cart == null) {
                 throw new ValidationException("Cart doesn't exist for studentId: " + studentId);
             }
