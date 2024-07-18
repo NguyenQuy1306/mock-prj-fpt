@@ -10,11 +10,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication  // (exclude = {SecurityAutoConfiguration.class})
 @ComponentScan(basePackages = "com.curcus.lms")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableJpaRepositories(basePackages = "com.curcus.lms.repository")
+@CrossOrigin(origins = "*")
 public class CurcusApplication {
 
 	public static void main(String[] args) {

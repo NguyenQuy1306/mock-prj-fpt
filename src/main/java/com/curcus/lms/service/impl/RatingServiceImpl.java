@@ -1,9 +1,6 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.CourseException;
-import com.curcus.lms.exception.EnrollmentException;
-import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.exception.*;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Rating;
 import com.curcus.lms.model.entity.Student;
@@ -115,6 +112,10 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public RatingResponse createRating(RatingRequest ratingRequest) {
+        if (ratingRepository.existsByStudent_UserIdAndCourse_CourseId(ratingRequest.getStudentId(), ratingRequest.getCourseId())) {
+            throw new UniqueConstraintException("Student has already enrolled the course");
+        }
+
         Student student = studentRepository.findById(ratingRequest.getStudentId()).orElseThrow();
         Course course = courseRepository.findById(ratingRequest.getCourseId()).orElseThrow();
         Rating rating = new Rating();

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,9 @@ public class RatingController {
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
-    @PostMapping("/update")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') " +
+            "and authentication.principal.getId() == #ratingRequest.studentId)")
+    @PutMapping("/update")
     public ResponseEntity<ApiResponse<RatingResponse>> updateRating(
             @Valid @RequestBody RatingRequest ratingRequest,
             BindingResult bindingResult) {
@@ -66,6 +69,8 @@ public class RatingController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') " +
+            "and authentication.principal.getId() == #studentId)")
     @GetMapping("/student/{studentId}/course/{courseId}")
     public ResponseEntity<ApiResponse<RatingResponse>> getRatingByStudentIdAndCourseId(@PathVariable Long studentId, @PathVariable Long courseId) {
         ApiResponse<RatingResponse> apiResponse = new ApiResponse<>();
@@ -108,6 +113,8 @@ public class RatingController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') " +
+            "and authentication.principal.getId() == #ratingRequest.studentId)")
     @PostMapping
     public ResponseEntity<ApiResponse<RatingResponse>> createRating(
             @Valid @RequestBody RatingRequest ratingRequest,
@@ -130,12 +137,17 @@ public class RatingController {
             apiResponse.ok(response);
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
 
+        } catch (UniqueConstraintException e) {
+            apiResponse.error(ResponseCode.getError(25));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch(Exception e) {
             apiResponse.error(ResponseCode.getError(23));
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') " +
+            "and authentication.principal.getId() == #studentId)")
     @DeleteMapping("student/{studentId}/course/{courseId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteRatingByStudentIdAndCourseId(
             @PathVariable Long studentId,
