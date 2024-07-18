@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.ApplicationException;
@@ -25,6 +26,8 @@ public class InstructorServiceImpl implements InstructorService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<InstructorResponse> findAll() {
@@ -101,9 +104,9 @@ public class InstructorServiceImpl implements InstructorService {
         try {
             if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (newInstructor.getPassword().equals(password))
+            if (passwordEncoder.matches(password, newInstructor.getPassword()))
                 throw new ApplicationException("Password already exists in your account");
-            newInstructor.setPassword(password);
+            newInstructor.setPassword(passwordEncoder.encode(password));
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
             throw ex;

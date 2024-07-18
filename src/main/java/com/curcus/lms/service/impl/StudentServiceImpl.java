@@ -3,6 +3,7 @@ package com.curcus.lms.service.impl;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.repository.CartItemsRepository;
@@ -44,6 +45,8 @@ public class StudentServiceImpl implements StudentService {
     private CartItemsRepository cartItemsRepository;
     @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -111,8 +114,8 @@ public class StudentServiceImpl implements StudentService {
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
             if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
-            if(newStudent.getPassword().equals(studentRequest.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
-            newStudent.setPassword(studentRequest.getPassword());
+            if(passwordEncoder.matches(studentRequest.getPassword(), newStudent.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
+            newStudent.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
             throw ex;
