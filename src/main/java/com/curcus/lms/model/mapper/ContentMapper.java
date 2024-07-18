@@ -13,6 +13,7 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -43,7 +44,7 @@ public abstract class ContentMapper {
     @Mapping(target = "type", expression = "java(getContentType(contentCreateRequest.getFile()))")
     @Mapping(target = "position", source = "contentCreateRequest.sectionId", qualifiedByName = "getLastPosition")
     public abstract Content toEntity(ContentCreateRequest contentCreateRequest);
-
+    public abstract Content toEntity(ContentUpdateRequest contentUpdateRequest);
     protected String uploadAndGetUrl(MultipartFile file) {
         ContentType contentType = getContentType(file);
         try {

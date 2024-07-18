@@ -137,15 +137,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public ContentCreateResponse updateContent(Long id, ContentUpdateRequest contentUpdateRequest) {
-        try{
-            if(contentRepository.findById(id)==null) throw new ApplicationException("Content is invalid");
-            Content content = contentRepository.findById(id).get();
-            if(contentUpdateRequest.getType()!=null) content.setType(contentUpdateRequest.getType());
-            if(contentUpdateRequest.getFile())!=null) content.setFile(contentUpdateRequest.getFile());
-            return contentMapper.toResponse(contentRepository.save(content));
-        }catch(ApplicationException ex){
-            throw ex;
-        }
+        Content content = contentRepository.findById(contentUpdateRequest.getId())
+                    .orElseThrow(() -> new ApplicationException("Content not found"));
+        content = contentMapper.toEntity(contentUpdateRequest);
+        content = contentRepository.save(content);
+        return contentMapper.toResponse(content);
     }
 
     @Override
