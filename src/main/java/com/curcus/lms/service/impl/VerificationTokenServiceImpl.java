@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.common.util.RandomValueStringGenerato
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,6 +67,21 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 
         } catch (NotFoundException e) {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public void revokePreviousTokens(Long userId) {
+        try {
+            List<VerificationToken> list = verificationTokenRepository.findAllByUser_UserId(userId);
+            if (!list.isEmpty()) {
+                for (VerificationToken verificationToken : list) {
+                    verificationToken.setRevoked(true);
+                }
+                verificationTokenRepository.saveAll(list);
+            }
+        } catch (Exception e) {
+            throw e;
         }
     }
 }

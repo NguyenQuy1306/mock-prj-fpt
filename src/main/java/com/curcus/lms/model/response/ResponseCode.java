@@ -25,6 +25,9 @@ public class ResponseCode {
             case 10:
                 map.put("MSG 10", "Course not found");
                 break;
+            case 11:
+                map.put("MSG 11", "Account already activated");
+                break;
             // TODO case 4 - 22
             case 21:
                 map.put("MSG 21", "An error occurred, please try again later");
