@@ -97,10 +97,9 @@ public class CartController {
 
     @DeleteMapping(value = "/deleteCourseFromCart")
     public ResponseEntity<ApiResponse<Void>> deleteCourseFromCart(@RequestParam Long studentId,
-            @RequestParam Long cartId,
             @RequestParam Long courseId) {
         try {
-            cartService.deleteCourseFromCart(studentId, cartId, courseId);
+            cartService.deleteCourseFromCart(studentId, courseId);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -110,10 +109,9 @@ public class CartController {
     }
 
     @DeleteMapping(value = "/deleteAllCourseFromCart")
-    public ResponseEntity<ApiResponse<Void>> deleteAllCourseFromCart(@RequestParam Long studentId,
-            @RequestParam Long cartId) {
+    public ResponseEntity<ApiResponse<Void>> deleteAllCourseFromCart(@RequestParam Long studentId) {
         try {
-            cartService.deleteAllCourseFromCart(studentId, cartId);
+            cartService.deleteAllCourseFromCart(studentId);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);

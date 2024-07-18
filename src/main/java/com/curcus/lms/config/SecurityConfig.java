@@ -47,7 +47,8 @@ public class SecurityConfig {
                         "/api/password-reset/request",
                         "/api/password-reset/reset",
                         "/api/courses/**",
-                        "/api/ratings/**"
+                        "/api/ratings/**",
+                        "/api/cart/**"
         };
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final AuthenticationProvider authenticationProvider;

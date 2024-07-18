@@ -25,9 +25,9 @@ public interface CartService {
 
     Cart createCart(Long studentId);
 
-    void deleteCourseFromCart(Long studentId, Long cartId, Long courseId);
+    void deleteCourseFromCart(Long studentId, Long courseId);
 
-    void deleteAllCourseFromCart(Long studentId, Long cartId);
+    void deleteAllCourseFromCart(Long studentId);
 
     void deleteCart(Long studentId);
 
