@@ -26,8 +26,7 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public abstract class ContentMapper {
 
-    @Autowired
-    protected CloudinaryService cloudinaryService;
+    
     @Autowired
     protected SectionRepository sectionRepository;
     @Autowired
@@ -39,26 +38,12 @@ public abstract class ContentMapper {
     public abstract ContentCreateResponse toResponse(Content content);
 
     @Mapping(target = "section", expression = "java(findSectionById(contentCreateRequest.getSectionId()))")
-    @Mapping(target = "url", expression = "java(uploadAndGetUrl(contentCreateRequest.getFile()))")
+//    @Mapping(target = "url", expression = "java(uploadAndGetUrl(contentCreateRequest.getFile()))")
+    @Mapping(target = "url", expression = "java(null)")
     @Mapping(target = "type", expression = "java(getContentType(contentCreateRequest.getFile()))")
     @Mapping(target = "position", source = "contentCreateRequest.sectionId", qualifiedByName = "getLastPosition")
     public abstract Content toEntity(ContentCreateRequest contentCreateRequest);
 
-    protected String uploadAndGetUrl(MultipartFile file) {
-        ContentType contentType = getContentType(file);
-        try {
-            switch (contentType) {
-                case VIDEO:
-                    return cloudinaryService.uploadVideo(file);
-                case DOCUMENT:
-                    return cloudinaryService.uploadFile(file);
-                default:
-                    throw new InvalidFileTypeException("Unsupported file type");
-            }
-        } catch (IOException | InvalidFileTypeException e) {
-            throw new InvalidFileTypeException("Unsupported file type");
-        }
-    }
 
     protected ContentType getContentType(MultipartFile file) {
         String contentType = file.getContentType();

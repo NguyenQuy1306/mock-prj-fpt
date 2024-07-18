@@ -38,6 +38,9 @@ public class ResponseCode {
             case 24:
                 map.put("MSG 24", "Permission Denied");
                 break;
+            case 25:
+                map.put("MSG 25", "Already exists");
+                break;
             default:
                 map.put("MSG ?", "Unknown error");
                 break;

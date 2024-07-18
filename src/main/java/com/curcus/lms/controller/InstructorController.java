@@ -9,6 +9,7 @@ import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,7 @@ public class InstructorController {
     @Autowired
     private InstructorService instructorService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = {""})
     public ResponseEntity<ApiResponse<List<InstructorResponse>>> getAllInstructors(){
         try {
@@ -56,6 +58,7 @@ public class InstructorController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = {"/name/{name}"})
     public ResponseEntity<ApiResponse<List<InstructorResponse>>> getInstructorsByName(@PathVariable String name){
         try {
@@ -73,6 +76,7 @@ public class InstructorController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @GetMapping(value = {"/id/{id}"})
     public ResponseEntity<ApiResponse<InstructorResponse>> findById(@PathVariable Long id){
         try {
@@ -93,7 +97,8 @@ public class InstructorController {
         }
 
     }
-    
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult){
         try {
@@ -119,6 +124,7 @@ public class InstructorController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PutMapping(value = {"/{id}"})
     public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
         try {
@@ -143,6 +149,7 @@ public class InstructorController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PutMapping(value = {"/{id}/updatepassword"})
     public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructorPassword(@PathVariable Long id, @Valid @RequestParam String password) {
         try {
@@ -159,6 +166,7 @@ public class InstructorController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PutMapping(value = {"/{id}/recoverpassword"})
     public ResponseEntity<ApiResponse<InstructorResponse>> recoverInstructorPassword(@PathVariable Long id, @Valid @RequestParam String password) {
         try {
@@ -175,6 +183,7 @@ public class InstructorController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = {"/{id}"})
     public ResponseEntity<ApiResponse<Void>> deleteInstructor(@PathVariable Long id) {
         try {

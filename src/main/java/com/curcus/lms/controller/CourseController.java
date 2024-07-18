@@ -161,7 +161,7 @@ public class CourseController {
                 .saveContent(contentCreateRequest);
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
 
     }
 
