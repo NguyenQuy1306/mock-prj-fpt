@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ratings")
+@CrossOrigin(origins = "*")
 public class RatingController {
     @Autowired
     private RatingService ratingService;
