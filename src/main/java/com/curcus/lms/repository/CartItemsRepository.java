@@ -15,6 +15,7 @@ import com.curcus.lms.model.entity.CartItemsId;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartItemsRepository extends JpaRepository<CartItems, CartItemsId> {
@@ -28,4 +29,7 @@ public interface CartItemsRepository extends JpaRepository<CartItems, CartItemsI
 
     // CartItems getCartItemByCompositeId(Long cartId, Long CourseId);
     List<CartItems> findAllByCart_CartId(Long cartId);
+
+    @Query("select a from CartItems a where a.id.cartId = :cartId and a.id.courseId = :courseId")
+    Optional<CartItems> findByIdCardAndIdCourse(@Param("cartId") Long cartId, @Param("courseId") Long courseId);
 }

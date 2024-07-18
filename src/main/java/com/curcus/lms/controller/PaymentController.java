@@ -34,14 +34,14 @@ public class PaymentController {
     @GetMapping("/vn-pay-callback")
     public ResponseEntity<PaymentResponse.VNPayResponse> payCallbackHandler(@RequestParam Map<String, String> reqParams,
             HttpServletResponse response) throws IOException {
-        orderService.completeOrder(reqParams);
         String status = reqParams.get("vnp_ResponseCode");
         if (status.equals("00")) {
+            orderService.completeOrder(reqParams);
             return new ResponseEntity<>(new PaymentResponse.VNPayResponse("00", "Success", ""), HttpStatus.OK);
             // response.sendRedirect("http://localhost:3000/payment-success");
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            // response.sendRedirect("http://localhost:3000/payment-failed");
         }
+        // response.sendRedirect("http://localhost:3000/payment-failed");
     }
 }
