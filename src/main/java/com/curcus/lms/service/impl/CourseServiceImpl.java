@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Category;
@@ -33,6 +34,7 @@ import com.curcus.lms.repository.SectionRepository;
 
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
+import com.curcus.lms.util.FileAsyncUtil;
 import com.curcus.lms.util.ValidatorUtil;
 import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
@@ -65,7 +67,8 @@ public class CourseServiceImpl implements CourseService {
     private InstructorValidator instructorValidator;
     @Autowired
     private InstructorService instructorService;
-
+    @Autowired
+    private FileAsyncUtil fileAsyncUtil;
 
     @Override
     public Page<CourseResponse> findAll(Pageable pageable) {
@@ -152,7 +155,10 @@ public class CourseServiceImpl implements CourseService {
     public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
+        fileAsyncUtil.validContent(contentCreateRequest.getFile());
         content = contentRepository.save(content);
+		
+		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
         return contentMapper.toResponse(content);
     }
 

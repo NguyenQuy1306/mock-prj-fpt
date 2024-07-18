@@ -1,6 +1,7 @@
 package com.curcus.lms.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.websocket.Decoder.Text;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,7 @@ public class Course {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)

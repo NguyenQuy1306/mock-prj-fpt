@@ -28,7 +28,6 @@ public class Content {
     @Column(nullable = false)
     private ContentType type;
 
-    @Column(nullable = false)
     private String url;
 
     @Column(nullable = false)
