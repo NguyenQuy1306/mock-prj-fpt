@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @ComponentScan(basePackages = "com.curcus.lms")
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableJpaRepositories(basePackages = "com.curcus.lms.repository")
+@CrossOrigin(origins = "*")
 public class CurcusApplication {
 
 	public static void main(String[] args) {
