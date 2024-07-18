@@ -3,12 +3,15 @@ package com.curcus.lms.controller;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.InactivatedUserException;
+import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.User;
+import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
+import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
@@ -39,6 +42,8 @@ public class AuthenticationController {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final VerificationTokenService verificationTokenService;
+    private final CourseRepository courseRepository;
+    private final CourseMapper courseMapper;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request,
@@ -209,4 +214,13 @@ public class AuthenticationController {
 //        return ResponseEntity.status(HttpStatus.OK).body("Unsuccessful authentication");
 //    }
 
+    @GetMapping("/testCResponse/{id}")
+    public ResponseEntity<ApiResponse<CourseSearchResponse>> testCResponse(@PathVariable Long id) {
+        ApiResponse<CourseSearchResponse> apiResponse = new ApiResponse<>();
+        CourseSearchResponse courseSearchResponse = new CourseSearchResponse();
+        Course course = courseRepository.findById(id).orElse(null);
+        courseSearchResponse = courseMapper.toCourseSearchResponse(course);
+        apiResponse.ok(courseSearchResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

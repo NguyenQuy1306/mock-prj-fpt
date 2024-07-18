@@ -1,5 +1,8 @@
 package com.curcus.lms.model.mapper;
 
+import com.curcus.lms.model.response.CourseSearchResponse;
+import com.curcus.lms.model.response.InstructorResponse;
+import com.curcus.lms.repository.RatingRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -36,6 +39,13 @@ public abstract class CourseMapper {
 
     @Autowired
     protected CategoryRepository categoryRepository;
+
+    @Autowired
+    protected RatingRepository ratingRepository;
+
+    @Autowired
+    protected InstructorMapper instructorMapper;
+
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
@@ -93,4 +103,25 @@ public abstract class CourseMapper {
             return ContentType.UNKNOWN;
         }
     }
+
+    // CourseSearchResponse
+    @Mapping(target = "instructor", expression = "java(getInstructorResponseById(course.getInstructor().getUserId()))")
+    @Mapping(target = "totalReviews", expression = "java(getTotalViewByCourseId(course.getCourseId()))")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    public abstract CourseSearchResponse toCourseSearchResponse(Course course);
+    public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
+
+
+    protected Long getTotalViewByCourseId(Long courseId) {
+        return ratingRepository.countByCourse_CourseId(courseId);
+    }
+
+    protected InstructorResponse getInstructorResponseById(Long constructorId) {
+        return instructorMapper.toResponse(
+                instructorRepository.findById(constructorId).orElse(null)
+        );
+    }
+
+
+
 }
