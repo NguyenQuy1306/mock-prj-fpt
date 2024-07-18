@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -34,6 +35,8 @@ public class Course {
     @Column(nullable = false)
     private Long price;
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;

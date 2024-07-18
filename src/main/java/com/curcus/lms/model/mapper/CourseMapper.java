@@ -55,6 +55,7 @@ public abstract class CourseMapper {
     @Mapping(target = "instructor", expression = "java(findInstructorById(courseCreateRequest.getInstructorId()))")
     @Mapping(target = "category", expression = "java(findCategoryById(courseCreateRequest.getCategoryId()))")
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
 
     protected Instructor findInstructorById(Long id) {
