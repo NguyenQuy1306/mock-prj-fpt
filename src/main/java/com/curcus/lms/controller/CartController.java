@@ -21,6 +21,8 @@ import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.service.CartService;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -79,8 +81,8 @@ public class CartController {
         }
     }
 
-    @PostMapping("/{studentId}/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@PathVariable Long studentId, List<Long> courseIds, Long totalPrice) {
+    @PostMapping("/checkout")
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId, @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
         try {
             cartService.copyCartToOrder(studentId, courseIds, totalPrice);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
