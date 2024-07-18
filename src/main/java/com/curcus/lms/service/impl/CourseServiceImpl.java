@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -140,7 +141,7 @@ public class CourseServiceImpl implements CourseService {
             if(contentRepository.findById(id)==null) throw new ApplicationException("Content is invalid");
             Content content = contentRepository.findById(id).get();
             if(contentUpdateRequest.getType()!=null) content.setType(contentUpdateRequest.getType());
-            if(contentUpdateRequest.getUrl()!=null) content.setUrl(contentUpdateRequest.getUrl());
+            if(contentUpdateRequest.getFile())!=null) content.setFile(contentUpdateRequest.getFile());
             return contentMapper.toResponse(contentRepository.save(content));
         }catch(ApplicationException ex){
             throw ex;
