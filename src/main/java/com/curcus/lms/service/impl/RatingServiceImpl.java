@@ -113,7 +113,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingResponse createRating(RatingRequest ratingRequest) {
         if (ratingRepository.existsByStudent_UserIdAndCourse_CourseId(ratingRequest.getStudentId(), ratingRequest.getCourseId())) {
-            throw new UniqueConstraintException("Student has already enrolled the course");
+            throw new UniqueConstraintException("Rating already exists");
         }
 
         Student student = studentRepository.findById(ratingRequest.getStudentId()).orElseThrow();
