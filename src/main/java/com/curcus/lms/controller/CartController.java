@@ -80,9 +80,9 @@ public class CartController {
     }
 
     @PostMapping("/{studentId}/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@PathVariable Long studentId, List<Long> courseIds, Long totalPrice) {
         try {
-            cartService.copyCartToOrder(studentId);
+            cartService.copyCartToOrder(studentId, courseIds, totalPrice);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);

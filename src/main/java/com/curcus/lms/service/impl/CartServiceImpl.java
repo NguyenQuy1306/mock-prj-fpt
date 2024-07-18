@@ -182,7 +182,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Transactional
-    public void copyCartToOrder(Long studentId) {
+    public void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice) {
         try {
 
             Student student = studentRepository.findById(studentId).orElse(null);
@@ -199,10 +199,6 @@ public class CartServiceImpl implements CartService {
                 throw new NotFoundException("No items in the cart");
             }
 
-            Long totalPrice = cartItems.stream()
-                    .map(cartItem -> cartItem.getCourse().getPrice())
-                    .reduce(0L, Long::sum);
-
             Order order = Order.builder()
                     .student(cart.getStudent())
                     .paymentDate(new Date())
@@ -212,9 +208,17 @@ public class CartServiceImpl implements CartService {
             Order savedOrder = orderRepository.save(order);
 
             List<OrderItems> orderItemsList = new ArrayList<>();
+            List<CartItems> cartItemsToDelete = new ArrayList<>();
+
             for (CartItems cartItem : cartItems) {
+<<<<<<< HEAD
                 if (enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId,
                         cartItem.getCourse().getCourseId()) == null) {
+=======
+                if (courseIds.contains(cartItem.getCourse().getCourseId()) &&
+                        enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, cartItem.getCourse().getCourseId()) == null) {
+
+>>>>>>> origin/Cart_ii
                     OrderItems orderItem = OrderItems.builder()
                             .id(new OrderItemsId(savedOrder.getOrderId(), cartItem.getCourse().getCourseId()))
                             .order(savedOrder)
@@ -223,15 +227,21 @@ public class CartServiceImpl implements CartService {
                             .build();
                     StudentService.addStudentToCourse(studentId, cartItem.getCourse().getCourseId());
                     orderItemsList.add(orderItem);
+                    cartItemsToDelete.add(cartItem);
                 }
             }
 
             orderItemsRepository.saveAll(orderItemsList);
+<<<<<<< HEAD
             // StudentService.addStudentToCoursesFromCart(studentId);
             // add delete cart method
 
         } catch (NotFoundException ex) {
             throw ex;
+=======
+
+            cartItemsRepository.deleteAll(cartItemsToDelete);
+>>>>>>> origin/Cart_ii
         } catch (Exception ex) {
             throw new RuntimeException("An error occurred while copying the cart to the order", ex);
         }
