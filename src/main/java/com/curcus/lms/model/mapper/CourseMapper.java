@@ -1,6 +1,7 @@
 package com.curcus.lms.model.mapper;
 
 import com.curcus.lms.model.response.CourseSearchResponse;
+import com.curcus.lms.model.response.InstructorPublicResponse;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.RatingRepository;
 import org.mapstruct.Mapper;
@@ -117,8 +118,8 @@ public abstract class CourseMapper {
         return ratingRepository.countByCourse_CourseId(courseId);
     }
 
-    protected InstructorResponse getInstructorResponseById(Long constructorId) {
-        return instructorMapper.toResponse(
+    protected InstructorPublicResponse getInstructorResponseById(Long constructorId) {
+        return instructorMapper.toInstructorPublicResponse(
                 instructorRepository.findById(constructorId).orElse(null)
         );
     }

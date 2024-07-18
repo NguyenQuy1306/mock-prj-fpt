@@ -17,7 +17,7 @@ public class CourseSearchResponse implements Serializable {
 
     private Double avgRating;
 
-    private InstructorResponse instructor;
+    private InstructorPublicResponse instructor;
 
     private Long totalReviews;
 
