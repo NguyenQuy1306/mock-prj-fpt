@@ -8,16 +8,16 @@ public class ResponseCode {
         Map<String, String> map = new HashMap<String, String>();
         switch (code) {
             case 1:
-                map.put("MSG 1", "Vui lòng điền đầy đủ thông tin");
+                map.put("MSG 1", "Please fill in all the information");
                 break;
             case 2:
-                map.put("MSG 2", "Người dùng đã tồn tại trong hệ thống");
+                map.put("MSG 2", "User already exists in the system");
                 break;
             case 3:
-                map.put("MSG 3", "Mã xác thực đã hết hiệu lực");
+                map.put("MSG 3", "Verification code has expired");
                 break;
             case 8:
-                map.put("MSG 8", "Tài khoản không tồn tại");
+                map.put("MSG 8", "Account does not exist");
                 break;
             case 9:
                 map.put("MSG 9", "Incorrect password");
@@ -25,9 +25,12 @@ public class ResponseCode {
             case 10:
                 map.put("MSG 10", "Course not found");
                 break;
+            case 11:
+                map.put("MSG 11", "Account already activated");
+                break;
             // TODO case 4 - 22
             case 21:
-                map.put("MSG 21", "Đã xảy ra lỗi, vui lòng thử lại sau");
+                map.put("MSG 21", "An error occurred, please try again later");
                 break;
             case 23:
                 map.put("MSG 23", "Internal Server Error");
@@ -35,8 +38,11 @@ public class ResponseCode {
             case 24:
                 map.put("MSG 24", "Permission Denied");
                 break;
+            case 25:
+                map.put("MSG 25", "Already exists");
+                break;
             default:
-                map.put("MSG ?", "Lỗi không xác định");
+                map.put("MSG ?", "Unknown error");
                 break;
         }
         return map;

@@ -11,4 +11,5 @@ import com.curcus.lms.model.entity.Section;
 
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Long> {
+    Boolean existsByCourse_Instructor_UserIdAndSectionId(Long instructorId, Long sectionId);
 }

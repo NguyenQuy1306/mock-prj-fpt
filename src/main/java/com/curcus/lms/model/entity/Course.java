@@ -29,7 +29,7 @@ public class Course {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
@@ -37,6 +37,9 @@ public class Course {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+    @Column(nullable = true, columnDefinition = "double precision default 0.0")
+    private Double avgRating;
+
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;

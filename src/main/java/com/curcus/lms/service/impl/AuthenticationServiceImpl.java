@@ -1,6 +1,7 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.InactivatedUserException;
 import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.entity.*;
@@ -100,7 +101,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Account does not exist"));
-
+//        if (!user.isActivated())
+//            throw new InactivatedUserException("Account has not been activated");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

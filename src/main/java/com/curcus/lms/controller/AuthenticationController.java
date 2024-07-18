@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.InactivatedUserException;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.exception.IncorrectPasswordException;
@@ -11,10 +12,9 @@ import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.repository.VerificationTokenRepository;
 import com.curcus.lms.service.AuthenticationService;
+import com.curcus.lms.service.EmailService;
+import com.curcus.lms.service.VerificationTokenService;
 import com.curcus.lms.service.impl.CookieServiceImpl;
-import com.curcus.lms.service.impl.EmailServiceImpl;
-import com.curcus.lms.service.impl.VerificationTokenServiceImpl;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -33,18 +33,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AuthenticationController {
     private final AuthenticationService service;
-    private final EmailServiceImpl emailServiceImpl;
-    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
     private final UserRepository userRepository;
-    private final VerificationTokenServiceImpl verificationTokenServiceImpl;
-    private final CookieServiceImpl cookieServiceImpl;
+    private final VerificationTokenService verificationTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request,
-                                                         BindingResult bindingResult) {
+                                                              BindingResult bindingResult) {
 
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         Map<String, String> errors = new HashMap<>();
@@ -84,10 +81,10 @@ public class AuthenticationController {
             String successMessage = "";
 
             if ("S".equals(request.getUserRole())) {
-                emailSent = emailServiceImpl.sendEmailToStudent(request.getEmail());
+                emailSent = emailService.sendEmailToStudent(request.getEmail());
 //                successMessage = "Registration successful. Please check your email to complete account verification.";
             } else if ("I".equals(request.getUserRole())) {
-                emailSent = emailServiceImpl.sendEmailToInstructor(request.getEmail());
+                emailSent = emailService.sendEmailToInstructor(request.getEmail());
 //                successMessage = "Registration successful. Please check your email to complete account verification.";
             }
 
@@ -104,8 +101,7 @@ public class AuthenticationController {
             error.put("message", "Invalid user role");
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             apiResponse.error(ResponseCode.getError(23));
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -140,7 +136,12 @@ public class AuthenticationController {
         } catch (IncorrectPasswordException e) {
             apiResponse.error(ResponseCode.getError(9));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        } catch (ApplicationException e) {
+        }
+//        catch (InactivatedUserException e) {
+//            errors.put("message", "Account is inactivated");
+//            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+//        }
+        catch (ApplicationException e) {
             errors.put("message", e.getMessage());
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
@@ -157,7 +158,7 @@ public class AuthenticationController {
     @GetMapping("/is-expired-verification")
     public ResponseEntity<Object> isExpiredVerification(@RequestParam String token) {
         try {
-            User user = verificationTokenServiceImpl.validateVerificationToken(token)
+            User user = verificationTokenService.validateVerificationToken(token)
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
             user.setActivated(true);
             userRepository.save(user);
@@ -174,6 +175,28 @@ public class AuthenticationController {
 
         }
     }
+
+    @GetMapping("/send-verification-email/{email}")
+    public ResponseEntity<ApiResponse<Boolean>> sendVerificationEmail(@PathVariable String email) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            apiResponse.error(ResponseCode.getError(8));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+        if ( user.isActivated()) {
+            apiResponse.error(ResponseCode.getError(11));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+        verificationTokenService.revokePreviousTokens(user.getUserId());
+        if (emailService.sendEmailToStudent(email))
+            apiResponse.ok(true);
+        else
+            apiResponse.error(ResponseCode.getError(23));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
 
 //    @GetMapping("/successful")
 //    public ResponseEntity<String> successfulAuthentication() {
