@@ -28,8 +28,8 @@ public class CourseSearchResponse implements Serializable {
     private Long aftPrice;
 
     public CourseSearchResponse() {
-        this.prePrice = 0L; // default value
-        this.aftPrice = 0L; // default value
+        this.prePrice = price; // default value
+        this.aftPrice = price; // default value
     }
 
     @Override
