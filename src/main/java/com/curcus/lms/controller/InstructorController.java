@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.curcus.lms.model.request.UserAddressRequest;
+import com.curcus.lms.model.response.UserAddressResponse;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,11 +43,11 @@ public class InstructorController {
     private InstructorService instructorService;
 
     @GetMapping(value = {""})
-    public ResponseEntity<ApiResponse<List<InstructorResponse>>> getAllInstructors(){
+    public ResponseEntity<ApiResponse<List<InstructorResponse>>> getAllInstructors() {
         try {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findAll());
-            if (instructorService.findAll().size()==0) throw new NotFoundException("Instructor not found.");
+            if (instructorService.findAll().size() == 0) throw new NotFoundException("Instructor not found.");
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -57,11 +60,11 @@ public class InstructorController {
     }
 
     @GetMapping(value = {"/name/{name}"})
-    public ResponseEntity<ApiResponse<List<InstructorResponse>>> getInstructorsByName(@PathVariable String name){
+    public ResponseEntity<ApiResponse<List<InstructorResponse>>> getInstructorsByName(@PathVariable String name) {
         try {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findByName(name));
-            if (instructorService.findByName(name).size()==0) throw new NotFoundException("Instructor not found.");
+            if (instructorService.findByName(name).size() == 0) throw new NotFoundException("Instructor not found.");
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -74,7 +77,7 @@ public class InstructorController {
     }
 
     @GetMapping(value = {"/id/{id}"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> findById(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<InstructorResponse>> findById(@PathVariable Long id) {
         try {
             Optional<InstructorResponse> instructorResponse = instructorService.findById(id);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
@@ -93,13 +96,14 @@ public class InstructorController {
         }
 
     }
-    
+
+
     @PostMapping
-    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult){
+    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult) {
         try {
-            if(bindingResult.hasErrors()){
-                Map<String, String> errors= new HashMap<>();
-    
+            if (bindingResult.hasErrors()) {
+                Map<String, String> errors = new HashMap<>();
+
                 bindingResult.getFieldErrors().forEach(
                         error -> errors.put(error.getField(), error.getDefaultMessage())
                 );
@@ -108,7 +112,7 @@ public class InstructorController {
             InstructorResponse instructorResponse = instructorService.createInstructor(instructorRequest);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED );
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         } catch (NotFoundException ex) {
             throw ex;
         } catch (ValidationException ex) {
@@ -122,9 +126,9 @@ public class InstructorController {
     @PutMapping(value = {"/{id}"})
     public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
         try {
-            if(bindingResult.hasErrors()){
-                Map<String, String> errors= new HashMap<>();
-    
+            if (bindingResult.hasErrors()) {
+                Map<String, String> errors = new HashMap<>();
+
                 bindingResult.getFieldErrors().forEach(
                         error -> errors.put(error.getField(), error.getDefaultMessage())
                 );
@@ -188,6 +192,26 @@ public class InstructorController {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException();
+        }
+
+
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
+    @PostMapping (value = "{id}/update-address")
+    public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id, @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {
+        try {
+            if (bindingResult.hasErrors()) throw new Exception("Request invalid");
+            UserAddressResponse instructorResponse = instructorService.updateInstructorAddress(id, studentAddressRequest);
+            ApiResponse<UserAddressResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(instructorResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<UserAddressResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

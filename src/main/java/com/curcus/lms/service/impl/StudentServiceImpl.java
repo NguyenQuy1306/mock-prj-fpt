@@ -1,20 +1,14 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.request.UserAddressRequest;
+import com.curcus.lms.model.response.UserAddressResponse;
+import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.curcus.lms.repository.CartItemsRepository;
-import com.curcus.lms.repository.CartRepository;
-import com.curcus.lms.repository.EnrollmentRepository;
-import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.model.entity.Cart;
-import com.curcus.lms.model.entity.CartItems;
-import com.curcus.lms.model.entity.Enrollment;
-import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
@@ -44,7 +38,8 @@ public class StudentServiceImpl implements StudentService {
     private CartItemsRepository cartItemsRepository;
     @Autowired
     private CourseRepository courseRepository;
-
+    @Autowired
+    private UserRepository userRepository;
     @Override
     public List<StudentResponse> findAll() {
         try {
@@ -215,5 +210,15 @@ public class StudentServiceImpl implements StudentService {
         return enrollmentResponses;
     }
 
+    public UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest) {
+        Student user = studentRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException("User not found with id: " + userId));
 
+        user.setUserAddress(addressRequest.getUserAddress());
+        user.setUserCity(addressRequest.getUserCity());
+        user.setUserCountry(addressRequest.getUserCountry());
+        user.setUserPostalCode(addressRequest.getUserPostalCode());
+        studentRepository.save(user);
+        return userMapper.toUserAddressResponse(user);
+    }
 }

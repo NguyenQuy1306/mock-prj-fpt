@@ -3,6 +3,9 @@ package com.curcus.lms.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.curcus.lms.model.entity.Student;
+import com.curcus.lms.model.request.UserAddressRequest;
+import com.curcus.lms.model.response.UserAddressResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +55,8 @@ public class InstructorServiceImpl implements InstructorService {
             throw ex;
         }
     }
+
+
 
     @Override
     public InstructorResponse createInstructor(InstructorRequest instructorRequest) {
@@ -137,4 +142,15 @@ public class InstructorServiceImpl implements InstructorService {
 
     }
 
+    public UserAddressResponse updateInstructorAddress(Long userId, UserAddressRequest addressRequest) {
+        Instructor user = instructorRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException("User not found with id: " + userId));
+
+        user.setUserAddress(addressRequest.getUserAddress());
+        user.setUserCity(addressRequest.getUserCity());
+        user.setUserCountry(addressRequest.getUserCountry());
+        user.setUserPostalCode(addressRequest.getUserPostalCode());
+        instructorRepository.save(user);
+        return userMapper.toUserAddressResponse(user);
+    }
 }

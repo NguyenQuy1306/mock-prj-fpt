@@ -1,9 +1,11 @@
 package com.curcus.lms.service;
 
 import com.curcus.lms.model.request.StudentRequest;
+import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.model.response.UserAddressResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,4 +30,6 @@ public interface StudentService {
     EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 
     List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId);
+
+    UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest);
 }

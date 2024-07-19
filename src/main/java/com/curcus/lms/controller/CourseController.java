@@ -1,5 +1,6 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.MetadataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,11 +24,7 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
-import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
@@ -105,9 +102,9 @@ public class CourseController {
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
+            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-//            apiResponse.ok(courseResponse);
+            apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -141,6 +138,14 @@ public class CourseController {
             @RequestBody SectionRequest sectionRequest) {
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(courseService.createSection(sectionRequest));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/updateSection")
+    public ResponseEntity<ApiResponse<SectionCreateResponse>> updateSection(
+            @RequestBody SectionUpdateRequest sectionUpdateRequest) {
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(courseService.updateSection(sectionUpdateRequest));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

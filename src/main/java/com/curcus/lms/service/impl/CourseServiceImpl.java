@@ -1,5 +1,7 @@
 package com.curcus.lms.service.impl;
 
+//import com.curcus.lms.kafka.KafkaProducerService;
+import com.curcus.lms.model.request.*;
 import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,6 @@ import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
-import com.curcus.lms.model.request.ContentCreateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseResponse;
@@ -36,6 +35,9 @@ import com.curcus.lms.service.InstructorService;
 import com.curcus.lms.util.ValidatorUtil;
 import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
+import org.springframework.validation.BindingResult;
+
+import java.util.Map;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -66,6 +68,9 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private InstructorService instructorService;
 
+
+//    @Autowired
+//    private KafkaProducerService kafkaProducerService;
 
     @Override
     public Page<CourseResponse> findAll(Pageable pageable) {
@@ -153,6 +158,10 @@ public class CourseServiceImpl implements CourseService {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
         content = contentRepository.save(content);
+        FileCreateRequest fileCreateRequest = new FileCreateRequest(content.getId(),contentCreateRequest.getFile());
+        // Gửi thông điệp qua Kafka
+//        kafkaProducerService.sendContentCreateRequest("content-create-topic", fileCreateRequest);
+
         return contentMapper.toResponse(content);
     }
 
@@ -170,51 +179,52 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest) {
+    public SectionCreateResponse updateSection(SectionUpdateRequest sectionUpdateRequest) {
+        Long sectionId = sectionUpdateRequest.getSectionId();
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new NotFoundException(
                         "Section not found with id " + sectionId));
 
-        section.setSectionName(sectionRequest.getSectionName());
+        section.setSectionName(sectionUpdateRequest.getSectionName());
         SectionCreateResponse sectionUpdateResponse = sectionMapper.toResponse(sectionRepository.save(section));
         return sectionUpdateResponse;
     }
 
-//    @Override
-//    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
-//        // Get id of course
-//        if (findById(courseRequest.getCourseId()) == null) {
-//            throw new NotFoundException("Course not found.");
-//        }
-//        // Validator to check category of course
-//        courseValidator.validate(courseRequest, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//
-//            Map<String, String> validationException = validatorUtil.toErrors(bindingResult.getFieldErrors());
-//            throw new ValidationException(validationException);
-//        }
-//        // Get id of instructor
-//        if (findByIdInstructor(courseRequest.getInstructorId()) == null) {
-//            throw new NotFoundException("Instructor not found");
-//        }
-//        // Validator to check instructor of course
-//        instructorValidator.validate(courseRequest, bindingResult);
-//        if (bindingResult.hasErrors()) {
-//            Map<String, String> validationExceptionInstructor = validatorUtil.toErrors(bindingResult.getFieldErrors());
-//            throw new ValidationException(validationExceptionInstructor);
-//        }
-//
-//        // set category entity to course
-//        Course course = courseMapper.toRequest(courseRequest);
-//        Category category = categoryService.findById(courseRequest.getCategoryId());
-//        course.setCategory(category);
-//        // set instructor entity to course
+    @Override
+    public CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult) {
+        // Get id of course
+        if (findById(courseRequest.getCourseId()) == null) {
+            throw new NotFoundException("Course not found.");
+        }
+        // Validator to check category of course
+        courseValidator.validate(courseRequest, bindingResult);
+        if (bindingResult.hasErrors()) {
+
+            Map<String, String> validationException = validatorUtil.toErrors(bindingResult.getFieldErrors());
+            throw new ValidationException(validationException);
+        }
+        // Get id of instructor
+        if (findByIdInstructor(courseRequest.getInstructorId()) == null) {
+            throw new NotFoundException("Instructor not found");
+        }
+        // Validator to check instructor of course
+        instructorValidator.validate(courseRequest, bindingResult);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validationExceptionInstructor = validatorUtil.toErrors(bindingResult.getFieldErrors());
+            throw new ValidationException(validationExceptionInstructor);
+        }
+
+        // set category entity to course
+        Course course = courseMapper.toRequest(courseRequest);
+        Category category = categorySevice.findById(courseRequest.getCategoryId());
+        course.setCategory(category);
+        // set instructor entity to course
 //        Instructor instructor = instructorService.findById(courseRequest.getInstructorId());
 //        course.setInstructor(instructor);
-//        // Save update course
-//        courseRepository.save(course);
-//        // Mapping course to courseResponse
-//        CourseResponse courseResponse = courseMapper.toResponse(course);
-//        return courseResponse;
-//    }
+        // Save update course
+        courseRepository.save(course);
+        // Mapping course to courseResponse
+        CourseResponse courseResponse = courseMapper.toResponse(course);
+        return courseResponse;
+    }
 }

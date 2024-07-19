@@ -1,5 +1,6 @@
 package com.curcus.lms.model.entity;
 
+import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,14 @@ public class User {
     private String lastName;
     @Column(nullable = true, unique = true)
     private String phoneNumber;
+
+    private String userAddress;
+
+    private String userCity;
+
+    private String userCountry;
+
+    private Long userPostalCode;
 
     private boolean activated;
 

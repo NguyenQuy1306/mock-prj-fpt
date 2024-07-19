@@ -44,6 +44,11 @@ public abstract class CourseMapper {
 
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
 
+
+    @Mapping(target = "instructor.userId", source = "instructorId")
+    @Mapping(target = "category.categoryId", source = "categoryId")
+    public abstract Course toRequest(CourseRequest courseRequest);
+
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
     // @Mapping(target = "category", expression =

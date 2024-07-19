@@ -6,10 +6,7 @@ import java.util.Optional;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentCreateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.model.request.SectionRequest;
+import com.curcus.lms.model.request.*;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseResponse;
@@ -39,7 +36,8 @@ public interface CourseService {
 
     Instructor findByIdInstructor(Long id);
 
-    SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
+    SectionCreateResponse updateSection(SectionUpdateRequest sectionUpdateRequest);
 
-//    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+
 }
