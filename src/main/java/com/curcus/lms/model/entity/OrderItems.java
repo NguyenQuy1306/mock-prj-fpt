@@ -1,34 +1,31 @@
 package com.curcus.lms.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "cart_items")
-public class CartItems {
+@Table(name = "order_items")
+public class OrderItems {
     @EmbeddedId
-    private CartItemsId id;
-    @JsonIgnore
-    @ManyToOne
-    @MapsId("cartId")
-    @JoinColumn(name = "cart_id", referencedColumnName = "cartId")
-    private Cart cart;
+    private OrderItemsId id;
 
-    @JsonIgnore
+    @ManyToOne
+    @MapsId("orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "orderId")
+    private Order order;
+
     @ManyToOne
     @MapsId("courseId")
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
+
+    @Column(nullable = false)
+    private Long price;
 }

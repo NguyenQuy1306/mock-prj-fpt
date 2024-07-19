@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,7 +31,7 @@ public class User {
 
     private String firstName;
     private String lastName;
-    @Column(nullable = true, unique = true)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
     private boolean activated;

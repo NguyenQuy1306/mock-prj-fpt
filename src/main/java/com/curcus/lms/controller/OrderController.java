@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.curcus.lms.model.request.CheckoutReq;
 import com.curcus.lms.model.request.PurchaseOrderDTO;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CheckoutResponse;
@@ -32,9 +33,9 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<CheckoutResponse>> checkoutOrder(@NotNull @RequestBody Long[] idCourses) {
+    public ResponseEntity<ApiResponse<CheckoutResponse>> checkoutOrder(@NotNull @RequestBody CheckoutReq checkoutReq) {
         ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.ok(orderService.checkoutOrder(idCourses));
+        apiResponse.ok(orderService.checkoutOrder(checkoutReq));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

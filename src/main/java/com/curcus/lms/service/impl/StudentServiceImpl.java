@@ -68,8 +68,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(StudentRequest studentRequest) {
         try {
-            if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("Email đã tồn tại");
-            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
+            if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("This email address already exists");
+            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
             Student newStudent = new Student();
             newStudent.setName(studentRequest.getName());
             newStudent.setEmail(studentRequest.getEmail());
@@ -87,14 +87,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudent(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Account does not exist");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
             newStudent.setFirstName(studentRequest.getFirstName());
             newStudent.setLastName(studentRequest.getLastName());
 
             if(!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
-                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
+                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
             return userMapper.toResponse(studentRepository.save(newStudent));
@@ -107,7 +107,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudentPassword(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Account does not exist");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
             if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
@@ -123,7 +123,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long studentId) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Accout does not exist");
             studentRepository.deleteById(studentId);
         } catch (ApplicationException ex) {
             throw ex;
@@ -135,7 +135,7 @@ public class StudentServiceImpl implements StudentService {
     public List<EnrollmentResponse> getCoursesByStudentId(Long studentId) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) throw new ApplicationException("Tài khoản không tồn tại");
+            if (student == null) throw new ApplicationException("Account does not exist");
             List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
             List<EnrollmentResponse> enrollmentResponses = enrollments.stream().map(enrollment -> new EnrollmentResponse(
                 enrollment.getEnrollmentId(),
@@ -154,8 +154,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<CourseResponse> getListCourseFromCart(Long studentId) {
         try {
-            Cart cart = cartRepository.findByStudent_UserId(studentId);
-            if (cart == null) throw new ApplicationException("Giỏ hàng không tồn tại");
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+            if (cart == null) throw new ApplicationException("Cart not found");
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
             List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
             return courseResponses;

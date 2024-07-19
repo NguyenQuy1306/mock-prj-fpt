@@ -1,6 +1,8 @@
 package com.curcus.lms.service;
 
 import java.util.List;
+
+import org.springframework.validation.BindingResult;
 import java.util.Optional;
 
 import com.curcus.lms.model.entity.Course;
@@ -21,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 
 public interface CourseService {
-
+    // List<CourseResponse> findByCategory(Long categoryId);
 
     CourseResponse deleteCourse(Long id);
 
@@ -39,7 +41,12 @@ public interface CourseService {
 
     Instructor findByIdInstructor(Long id);
 
+    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+
+    void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
+
     SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
 
-//    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+    // CourseResponse update(CourseRequest courseRequest, BindingResult
+    // bindingResult);
 }

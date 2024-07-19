@@ -35,12 +35,12 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-
             "/api/v1/auth/**",
             "/api/v1/auth/register",
             "/api/v1/auth/authenticate",
             "/api/password-reset/request",
             "/api/password-reset/reset",
+            "/api/cart/**",
             "/api/ratings/**",
             "/api/courses",
             "/api/courses/list"

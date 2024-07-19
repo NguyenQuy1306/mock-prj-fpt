@@ -13,6 +13,9 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
     Page<Course> findByCategory(Category category, Pageable pageable);
+
+    List<Course> findByCategory(Category category);
+
     Page<Course> findAll(Pageable pageable);
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
 }

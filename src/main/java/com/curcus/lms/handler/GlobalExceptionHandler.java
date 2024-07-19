@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     public ApiResponse handleApplicationException(ApplicationException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("errorCode", "500");
-        error.put("errorMessage", "INTERNAL_SERVER_ERROR");
+        error.put("errorMessage", ex.getMessage());
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);

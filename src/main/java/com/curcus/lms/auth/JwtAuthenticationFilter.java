@@ -23,10 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter  extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTServiceImpl jwtServiceImpl;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
@@ -38,14 +37,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-//        final String authHeader = request.getHeader("Authorization");
+        // final String authHeader = request.getHeader("Authorization");
         String accessToken = cookieServiceImpl
                 .getCookie(request, "accessToken")
                 .orElse("null");
@@ -53,15 +51,15 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                 .getCookie(request, "refreshToken")
                 .orElse("null");
         String userEmail = "";
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
+        // if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        // filterChain.doFilter(request, response);
+        // return;
+        // }
         if (accessToken.equals("null") && refreshToken.equals("null")) {
             filterChain.doFilter(request, response);
             return;
         }
-//        jwt = authHeader.substring(7);
+        // jwt = authHeader.substring(7);
         userEmail = jwtServiceImpl.extractUsername(accessToken);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -98,15 +96,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void setWebAuthentication (UserDetailsImpl userDetails, HttpServletRequest request) {
+    private void setWebAuthentication(UserDetailsImpl userDetails, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
-                userDetails.getAuthorities()
-        );
+                userDetails.getAuthorities());
         authToken.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
+                new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 

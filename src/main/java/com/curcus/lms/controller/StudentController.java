@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
@@ -69,9 +68,11 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentRequest studentRequest,
+            BindingResult bindingResult) {
         try {
-            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
+            if (bindingResult.hasErrors())
+                throw new Exception("Request is not valid");
             StudentResponse studentResponse = studentService.createStudent(studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
@@ -87,9 +88,11 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id, @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id,
+            @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
-            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
+            if (bindingResult.hasErrors())
+                throw new Exception("Request is not valid");
             StudentResponse studentResponse = studentService.updateStudent(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(studentResponse);
@@ -105,7 +108,8 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PutMapping("/{id}/changePassword")
-    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id, @RequestBody StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> updateStudentPassword(@PathVariable Long id,
+            @RequestBody StudentRequest studentRequest) {
         try {
             StudentResponse studentResponse = studentService.updateStudentPassword(id, studentRequest);
             ApiResponse<StudentResponse> apiResponse = new ApiResponse<>();
@@ -139,11 +143,13 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @GetMapping("/{id}/courses")
-    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id){
-        try{
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id) {
+        try {
             // List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(id);
             // ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            // List<CourseResponse> courseResponses = enrollments.stream().map(enrollment -> {return courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
+            // List<CourseResponse> courseResponses = enrollments.stream().map(enrollment ->
+            // {return
+            // courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
             // apiResponse.ok(courseResponses);
             // return new ResponseEntity<>(apiResponse, HttpStatus.OK);
             List<EnrollmentResponse> enrollments = studentService.getCoursesByStudentId(id);
@@ -184,7 +190,8 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping("/{studentId}/courses/{courseId}")
-    public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId, @PathVariable Long courseId) {
+    public ResponseEntity<ApiResponse<EnrollmentResponse>> addStudentToCourse(@PathVariable Long studentId,
+            @PathVariable Long courseId) {
         try {
             EnrollmentResponse enrollmentResponse = studentService.addStudentToCourse(studentId, courseId);
             ApiResponse<EnrollmentResponse> apiResponse = new ApiResponse<>();
@@ -201,7 +208,8 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping("/{studentId}/enrollFromCart")
-    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> addStudentToCoursesFromCart(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> addStudentToCoursesFromCart(
+            @PathVariable Long studentId) {
         try {
             List<EnrollmentResponse> enrollmentResponses = studentService.addStudentToCoursesFromCart(studentId);
             ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
@@ -215,6 +223,5 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 }

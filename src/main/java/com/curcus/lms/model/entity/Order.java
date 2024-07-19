@@ -1,31 +1,31 @@
 package com.curcus.lms.model.entity;
 
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "carts")
-public class Cart {
+@Table(name = "orders")
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
-@JsonIgnore
+    private Long orderId;
+
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", referencedColumnName = "userId")
     private Student student;
 
+    @Column(nullable = false)
+    private Date paymentDate;
+
+    @Column(nullable = false)
+    private Long totalPrice;
 }

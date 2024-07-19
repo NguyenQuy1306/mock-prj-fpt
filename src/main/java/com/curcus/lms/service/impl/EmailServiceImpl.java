@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -25,11 +27,13 @@ public class EmailServiceImpl implements EmailService {
     private TemplateEngine templateEngine;
 
     @Value("${mail.backend_host}")
+    // @Value("http://localhost:8080")
     private String PREFIX;
 
     private class MailSenderRunnable implements Runnable {
         private JavaMailSender mailSender;
         private MimeMessage mimeMessage;
+
         public MailSenderRunnable(JavaMailSender mailSender, MimeMessage mimeMessage) {
             this.mailSender = mailSender;
             this.mimeMessage = mimeMessage;
@@ -38,7 +42,8 @@ public class EmailServiceImpl implements EmailService {
         public void run() {
             try {
                 mailSender.send(mimeMessage);
-            } catch(Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -69,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
             String subject = "Xác nhận địa chỉ email của bạn";
             String body1 = "Để xác thực địa chỉ email đã đăng ký vui lòng ấn";
             String body2 = "";
-            String link =  PREFIX + "/api/v1/auth/is-expired-verification?token=" + token;
+            String link = PREFIX + "/api/v1/auth/is-expired-verification?token=" + token;
 
             return sendHtmlEmailWithButton(to, subject, body1, body2, link);
         } catch (RuntimeException r) {
@@ -86,7 +91,7 @@ public class EmailServiceImpl implements EmailService {
             String body2 = "Nếu bạn không yêu cầu đặt lại mật khẩu, bạn có thể bỏ qua email này và mật khẩu hiện tại của bạn sẽ vẫn được giữ nguyên. Xin lưu ý rằng liên kết đặt lại mật khẩu sẽ chỉ có hiệu lực trong vòng 1 ngày kể từ khi email này được gửi đi.";
             String link = PREFIX + "/api/password-reset/reset?token=" + token;
             return sendHtmlEmailWithButton(to, subject, body1, body2, link);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -95,7 +100,8 @@ public class EmailServiceImpl implements EmailService {
     public Boolean sendPassword(String to, String password) {
         try {
             String subject = "Thông tin mật khẩu mới";
-            String body1 = "Chúng tôi nhận được yêu cầu cung cấp lại mật khẩu cho tài khoản của bạn. Mật khẩu mới của bạn là: " + password;
+            String body1 = "Chúng tôi nhận được yêu cầu cung cấp lại mật khẩu cho tài khoản của bạn. Mật khẩu mới của bạn là: "
+                    + password;
             String body2 = "Chúng tôi khuyên bạn nên thay đổi mật khẩu ngay sau khi đăng nhập để đảm bảo an toàn cho tài khoản của bạn. Nếu bạn không thực hiện yêu cầu này, xin vui lòng liên hệ với chúng tôi ngay lập tức.";
             return sendHtmlEmailWithoutButton(to, subject, body1, body2);
         } catch (Exception e) {

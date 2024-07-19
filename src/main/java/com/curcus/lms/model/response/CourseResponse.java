@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 public class CourseResponse implements Serializable {
     private Long courseId;
-    
+
     private String courseThumbnail;
 
     private String title;
@@ -23,14 +23,9 @@ public class CourseResponse implements Serializable {
 
     private Long price;
 
-
-
     private Long instructorId;
 
-
     private int categoryId;
-
-
 
     @Override
     public String toString() {

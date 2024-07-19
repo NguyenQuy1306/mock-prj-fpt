@@ -13,8 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "ratings", uniqueConstraints={
-        @UniqueConstraint(columnNames = {"student_id", "course_id"})
+@Table(name = "ratings", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "student_id", "course_id" })
 })
 public class Rating {
 
@@ -22,7 +22,7 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ratingId;
     @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "student_id", referencedColumnName = "userId")
     private Student student;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")

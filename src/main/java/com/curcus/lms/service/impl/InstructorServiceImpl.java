@@ -77,9 +77,11 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     public InstructorResponse updateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
         try {
-            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
+            if (instructorRepository.findById(id) == null)
+                throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
-            if (instructorUpdateRequest.getName() != null) newInstructor.setName(instructorUpdateRequest.getName());
+            if (instructorUpdateRequest.getName() != null)
+                newInstructor.setName(instructorUpdateRequest.getName());
             if (instructorUpdateRequest.getFirstName() != null)
                 newInstructor.setFirstName(instructorUpdateRequest.getFirstName());
             if (instructorUpdateRequest.getLastName() != null)
@@ -99,7 +101,8 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     public InstructorResponse updateInstructorPassword(Long id, String password) {
         try {
-            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
+            if (instructorRepository.findById(id) == null)
+                throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
             if (newInstructor.getPassword().equals(password))
                 throw new ApplicationException("Password already exists in your account");
@@ -114,7 +117,8 @@ public class InstructorServiceImpl implements InstructorService {
     @Override
     public InstructorResponse recoverInstructorPassword(Long id, String password) {
         try {
-            if (instructorRepository.findById(id) == null) throw new ApplicationException("Unknown account");
+            if (instructorRepository.findById(id) == null)
+                throw new ApplicationException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
             newInstructor.setPassword(password);
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
@@ -127,8 +131,10 @@ public class InstructorServiceImpl implements InstructorService {
     public void deleteInstructor(Long instructorId) {
         try {
             System.out.println(123);
-            if (instructorRepository.findById(instructorId).isPresent()) instructorRepository.deleteById(instructorId);
-            else throw new NotFoundException("Unknown account");
+            if (instructorRepository.findById(instructorId).isPresent())
+                instructorRepository.deleteById(instructorId);
+            else
+                throw new NotFoundException("Unknown account");
             System.out.println(9999);
 
         } catch (ApplicationException ex) {

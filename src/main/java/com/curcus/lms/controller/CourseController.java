@@ -36,6 +36,7 @@ import com.curcus.lms.service.CourseService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @RestController
 @RequestMapping("/api/courses")
 @Validated
@@ -60,7 +60,7 @@ public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
 
-    @GetMapping(value = {"", "/list"})
+    @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
             @RequestParam(value = "category", required = false) Long category,
             @RequestParam(defaultValue = "0") int page,
@@ -87,8 +87,7 @@ public class CourseController {
                     (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
                     (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
                     "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
-                    "/api/courses/list?page=0"
-            );
+                    "/api/courses/list?page=0");
 
             ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
             Map<String, Object> responseMetadata = new HashMap<>();
@@ -107,9 +106,10 @@ public class CourseController {
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
+            // CourseResponse courseResponse = courseService.update(courseRequest,
+            // bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-//            apiResponse.ok(courseResponse);
+            // apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;

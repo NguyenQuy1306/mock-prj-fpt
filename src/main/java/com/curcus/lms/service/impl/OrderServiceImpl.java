@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,16 @@ import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.entity.User;
+import com.curcus.lms.model.request.CheckoutReq;
 import com.curcus.lms.model.request.PurchaseOrderDTO;
 import com.curcus.lms.model.response.CheckoutResponse;
 import com.curcus.lms.model.response.PaymentResponse;
+import com.curcus.lms.repository.CartItemsRepository;
 import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.repository.UserRepository;
+import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.OrderService;
 import com.curcus.lms.service.PaymentService;
@@ -41,37 +45,45 @@ public class OrderServiceImpl implements OrderService {
     private final VNPayConfig vnPayConfig;
     private final StudentRepository studentRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
+    private final CartItemsRepository cartItemsRepository;
 
     @Override
-    public CheckoutResponse checkoutOrder(Long[] idCourses) {
+    public CheckoutResponse checkoutOrder(CheckoutReq checkoutReq) {
         long totalPrice = 0;
-        for (long idCourse : idCourses) {
+        for (long idCourse : checkoutReq.getIdCourses()) {
             Course course = courseRepository.findById(idCourse).orElseThrow(() -> new NotFoundException(
                     "please update cart"));
             totalPrice += course.getPrice();
         }
-        return CheckoutResponse.builder().totalPrice(totalPrice).build();
+        return CheckoutResponse.builder().totalPrice(totalPrice).discountPrice(0).finalPrice(totalPrice).build();
     }
 
     @Override
     public PaymentResponse.VNPayResponse processingPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO,
             HttpServletRequest request) {
-        long idFake = 1;
+        long idUser = purchaseOrderDTO.getIdUser();
+        long idCart = purchaseOrderDTO.getCheckoutReq().getIdCart();
         StringBuilder orderInfo = new StringBuilder();
-        orderInfo.append(idFake + "##");
-        for (Long idCourse : purchaseOrderDTO.getIdCourses()) {
+        orderInfo.append(idUser + "##");
+        for (Long idCourse : purchaseOrderDTO.getCheckoutReq().getIdCourses()) {
+            cartItemsRepository.findByIdCardAndIdCourse(idCart, idCourse).orElseThrow(() -> new NotFoundException(
+                    "product don't exist in cart"));
             orderInfo.append(idCourse + "#");
         }
-        CheckoutResponse checkoutResponse = checkoutOrder(purchaseOrderDTO.getIdCourses());
-        if (checkoutResponse.getTotalPrice() != purchaseOrderDTO.getTotalPrice()) {
-            throw new NotFoundException("please update cart");
+        CheckoutResponse checkoutResponse = checkoutOrder(purchaseOrderDTO.getCheckoutReq());
+        if (checkoutResponse.getTotalPrice() != purchaseOrderDTO.getPrices().getTotalPrice()
+                || checkoutResponse.getFinalPrice() != purchaseOrderDTO.getPrices().getFinalPrice()
+                || checkoutResponse.getDiscountPrice() != purchaseOrderDTO.getPrices().getDiscountPrice()) {
+            throw new NotFoundException("error about money");
         }
-        return paymentService.createVnPayPayment(request, checkoutResponse.getTotalPrice(), orderInfo.toString());
+        return paymentService.createVnPayPayment(request, checkoutResponse.getFinalPrice(), orderInfo.toString());
     }
 
     @Override
     public void completeOrder(Map<String, String> reqParams) {
         String vnp_SecureHash = reqParams.remove("vnp_SecureHash");
+
         if (vnp_SecureHash == null) {
             throw new NotFoundException("vnp_SecureHash is required");
         }
@@ -80,21 +92,12 @@ public class OrderServiceImpl implements OrderService {
         if (!vnpSecureHash.equals(vnp_SecureHash)) {
             throw new ValidationException("vnp_SecureHash is invalid");
         }
+        String total_price = reqParams.remove("vnp_Amount");
         String[] infoOrder = reqParams.get("vnp_OrderInfo").split("##");
         long idUser = Long.parseLong(infoOrder[0]);
-        List<String> idCourses = Arrays.asList(infoOrder[1].split("#"));
-        Cart cart = new Cart();
-        Student user = studentRepository.findById(idUser).orElseThrow(() -> new NotFoundException("user not found"));
-        cart.setStudent(user);
-        for (String idCourse : idCourses) {
-            Course course = courseRepository.findById(Long.parseLong(idCourse))
-                    .orElseThrow(() -> new NotFoundException("course not found"));
-            CartItems cartItems = new CartItems();
-            cartItems.setCart(cart);
-            cartItems.setCourse(course);
-        }
-        cartRepository.save(cart);
-        // xử thông tin thanh toán
+        List<Long> idCourses = Arrays.asList(infoOrder[1].split("#")).stream().map(Long::parseLong)
+                .collect(Collectors.toList());
+        cartService.copyCartToOrder(idUser, idCourses, Long.parseLong(total_price) / 1000);
     }
 
 }

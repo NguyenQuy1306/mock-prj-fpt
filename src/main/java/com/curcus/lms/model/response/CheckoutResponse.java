@@ -7,4 +7,6 @@ import lombok.Data;
 @Builder
 public class CheckoutResponse {
     private long totalPrice;
+    private long discountPrice;
+    private long finalPrice;
 }

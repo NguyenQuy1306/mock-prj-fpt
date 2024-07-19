@@ -22,10 +22,8 @@ public class CourseRequest implements Serializable {
 
     private Long price;
 
-    private Boolean isFree;
-
     private Long instructorId;
 
-    private int categoryId;
+    private Long categoryId;
 
 }
