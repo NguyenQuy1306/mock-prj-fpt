@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.RatingResponse;
 import com.curcus.lms.model.response.ResponseCode;
@@ -27,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ratings")
+@CrossOrigin(origins = "*")
 public class RatingController {
     @Autowired
     private RatingService ratingService;

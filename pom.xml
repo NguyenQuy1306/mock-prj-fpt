@@ -441,11 +441,17 @@
 	                <from>
 	                    <image>openjdk:17-alpine</image>
 	                </from>
+	                <to>
+                        <image>dinhthai/curcus:3.0</image>
+                    </to>
 	                <container>
 	                    <ports>
 	                        <port>8080</port>
 	                    </ports>
 	                    <format>OCI</format>
+
+  						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+
 	                </container>
 	            </configuration>
 	        </plugin>

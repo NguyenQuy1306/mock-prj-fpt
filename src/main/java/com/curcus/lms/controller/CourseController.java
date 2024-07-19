@@ -35,9 +35,7 @@ import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
 
-
-
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +53,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("/api/courses")
 @Validated
+@CrossOrigin(origins = "*")
 public class CourseController {
     @Autowired
     private CourseService courseService;
