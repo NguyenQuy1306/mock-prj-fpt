@@ -111,14 +111,16 @@ public abstract class CourseMapper {
     }
 
     // CourseSearchResponse
+//    @Mapping(target = "position", source = "contentCreateRequest.sectionId")
     @Mapping(target = "instructor", expression = "java(getInstructorResponseById(course.getInstructor().getUserId()))")
-    @Mapping(target = "totalReviews", expression = "java(getTotalViewByCourseId(course.getCourseId()))")
+    @Mapping(target = "totalReviews", source="course.courseId", qualifiedByName = "getTotalViewByCourseId")
     @Mapping(source = "course.category.categoryName", target = "categoryName")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
 
-
+    @Named("getTotalViewByCourseId")
     protected Long getTotalViewByCourseId(Long courseId) {
+
         return ratingRepository.countByCourse_CourseId(courseId);
     }
 
