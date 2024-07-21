@@ -13,4 +13,5 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     List<Rating> findAllByStudent_UserId(Long studentId);
     List<Rating> findAllByCourse_CourseId(Long courseId);
     void deleteByStudent_UserIdAndCourse_CourseId(Long studentId, Long courseId);
+    Long countByCourse_CourseId(Long courseId);
 }
