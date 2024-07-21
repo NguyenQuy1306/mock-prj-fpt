@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.validation.BindingResult;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
@@ -34,6 +37,10 @@ public interface CourseService {
     Page<CourseResponse> findAll(Pageable pageable);
 
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
+    
+//    Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
+//    Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long minPrice, Long maxPrice, Pageable pageable);
+    Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable);
 
     ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
 

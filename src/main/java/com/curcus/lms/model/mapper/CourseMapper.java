@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.constants.ContentType;
@@ -53,7 +54,6 @@ public abstract class CourseMapper {
     public abstract CourseResponse toResponse(Course course);
 
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
-
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
     // @Mapping(target = "category", expression =
@@ -70,7 +70,7 @@ public abstract class CourseMapper {
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-
+    
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));

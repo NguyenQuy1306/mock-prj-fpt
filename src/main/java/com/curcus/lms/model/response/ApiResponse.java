@@ -33,6 +33,11 @@ public class ApiResponse<T> {
         this.status = StatusEnum.ERROR;
         this.error = error;
     }
+    public void error(Map<String, String> error, Map<String, Object> metadata) {
+        this.status = StatusEnum.ERROR;
+        this.error = error;
+        this.metadata=metadata;
+    }
 
 }
 

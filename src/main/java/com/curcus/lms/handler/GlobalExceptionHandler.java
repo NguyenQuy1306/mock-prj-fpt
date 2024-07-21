@@ -1,8 +1,10 @@
 package com.curcus.lms.handler;
 
+import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -117,6 +119,22 @@ public class GlobalExceptionHandler {
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);
+        return apiResponse;
+    }
+    
+    @ExceptionHandler(SearchOptionsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ApiResponse handleSearchOptionsException(SearchOptionsException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("errorCode", "400");
+        error.put("errorMessage", "INVALID_SEARCH_OPTION");
+        error.put("details", ex.getMessage());
+
+        ApiResponse apiResponse = new ApiResponse();
+        Map<String, Object> responseMetadata = new HashMap<>();
+        responseMetadata.put("searchOptions", CourseSearchOptions.HINTS_MAP);
+        apiResponse.error(error,responseMetadata);
         return apiResponse;
     }
 }

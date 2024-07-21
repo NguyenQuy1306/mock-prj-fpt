@@ -4,6 +4,7 @@ import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -35,6 +36,7 @@ import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
 
 import com.curcus.lms.service.CourseService;
+import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
 import com.curcus.lms.util.FileAsyncUtil;
 import com.curcus.lms.util.ValidatorUtil;
@@ -161,7 +163,7 @@ public class CourseServiceImpl implements CourseService {
         Content content = contentMapper.toEntity(contentCreateRequest);
         fileAsyncUtil.validContent(contentCreateRequest.getFile());
         content = contentRepository.save(content);
-		
+
 		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
         return contentMapper.toResponse(content);
     }
@@ -231,6 +233,28 @@ public class CourseServiceImpl implements CourseService {
         } catch (Exception ex) {
             throw new ApplicationException();
         }
+    }
+    @Override
+    public Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable) {
+        // TODO Auto-generated method stub
+        Specification<Course> spec = Specification.where(null);
+        if (instructorId != null) {
+            spec = spec.and(CourseSpecifications.hasInstructorId(instructorId));
+        }
+
+        if (categoryId != null) {
+            spec = spec.and(CourseSpecifications.hasCategoryId(categoryId));
+        }
+
+        if (title != null) {
+            spec = spec.and(CourseSpecifications.hasTitleLike(title));
+        }
+
+        if (price != null) {
+            spec = spec.and(CourseSpecifications.hasPriceGreaterThanOrEqualTo(price));
+        }
+        Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
+        return coursePage.map(courseMapper::toResponse);
     }
 
 }
