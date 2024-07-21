@@ -1,6 +1,6 @@
 package com.curcus.lms.model.entity;
 
-import com.google.firebase.database.annotations.NotNull;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
