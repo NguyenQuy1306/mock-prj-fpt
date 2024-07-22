@@ -158,7 +158,7 @@ public class CourseServiceImpl implements CourseService {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
         content = contentRepository.save(content);
-        FileCreateRequest fileCreateRequest = new FileCreateRequest(content.getId(),contentCreateRequest.getFile());
+//        FileCreateRequest fileCreateRequest = new FileCreateRequest(content.getId(),contentCreateRequest.getFile());
         // Gửi thông điệp qua Kafka
 //        kafkaProducerService.sendContentCreateRequest("content-create-topic", fileCreateRequest);
 

@@ -57,17 +57,26 @@ public interface UserMapper {
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     UserResponse toUserResponse(Instructor instructor);
 
-    @Mapping(source = "userId", target = "userId")
+
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "userAddress", target = "userAddress")
     @Mapping(source = "userCity", target = "userCity")
     @Mapping(source = "userCountry", target = "userCountry")
     @Mapping(source = "userPostalCode", target = "userPostalCode")
     UserAddressResponse toUserAddressResponse(Student student);
 
-    @Mapping(source = "userId", target = "userId")
+
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "userAddress", target = "userAddress")
     @Mapping(source = "userCity", target = "userCity")
     @Mapping(source = "userCountry", target = "userCountry")
     @Mapping(source = "userPostalCode", target = "userPostalCode")
     UserAddressResponse toUserAddressResponse(Instructor instructor);
+
 }

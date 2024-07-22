@@ -214,10 +214,13 @@ public class StudentServiceImpl implements StudentService {
         Student user = studentRepository.findById(userId)
                 .orElseThrow(() -> new ApplicationException("User not found with id: " + userId));
 
-        user.setUserAddress(addressRequest.getUserAddress());
-        user.setUserCity(addressRequest.getUserCity());
-        user.setUserCountry(addressRequest.getUserCountry());
-        user.setUserPostalCode(addressRequest.getUserPostalCode());
+        Optional.ofNullable(addressRequest.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(addressRequest.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(addressRequest.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+        Optional.ofNullable(addressRequest.getUserAddress()).ifPresent(user::setUserAddress);
+        Optional.ofNullable(addressRequest.getUserCity()).ifPresent(user::setUserCity);
+        Optional.ofNullable(addressRequest.getUserCountry()).ifPresent(user::setUserCountry);
+        Optional.ofNullable(addressRequest.getUserPostalCode()).ifPresent(user::setUserPostalCode);
         studentRepository.save(user);
         return userMapper.toUserAddressResponse(user);
     }
