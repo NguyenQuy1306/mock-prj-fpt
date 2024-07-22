@@ -6,6 +6,7 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface StudentService {
@@ -28,4 +29,8 @@ public interface StudentService {
     EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 
     List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId);
+
+    Map<Integer, Integer> getCoursesPurchasedLastFiveYears(Long studentId);
+
+    Integer getTotalPurchaseCourse(Long studentId);
 }

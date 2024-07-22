@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
@@ -222,6 +224,48 @@ public class StudentController {
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+    @GetMapping("/{studentId}/last-five-years")
+    public ResponseEntity<ApiResponse<Map<Integer, Integer>>> getCoursesPurchasedLastFiveYears(@PathVariable Long studentId) {
+        try{    
+            Map<Integer, Integer> temp=studentService.getCoursesPurchasedLastFiveYears(studentId);
+            ApiResponse<Map<Integer, Integer>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(temp);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+        catch (ValidationException ex) {
+            throw ex;
+        }
+        catch (NotFoundException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new ApplicationException();
+        }
+        
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+    @GetMapping("/{studentId}/totalPurchaseCourse")
+    public ResponseEntity<ApiResponse<Integer>> totalPurchaseCourse(@PathVariable Long studentId) {
+        try{    
+            Integer temp=studentService.getTotalPurchaseCourse(studentId);
+            ApiResponse<Integer> apiResponse = new ApiResponse<>();
+            apiResponse.ok(temp);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+        catch (ValidationException ex) {
+            throw ex;
+        }
+        catch (NotFoundException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new ApplicationException();
+        }
+        
     }
 
 }

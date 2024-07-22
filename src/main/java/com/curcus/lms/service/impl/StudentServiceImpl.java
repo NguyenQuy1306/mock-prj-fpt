@@ -11,6 +11,7 @@ import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.Enrollment;
@@ -23,8 +24,8 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -213,6 +214,46 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return enrollmentResponses;
+    }
+
+    @Override
+    public  Map<Integer, Integer> getCoursesPurchasedLastFiveYears(Long studentId){
+
+        Student student = studentRepository.findById(studentId).orElse(null);
+
+        if (student==null) throw new NotFoundException("Student doesn't exist");
+
+        List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
+
+        Map<Integer, Integer> courseCount = new HashMap<>();
+
+        for (int i = 0; i < 5; i++) {
+            int year = LocalDate.now().getYear() - i;
+            LocalDate startOfYear = LocalDate.of(year, 1, 1);
+            LocalDate endOfYear = startOfYear.plusYears(1).minusDays(1);
+            int count = 0;
+            for (int j = 0; j < enrollments.size(); j++) {
+                Enrollment enrollment = enrollments.get(j);
+                LocalDate enrollmentDate = enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                if ((enrollmentDate.isAfter(startOfYear) || enrollmentDate.isEqual(startOfYear)) &&
+                    (enrollmentDate.isBefore(endOfYear) || enrollmentDate.isEqual(endOfYear))) {
+                    count++;
+                }
+            }
+            courseCount.put(year, count);
+        }
+
+        return courseCount;
+    }
+
+    @Override
+    public  Integer getTotalPurchaseCourse(Long studentId){
+
+        Student student = studentRepository.findById(studentId).orElse(null);
+
+        if (student==null) throw new NotFoundException("Student doesn't exist");
+
+        return enrollmentRepository.totalPurchaseCourse(studentId);
     }
 
 
