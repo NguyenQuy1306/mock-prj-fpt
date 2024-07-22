@@ -1,11 +1,13 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Admin;
+import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.response.AdminResponse;
 import com.curcus.lms.repository.AdminRepository;
+import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ public class AdminServiceImpl implements AdminService {
     private AdminRepository adminRepository;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private CourseRepository courseRepository;
+
     @Override
     public Boolean save(Admin admin) {
         try {
@@ -44,5 +49,13 @@ public class AdminServiceImpl implements AdminService {
         } catch (ApplicationException a) {
             throw a;
         }
+    }
+
+    @Override
+    public Boolean approveCourse(Long courseId, Boolean approved) {
+            Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
+            course.setApproved(approved);
+            courseRepository.save(course);
+            return approved;
     }
 }

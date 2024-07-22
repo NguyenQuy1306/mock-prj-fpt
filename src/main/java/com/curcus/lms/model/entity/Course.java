@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 @Table(name = "courses")
 public class Course {
     @Id
@@ -39,6 +42,9 @@ public class Course {
     private LocalDateTime createdAt;
     @Column(nullable = true, columnDefinition = "double precision default 0.0")
     private Double avgRating;
+
+    @ColumnDefault("false")
+    private Boolean approved;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
