@@ -98,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
         List<Long> idCourses = Arrays.asList(infoOrder[1].split("#")).stream().map(Long::parseLong)
                 .collect(Collectors.toList());
         cartService.copyCartToOrder(idUser, idCourses, Long.parseLong(total_price) / 1000);
+        // call deleteDiscount when payment success
     }
 
 }
