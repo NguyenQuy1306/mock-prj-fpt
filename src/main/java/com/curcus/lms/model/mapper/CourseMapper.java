@@ -3,7 +3,7 @@ package com.curcus.lms.model.mapper;
 import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.InstructorPublicResponse;
 import com.curcus.lms.model.response.InstructorResponse;
-import com.curcus.lms.repository.RatingRepository;
+import com.curcus.lms.repository.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -22,9 +22,6 @@ import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.CloudinaryService;
 
 import java.io.IOException;
@@ -46,6 +43,9 @@ public abstract class CourseMapper {
 
     @Autowired
     protected InstructorMapper instructorMapper;
+
+    @Autowired
+    protected CourseRepository courseRepository;
 
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
@@ -108,22 +108,42 @@ public abstract class CourseMapper {
 
     // CourseSearchResponse
     @Mapping(target = "instructor", expression = "java(getInstructorResponseById(course.getInstructor().getUserId()))")
-    @Mapping(target = "totalReviews", expression = "java(getTotalViewByCourseId(course.getCourseId()))")
+    @Mapping(target = "totalReviews", source = "totalRating")
     @Mapping(source = "course.category.categoryName", target = "categoryName")
+    @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
+    @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
 
 
-    protected Long getTotalViewByCourseId(Long courseId) {
-        return ratingRepository.countByCourse_CourseId(courseId);
-    }
+//    @Named("getTotalViewByCourseId")
+//    protected Long getTotalViewByCourseId(Long courseId) {
+//        return ratingRepository.countByCourse_CourseId(courseId);
+//    }
 
-    protected InstructorPublicResponse getInstructorResponseById(Long constructorId) {
+
+    protected InstructorPublicResponse getInstructorResponseById(Long instructorId) {
         return instructorMapper.toInstructorPublicResponse(
-                instructorRepository.findById(constructorId).orElse(null)
+                instructorRepository.findById(instructorId).orElse(null)
         );
     }
 
+    @Named("getPrePriceByCourseId")
+    protected Long getPrePriceByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getPrice();
+        }
+        return null;
+    }
 
+    @Named("getAftPriceByCourseId")
+    protected Long getAftPriceByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getPrice();
+        }
+        return null;
+    }
 
 }

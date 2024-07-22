@@ -37,9 +37,12 @@ public class Course {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
     @Column(nullable = true, columnDefinition = "double precision default 0.0")
     private Double avgRating;
 
+    @Column(nullable = true, columnDefinition = "bigint default 0")
+    private Long totalRating;
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;
