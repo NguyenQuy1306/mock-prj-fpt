@@ -1,40 +1,95 @@
 package com.curcus.lms.service.impl;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.repository.InstructorRepository;
+import com.curcus.lms.repository.OrderItemsRepository;
 import com.curcus.lms.service.InstructorStatisticService;
 
+@Service
 public class InstructorStatisticServiceImpl implements InstructorStatisticService {
+    @Autowired
+    private InstructorRepository instructorRepository;
+    @Autowired
+    private CourseRepository courseRepository;
+    @Autowired
+    private CourseMapper courseMapper;
+    @Autowired
+    private OrderItemsRepository orderItemsRepository;
 
     @Override
     public Long getTotalrevenue(Long instructorId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalrevenue'");
+        return instructorRepository.getTotalRevenue(instructorId);
     }
 
     @Override
     public Long getTotalCourses(Long instructorId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalCourses'");
+
+        return courseRepository.countCoursesOfInstructor(instructorId);
     }
 
     @Override
     public CourseResponse GetTheMostPurchasedCourse(Long instructorId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'GetTheMostPurchasedCourse'");
+        Pageable pageable = PageRequest.of(0, 1);
+        Course course = courseRepository.getTheMostPurchasedCourses(instructorId, pageable).stream().findFirst()
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+        return courseMapper.toResponse(course);
+        // throw new UnsupportedOperationException("Unimplemented method
+        // 'getRevenueStatisticsForYears'");
+
     }
 
     @Override
     public Map<Long, Long> getRevenueStatisticsForYears(Long instructorId, int numberyear) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRevenueStatisticsForYears'");
+        LocalDate now = LocalDate.now();
+        Map<Long, Long> revenueStatisticsForYears = new HashMap<>();
+        for (int i = 0; i < numberyear; i++) {
+            LocalDate start = now.minusYears(i).with(TemporalAdjusters.firstDayOfYear());
+            LocalDate end = now.minusYears(i).with(TemporalAdjusters.lastDayOfYear());
+            Long revenue = orderItemsRepository.getRevenueStatisticsForYears(instructorId, start,
+                    end);
+            if (revenue == null) {
+                revenue = 0L;
+            }
+            revenueStatisticsForYears.put((long) start.getYear(), revenue);
+        }
+        return revenueStatisticsForYears;
     }
 
     @Override
     public Map<Long, Long> getTotalCoursesForYears(Long instructorId, int numberyear) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTotalCoursesForYears'");
+        LocalDate now = LocalDate.now();
+        Map<Long, Long> coursesForYears = new HashMap<>();
+        for (int i = 0; i < numberyear; i++) {
+            LocalDate start = now.minusYears(i).with(TemporalAdjusters.firstDayOfYear());
+            LocalDate end = now.minusYears(i).with(TemporalAdjusters.lastDayOfYear());
+            Long revenue = courseRepository.getTotalCoursesForYears(instructorId, start,
+                    end);
+            if (revenue == null) {
+                revenue = 0L;
+            }
+            coursesForYears.put((long) start.getYear(), revenue);
+        }
+        return coursesForYears;
+    }
+
+    @Override
+    public Long getTotalUsersBuyedCourses(Long instructorId) {
+        return orderItemsRepository.getTotalUsersBuyedCourses(instructorId);
     }
 
 }

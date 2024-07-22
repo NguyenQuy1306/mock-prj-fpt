@@ -11,6 +11,8 @@ public interface InstructorStatisticService {
 
     Long getTotalCourses(Long instructorId);
 
+    Long getTotalUsersBuyedCourses(Long instructorId);
+
     CourseResponse GetTheMostPurchasedCourse(Long instructorId);
 
     Map<Long, Long> getRevenueStatisticsForYears(Long instructorId, int numberyear);
