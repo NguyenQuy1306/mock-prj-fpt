@@ -5,8 +5,8 @@ import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface StudentService {
@@ -30,7 +30,7 @@ public interface StudentService {
 
     List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId);
 
-    Map<Integer, Integer> getCoursesPurchasedLastFiveYears(Long studentId);
+    HashMap<String, Integer> getCoursesPurchasedLastFiveYears(Long studentId);
 
     Integer getTotalPurchaseCourse(Long studentId);
 }

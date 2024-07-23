@@ -217,7 +217,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public  Map<Integer, Integer> getCoursesPurchasedLastFiveYears(Long studentId){
+    public  HashMap<String, Integer> getCoursesPurchasedLastFiveYears(Long studentId){
 
         Student student = studentRepository.findById(studentId).orElse(null);
 
@@ -225,7 +225,7 @@ public class StudentServiceImpl implements StudentService {
 
         List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
 
-        Map<Integer, Integer> courseCount = new HashMap<>();
+        HashMap<String, Integer> courseCount = new HashMap<>();
 
         for (int i = 0; i < 5; i++) {
             int year = LocalDate.now().getYear() - i;
@@ -240,7 +240,8 @@ public class StudentServiceImpl implements StudentService {
                     count++;
                 }
             }
-            courseCount.put(year, count);
+            String temp=String.valueOf(year);
+            courseCount.put(temp, count);
         }
 
         return courseCount;

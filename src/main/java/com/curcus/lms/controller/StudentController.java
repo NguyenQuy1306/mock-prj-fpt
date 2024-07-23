@@ -228,10 +228,10 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping("/{studentId}/purchaseCoursesInFiveYear")
-    public ResponseEntity<ApiResponse<Map<Integer, Integer>>> getCoursesPurchasedLastFiveYears(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<HashMap<String, Integer>>> getCoursesPurchasedLastFiveYears(@PathVariable Long studentId) {
         try{    
-            Map<Integer, Integer> temp=studentService.getCoursesPurchasedLastFiveYears(studentId);
-            ApiResponse<Map<Integer, Integer>> apiResponse = new ApiResponse<>();
+            HashMap<String, Integer> temp=studentService.getCoursesPurchasedLastFiveYears(studentId);
+            ApiResponse<HashMap<String, Integer>> apiResponse = new ApiResponse<>();
             apiResponse.ok(temp);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
