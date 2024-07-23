@@ -2,6 +2,11 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.CategorySevice;
+
+import java.util.stream.Collectors;
+
+import java.util.List;
+// import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +22,7 @@ import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
-
+import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
@@ -27,6 +32,11 @@ import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
+import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.SectionCreateResponse;
+import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -41,6 +51,7 @@ import com.curcus.lms.util.ValidatorUtil;
 import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
 
+import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -263,6 +274,13 @@ public class CourseServiceImpl implements CourseService {
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toCourseSearchResponse);
     }
+    
+    @Transactional
+    @Override
+    public List<CourseDetailResponse2> getCoursebyInstructorId(Long id){
+         List<Course> courses = courseRepository.findByInstructorUserId(id);
+        return courses.stream().map(this::convertToCourseDetailResponse).collect(Collectors.toList());
+    }
 
 
     @Override
@@ -276,4 +294,30 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
+    private CourseDetailResponse2 convertToCourseDetailResponse(Course course) {
+        return CourseDetailResponse2.builder()
+                .courseId(course.getCourseId())
+                .courseThumbnail(course.getCourseThumbnail())
+                .title(course.getTitle())
+                .description(course.getDescription())
+                .price(course.getPrice())
+                .categoryId(course.getCategory().getCategoryId())
+                .studentList(course.getEnrollment().stream()
+                        .map(e -> convertToStudentResponse(e.getStudent()))
+                        .collect(Collectors.toList()))
+                .createDate(course.getCreatedAt().toLocalDate())
+                .status("") // Assuming you want an empty string as default
+                .build();
+    }
+
+    private StudentResponse convertToStudentResponse(Student student) {
+        StudentResponse response = new StudentResponse();
+        response.setStudentId(student.getUserId().intValue());
+        response.setName(student.getName());
+        // response.setEmail(student.getEmail());
+        // response.setFirstName(student.getFirstName());
+        // response.setLastName(student.getLastName());
+        // response.setPhoneNumber(student.getPhoneNumber());
+        return response;
+    }
 }

@@ -1,5 +1,6 @@
 package com.curcus.lms.repository;
 
+import com.curcus.lms.model.entity.Instructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -43,4 +44,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
 
     @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate;")
     Long getTotalCoursesForYears(Long instructorId, LocalDate startDate, LocalDate endDate);
+    // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id = :instructorId", nativeQuery = true)
+    List<Course> findByInstructorUserId(@Param("instructorId") Long instructorId);
 }
