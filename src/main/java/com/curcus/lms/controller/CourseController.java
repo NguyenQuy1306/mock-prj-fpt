@@ -154,13 +154,12 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createContent(
             @ModelAttribute @Valid ContentCreateRequest contentCreateRequest) {
-        ContentCreateResponse contentCreateResponse = null;
-        courseService
+        ContentCreateResponse contentCreateResponse = courseService
                     .saveContent(contentCreateRequest);
 
         ApiResponse apiResponse = new ApiResponse<>();
