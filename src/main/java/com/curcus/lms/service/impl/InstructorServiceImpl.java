@@ -1,8 +1,15 @@
 package com.curcus.lms.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.Student;
+import com.curcus.lms.model.entity.Enrollment;
+import com.curcus.lms.model.response.InstructorGetCourseResponse;
+import com.curcus.lms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +29,9 @@ import jakarta.validation.ValidationException;
 public class InstructorServiceImpl implements InstructorService {
     @Autowired
     private InstructorRepository instructorRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -143,4 +153,31 @@ public class InstructorServiceImpl implements InstructorService {
 
     }
 
+
+    @Override
+    public List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId) {
+        List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+        List<InstructorGetCourseResponse> responseList = new ArrayList<>();
+        for (Course course : courses) {
+            List<Student> studentList = course.getEnrollment().stream()
+                    .map(Enrollment::getStudent)
+                    .collect(Collectors.toList());
+
+            InstructorGetCourseResponse response = new InstructorGetCourseResponse(
+                    course.getCourseId(),
+                    course.getCourseThumbnail(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    course.getPrice(),
+                    course.getCategory().getCategoryId(),
+                    studentList,
+                    course.getCreatedAt(),
+                    "Approved" // Assuming default status
+            );
+
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
 }

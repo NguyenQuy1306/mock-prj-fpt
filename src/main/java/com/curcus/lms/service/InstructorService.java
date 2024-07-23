@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.request.InstructorUpdateRequest;
+import com.curcus.lms.model.response.InstructorGetCourseResponse;
 import com.curcus.lms.model.response.InstructorResponse;
 
 public interface InstructorService {
@@ -24,4 +25,6 @@ public interface InstructorService {
     InstructorResponse recoverInstructorPassword(Long id, String password);
 
     void deleteInstructor(Long instructorId);
+
+    List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId);
 }

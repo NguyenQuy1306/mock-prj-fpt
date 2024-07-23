@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.curcus.lms.model.response.InstructorGetCourseResponse;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -209,17 +210,17 @@ public class InstructorController {
 
     @GetMapping(value="/{id}/course")
     public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getCourse(@PathVariable Long id){
-        // try{
+        try{
             List<CourseDetailResponse> CDR=courseService.getCoursebyInstructorId(id);
             ApiResponse<List<CourseDetailResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(CDR);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        // }catch (NotFoundException ex) {
-        //     throw ex;
-        // } catch (ValidationException ex) {
-        //     throw ex;
-        // } catch (Exception ex) {
-        //     throw new ApplicationException();
-        // }
+        }catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException();
+        }
     }
 }

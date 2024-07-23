@@ -1,5 +1,6 @@
 package com.curcus.lms.repository;
 
+import com.curcus.lms.model.entity.Instructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
