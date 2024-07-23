@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,10 +78,10 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public Page<CourseResponse> findAll(Pageable pageable) {
+    public Page<CourseSearchResponse> findAll(Pageable pageable) {
         try {
             Page<Course> coursesPage = courseRepository.findAll(pageable);
-            return coursesPage.map(courseMapper::toResponse);
+            return coursesPage.map(courseMapper::toCourseSearchResponse);
         } catch (Exception ex) {
             throw new ApplicationException();
         }
@@ -105,12 +106,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<CourseResponse> findByCategory(Long categoryId, Pageable pageable) {
+    public Page<CourseSearchResponse> findByCategory(Long categoryId, Pageable pageable) {
         try {
             Category category = new Category();
             category.setCategoryId(categoryId);
             Page<Course> coursesPage = courseRepository.findByCategory(category, pageable);
-            return coursesPage.map(courseMapper::toResponse);
+            return coursesPage.map(courseMapper::toCourseSearchResponse);
         } catch (Exception ex) {
             throw new ApplicationException();
         }
@@ -235,7 +236,13 @@ public class CourseServiceImpl implements CourseService {
         }
     }
     @Override
-    public Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable) {
+    public Page<CourseSearchResponse> searchCourses(
+            Long instructorId,
+            Long categoryId,
+            String title,
+            Long price,
+            Boolean isFree,
+            Pageable pageable) {
         // TODO Auto-generated method stub
         Specification<Course> spec = Specification.where(null);
         if (instructorId != null) {
@@ -253,8 +260,11 @@ public class CourseServiceImpl implements CourseService {
         if (price != null) {
             spec = spec.and(CourseSpecifications.hasPriceGreaterThanOrEqualTo(price));
         }
+        if (isFree != null) {
+            spec = spec.and(CourseSpecifications.isFree(isFree));
+        }
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
-        return coursePage.map(courseMapper::toResponse);
+        return coursePage.map(courseMapper::toCourseSearchResponse);
     }
 
 }
