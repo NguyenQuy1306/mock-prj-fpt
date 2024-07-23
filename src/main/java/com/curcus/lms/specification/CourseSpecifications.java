@@ -27,4 +27,15 @@ public class CourseSpecifications {
         return (root, query, criteriaBuilder) ->
                 price == null ? criteriaBuilder.conjunction() : criteriaBuilder.greaterThanOrEqualTo(root.get("price"), price);
     }
+    public static Specification<Course> isFree(Boolean isFree) {
+        return (root, query, criteriaBuilder) -> {
+            if (isFree == null) {
+                return criteriaBuilder.conjunction();
+            } else if (isFree) {
+                return criteriaBuilder.equal(root.get("price"), 0);
+            } else {
+                return criteriaBuilder.notEqual(root.get("price"), 0);
+            }
+        };
+    }
 }

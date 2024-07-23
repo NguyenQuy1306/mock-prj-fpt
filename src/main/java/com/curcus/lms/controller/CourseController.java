@@ -1,6 +1,6 @@
 package com.curcus.lms.controller;
 
-import com.curcus.lms.model.response.MetadataResponse;
+import com.curcus.lms.model.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.MetadataResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
-import com.curcus.lms.model.response.StatusEnum;
-import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -35,7 +31,6 @@ import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.ContentCreateRequest;
-import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -68,13 +63,13 @@ public class CourseController {
     private CourseMapper courseMapper;
 
     @GetMapping(value = {"", "/list"})
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses(
+    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> getAllCourses(
             @RequestParam(value = "category", required = false) Long category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<CourseResponse> coursePage;
+            Page<CourseSearchResponse> coursePage;
 
             if (category == null) {
                 coursePage = courseService.findAll(pageable);
@@ -97,7 +92,7 @@ public class CourseController {
                     "/api/courses/list?page=0"
             );
 
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
             Map<String, Object> responseMetadata = new HashMap<>();
             responseMetadata.put("pagination", metadata);
             apiResponse.ok(coursePage.getContent(), responseMetadata);
@@ -171,25 +166,49 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
 
     }
-
+    private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice, Boolean isFree, String sort, String direction) {
+        StringBuilder baseUrl = new StringBuilder("/api/courses/courses/search?");
+        if (instructorId != null) baseUrl.append("instructorId=").append(instructorId).append("&");
+        if (categoryId != null) baseUrl.append("categoryId=").append(categoryId).append("&");
+        if (title != null) baseUrl.append("title=").append(title).append("&");
+        if (minPrice != null) baseUrl.append("minPrice=").append(minPrice).append("&");
+        if (isFree != null) baseUrl.append("isFree=").append(isFree).append("&");
+        if (sort != null) baseUrl.append("sort=").append(sort).append("&");
+        if (direction != null) baseUrl.append("direction=").append(direction).append("&");
+        return baseUrl.toString();
+    }
+    private MetadataResponse createPaginationMetadata(Page<CourseSearchResponse> coursePage, String baseUrlStr, int size) {
+        return new MetadataResponse(
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                (coursePage.hasNext() ? baseUrlStr + "page=" + (coursePage.getNumber() + 1) + "&size=" + size : null),
+                (coursePage.hasPrevious() ? baseUrlStr + "page=" + (coursePage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (coursePage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
+        );
+    }
     @GetMapping("courses/search")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> searchCourses(
+    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> searchCourses(
             @RequestParam(required = false) Long instructorId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) Boolean isFree,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String direction // parameter for sorting direction
     ) {
-    	if (sort != null && !CourseSearchOptions.SORT_OPTIONS.contains(sort)) {
-            throw new SearchOptionsException( "Invalid sort parameter.");
+        if (sort != null && !CourseSearchOptions.SORT_OPTIONS.contains(sort)) {
+            throw new SearchOptionsException("Invalid sort parameter.");
         }
 
         if (direction != null && !CourseSearchOptions.DIRECTION_OPTIONS.contains(direction.toLowerCase())) {
-        	throw new SearchOptionsException(  "Invalid direction parameter.");
+            throw new SearchOptionsException("Invalid direction parameter.");
         }
+
         // Validate direction parameter
         Sort.Direction sortDirection = Sort.Direction.ASC; // default to ascending
         if (direction != null && direction.equalsIgnoreCase("desc")) {
@@ -205,27 +224,21 @@ public class CourseController {
         }
 
         // Call service method to search courses
-        Page<CourseResponse> coursePage = courseService.searchCourses(instructorId, categoryId, title, minPrice, pageable);
+        Page<CourseSearchResponse> coursePage = courseService.searchCourses(instructorId, categoryId, title, minPrice, isFree, pageable);
 
         // Handle empty result
         if (coursePage.isEmpty()) {
             throw new NotFoundException("Course not found.");
         }
 
-        // Create metadata for pagination
-        MetadataResponse metadata = new MetadataResponse(
-                coursePage.getTotalElements(),
-                coursePage.getTotalPages(),
-                coursePage.getNumber(),
-                coursePage.getSize(),
-                (coursePage.hasNext() ? "/api/courses/courses/search?page=" + (coursePage.getNumber() + 1) : null),
-                (coursePage.hasPrevious() ? "/api/courses/courses/search?page=" + (coursePage.getNumber() - 1) : null),
-                "/api/courses/courses/search?page=" + (coursePage.getTotalPages() - 1),
-                "/api/courses/courses/search?page=0"
-        );
+        // Create base URL with query parameters
+        String baseUrlStr = buildBaseUrl(instructorId, categoryId, title, minPrice, isFree, sort, direction);
+
+        // Create pagination metadata
+        MetadataResponse metadata = createPaginationMetadata(coursePage, baseUrlStr, size);
 
         // Create API response
-        ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+        ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
         Map<String, Object> responseMetadata = new HashMap<>();
 
         responseMetadata.put("pagination", metadata);
