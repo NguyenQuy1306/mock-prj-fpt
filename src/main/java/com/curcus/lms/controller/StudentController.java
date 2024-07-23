@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StatisticResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -223,5 +226,27 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+    @GetMapping("/{studentId}/statistic")
+    public ResponseEntity<ApiResponse<StatisticResponse>> studentStatistic(@PathVariable Long studentId) {
+        try{    
+            StatisticResponse temp=studentService.studentStatistic(studentId);
+            ApiResponse<StatisticResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(temp);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+        catch (ValidationException ex) {
+            throw ex;
+        }
+        catch (NotFoundException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new ApplicationException();
+        }
+        
+    }
+
 
 }
