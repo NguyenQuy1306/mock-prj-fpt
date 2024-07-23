@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableJpaRepositories(basePackages = "com.curcus.lms.repository")
 @CrossOrigin(origins = "*")
+
 public class CurcusApplication {
 
 	public static void main(String[] args) {
