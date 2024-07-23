@@ -22,4 +22,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>,JpaSpecifi
 
     Page<Course> findAll(Pageable pageable);
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
+
+    // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id = :instructorId", nativeQuery = true)
+    List<Course> findByInstructorUserId(@Param("instructorId") Long instructorId);
 }

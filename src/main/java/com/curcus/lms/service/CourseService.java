@@ -17,6 +17,7 @@ import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 
@@ -56,4 +57,5 @@ public interface CourseService {
 
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);
+    List<CourseDetailResponse> getCoursebyInstructorId(Long id);
 }

@@ -28,7 +28,9 @@ import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.request.InstructorUpdateRequest;
 import com.curcus.lms.model.response.ApiResponse;
+import com.curcus.lms.model.response.CourseDetailResponse;
 import com.curcus.lms.model.response.InstructorResponse;
+import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
 
 import jakarta.validation.Valid;
@@ -41,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class InstructorController {
     @Autowired
     private InstructorService instructorService;
+    @Autowired
+    private CourseService courseService;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = {""})
@@ -201,5 +205,21 @@ public class InstructorController {
             throw new ApplicationException();
         }
 
+    }
+
+    @GetMapping(value="/{id}/course")
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getCourse(@PathVariable Long id){
+        // try{
+            List<CourseDetailResponse> CDR=courseService.getCoursebyInstructorId(id);
+            ApiResponse<List<CourseDetailResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.ok(CDR);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        // }catch (NotFoundException ex) {
+        //     throw ex;
+        // } catch (ValidationException ex) {
+        //     throw ex;
+        // } catch (Exception ex) {
+        //     throw new ApplicationException();
+        // }
     }
 }
