@@ -1,11 +1,11 @@
 package com.curcus.lms.model.mapper;
-
-import com.curcus.lms.model.response.CourseSearchResponse;
-import com.curcus.lms.model.response.InstructorResponse;
+import com.curcus.lms.model.entity.Content;
+import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.RatingRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +21,6 @@ import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.UserRepository;
@@ -47,6 +46,16 @@ public abstract class CourseMapper {
     @Autowired
     protected InstructorMapper instructorMapper;
 
+
+    @Mapping(source = "courseThumbnail", target = "courseThumbnail")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "price", target = "price")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "avgRating", target = "avgRating")
+    @Mapping(source = "instructor", target = "instructor")
+    @Mapping(source = "category", target = "category")
+    public abstract CourseDetailResponse toDetailResponse(Course course);
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")

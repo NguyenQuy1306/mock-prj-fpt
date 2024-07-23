@@ -1,5 +1,6 @@
 package com.curcus.lms.model.mapper;
 
+import com.curcus.lms.model.response.ContentDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -33,6 +34,11 @@ public abstract class ContentMapper {
     protected CourseRepository courseRepository;
     @Autowired
     protected ContentRepository contentRepository;
+
+    @Mapping(source = "type", target = "type")
+    @Mapping(source = "url", target = "url")
+    @Mapping(source = "position", target = "position")
+    public abstract ContentDetailResponse toDetailResponse(Content content);
 
     @Mapping(expression = "java(content.getSection().getSectionId())", target = "sectionId")
     public abstract ContentCreateResponse toResponse(Content content);

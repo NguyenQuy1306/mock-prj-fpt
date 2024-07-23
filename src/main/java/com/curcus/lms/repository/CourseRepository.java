@@ -2,6 +2,7 @@ package com.curcus.lms.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>,JpaSpecifi
 
     Page<Course> findAll(Pageable pageable);
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
+
+    @EntityGraph(attributePaths = {"sections", "sections.contents", "instructor", "category"})
+            Course findWithSectionsByCourseId(Long courseId);
 }
