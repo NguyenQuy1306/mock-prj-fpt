@@ -1,5 +1,6 @@
 package com.curcus.lms.repository;
 
+import com.curcus.lms.model.entity.Instructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>,JpaSpecifi
 
     Page<Course> findAll(Pageable pageable);
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
+
+    List<Course> findAllByInstructorId(Long instructorId);
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +19,7 @@ public class InstructorGetCourseResponse implements Serializable {
     private Long price;
     private Long categoryId;
     private List<Student> studentList;
-    private Date LocalDate;
+    private LocalDateTime LocalDate;
     private String status;
 
     @Override
