@@ -160,7 +160,8 @@ public class CourseController {
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createContent(
             @ModelAttribute @Valid ContentCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
-                .saveContent(contentCreateRequest);
+                    .saveContent(contentCreateRequest);
+
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);
         return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
@@ -248,4 +249,14 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+
+    @GetMapping("/details/{courseId}")
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> getCourseDetails(@PathVariable Long courseId) {
+
+        CourseDetailResponse course = courseService.getCourseDetails(courseId);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(course);
+
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
 }

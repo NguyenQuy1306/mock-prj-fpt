@@ -1,11 +1,13 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.*;
+import com.curcus.lms.model.dto.RatingDetailDTO;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Rating;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.OthersMapper;
 import com.curcus.lms.model.request.RatingRequest;
+import com.curcus.lms.model.response.CourseRatingResponse;
 import com.curcus.lms.model.response.RatingResponse;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.RatingRepository;
@@ -108,6 +110,46 @@ public class RatingServiceImpl implements RatingService {
         } catch (ApplicationException e) {
             throw e;
         }
+    }
+
+    @Override
+    public CourseRatingResponse getCourseRatingsByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new CourseException("Course not found")
+        );
+        List<Rating> ratings = ratingRepository.findAllByCourse_CourseId(courseId);
+        CourseRatingResponse courseRatingResponse = new CourseRatingResponse();
+
+        courseRatingResponse.setTotalRating(course.getTotalRating());
+        courseRatingResponse.setAvgRating(course.getAvgRating());
+
+        RatingDetailDTO ratingDetailDTO = new RatingDetailDTO();
+        if (ratings != null && !ratings.isEmpty()) {
+            for (Rating rating : ratings) {
+                switch (rating.getRating().intValue()) {
+                    case 1:
+                        ratingDetailDTO.setOneStar(ratingDetailDTO.getOneStar()+1);
+                        break;
+                    case 2:
+                        ratingDetailDTO.setTwoStar(ratingDetailDTO.getTwoStar()+1);
+                        break;
+                    case 3:
+                        ratingDetailDTO.setThreeStar(ratingDetailDTO.getThreeStar()+1);
+                        break;
+                    case 4:
+                        ratingDetailDTO.setFourStar(ratingDetailDTO.getFourStar()+1);
+                        break;
+                    case 5:
+                        ratingDetailDTO.setFiveStar(ratingDetailDTO.getFiveStar()+1);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        courseRatingResponse.setRatingDetailDTO(ratingDetailDTO);
+
+        return courseRatingResponse;
     }
 
     @Override

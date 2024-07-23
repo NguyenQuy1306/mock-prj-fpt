@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 import com.curcus.lms.exception.*;
 import com.curcus.lms.model.request.RatingRequest;
+import com.curcus.lms.model.response.CourseRatingResponse;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.service.RatingService;
 import jakarta.validation.Valid;
@@ -172,6 +173,23 @@ public class RatingController {
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch (ValidationException e) {
             throw e;
+        }
+    }
+
+    @GetMapping("/course-rating/{courseId}")
+    public ResponseEntity<ApiResponse<CourseRatingResponse>> getRatingsByCourseId(@PathVariable Long courseId) {
+        ApiResponse<CourseRatingResponse> apiResponse = new ApiResponse<>();
+
+        try {
+            CourseRatingResponse courseRatingResponse = ratingService.getCourseRatingsByCourseId(courseId);
+            apiResponse.ok(courseRatingResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (CourseException c) {
+            apiResponse.error(ResponseCode.getError(10));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch (ApplicationException e) {
+            apiResponse.error(ResponseCode.getError(23));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
     }
 }

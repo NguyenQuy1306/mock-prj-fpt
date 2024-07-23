@@ -1,4 +1,7 @@
 package com.curcus.lms.model.mapper;
+import com.curcus.lms.model.entity.Content;
+import com.curcus.lms.model.response.*;
+import com.curcus.lms.repository.RatingRepository;
 
 import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.InstructorPublicResponse;
@@ -7,6 +10,7 @@ import com.curcus.lms.repository.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +56,16 @@ public abstract class CourseMapper {
     protected CourseRepository courseRepository;
 
 
+    @Mapping(source = "courseThumbnail", target = "courseThumbnail")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "price", target = "price")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "avgRating", target = "avgRating")
+    @Mapping(source = "instructor", target = "instructor")
+    @Mapping(source = "category", target = "category")
+    public abstract CourseDetailResponse toDetailResponse(Course course);
+
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
 
@@ -74,7 +88,7 @@ public abstract class CourseMapper {
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-
+    
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));

@@ -1,6 +1,6 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.model.response.CourseSearchResponse;
+import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,9 +27,6 @@ import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -266,5 +263,17 @@ public class CourseServiceImpl implements CourseService {
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toCourseSearchResponse);
     }
+
+
+    @Override
+    public CourseDetailResponse getCourseDetails(Long courseId) {
+        Course course = courseRepository.findWithSectionsByCourseId(courseId);
+        if (course == null) {
+            throw new NotFoundException("Course not found with id " + courseId);
+        }
+        CourseDetailResponse courseDetailResponse = courseMapper.toDetailResponse(course);
+        return courseDetailResponse;
+    }
+
 
 }
