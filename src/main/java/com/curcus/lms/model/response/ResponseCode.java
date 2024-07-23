@@ -8,7 +8,7 @@ public class ResponseCode {
         Map<String, String> map = new HashMap<String, String>();
         switch (code) {
             case 1:
-                map.put("MSG 1", "Please fill in all the information");
+                map.put("MSG 1", "Invalid request: missing or incorrect format");
                 break;
             case 2:
                 map.put("MSG 2", "User already exists in the system");
@@ -36,7 +36,7 @@ public class ResponseCode {
                 map.put("MSG 23", "Internal Server Error");
                 break;
             case 24:
-                map.put("MSG 24", "Permission Denied");
+                map.put("MSG 24", "Enrollment not found for this student and course");
                 break;
             case 25:
                 map.put("MSG 25", "Already exists");
