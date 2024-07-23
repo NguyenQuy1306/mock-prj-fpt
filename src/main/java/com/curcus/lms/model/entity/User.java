@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_role", discriminatorType = DiscriminatorType.STRING)
@@ -31,7 +33,7 @@ public class User {
 
     private String firstName;
     private String lastName;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String phoneNumber;
 
     private boolean activated;
