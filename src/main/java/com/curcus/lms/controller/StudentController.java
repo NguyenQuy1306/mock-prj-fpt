@@ -16,6 +16,7 @@ import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StatisticResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -227,11 +228,11 @@ public class StudentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
-    @GetMapping("/{studentId}/purchaseCoursesInFiveYear")
-    public ResponseEntity<ApiResponse<HashMap<String, Integer>>> getCoursesPurchasedLastFiveYears(@PathVariable Long studentId) {
+    @GetMapping("/{studentId}/statistic")
+    public ResponseEntity<ApiResponse<StatisticResponse>> studentStatistic(@PathVariable Long studentId) {
         try{    
-            HashMap<String, Integer> temp=studentService.getCoursesPurchasedLastFiveYears(studentId);
-            ApiResponse<HashMap<String, Integer>> apiResponse = new ApiResponse<>();
+            StatisticResponse temp=studentService.studentStatistic(studentId);
+            ApiResponse<StatisticResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(temp);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
@@ -247,25 +248,5 @@ public class StudentController {
         
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
-    @GetMapping("/{studentId}/totalPurchaseCourses")
-    public ResponseEntity<ApiResponse<Integer>> totalPurchaseCourse(@PathVariable Long studentId) {
-        try{    
-            Integer temp=studentService.getTotalPurchaseCourse(studentId);
-            ApiResponse<Integer> apiResponse = new ApiResponse<>();
-            apiResponse.ok(temp);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        }
-        catch (ValidationException ex) {
-            throw ex;
-        }
-        catch (NotFoundException ex){
-            throw ex;
-        }
-        catch (Exception ex){
-            throw new ApplicationException();
-        }
-        
-    }
 
 }

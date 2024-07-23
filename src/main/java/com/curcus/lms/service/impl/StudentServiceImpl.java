@@ -21,13 +21,15 @@ import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -255,6 +257,50 @@ public class StudentServiceImpl implements StudentService {
         if (student==null) throw new NotFoundException("Student doesn't exist");
 
         return enrollmentRepository.totalPurchaseCourse(studentId);
+    }
+
+    @Override
+    public Integer totalFinishCourse(Long studentId){
+        try {
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
+            int totalFinishCourse = (int) enrollments.stream()
+                   .filter(Enrollment::getIsComplete)
+                   .count();
+            return totalFinishCourse;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public HashMap<String, Integer> finishCourseFiveYears(Long studentId){
+        try {
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
+            Year currentYear = Year.now();
+            HashMap<String, Integer> finishCourseFiveYears = new HashMap<String, Integer>();
+            Stream.iterate(currentYear, year -> year.minusYears(1)).limit(5).forEach(year -> {
+                String yearString = year.toString();
+                Integer count = (int) enrollments.stream()
+                       .filter(enrollment -> enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                               .getYear() == year.getValue())
+                       .filter(Enrollment::getIsComplete)
+                       .count();
+                finishCourseFiveYears.put(yearString, count);
+            });
+            return finishCourseFiveYears;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public StatisticResponse studentStatistic(Long studentId)
+    {
+        StatisticResponse statisticResponse=new StatisticResponse(getTotalPurchaseCourse(studentId), 
+                                                                  totalFinishCourse(studentId), 
+                                                                  getCoursesPurchasedLastFiveYears(studentId), 
+                                                                  finishCourseFiveYears(studentId));
+        return statisticResponse;
     }
 
 
