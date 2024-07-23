@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,8 @@ import java.util.Optional;
 public class StudentController {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = { "", "/list" })
@@ -223,5 +227,7 @@ public class StudentController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
 }
