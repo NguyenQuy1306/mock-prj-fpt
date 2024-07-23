@@ -26,5 +26,5 @@ public interface InstructorService {
 
     void deleteInstructor(Long instructorId);
 
-    List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId);
+    // List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId);
 }

@@ -154,30 +154,30 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
 
-    @Override
-    public List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId) {
-        List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
-        List<InstructorGetCourseResponse> responseList = new ArrayList<>();
-        for (Course course : courses) {
-            List<Student> studentList = course.getEnrollment().stream()
-                    .map(Enrollment::getStudent)
-                    .collect(Collectors.toList());
+    // @Override
+    // public List<InstructorGetCourseResponse> getCoursesByInstructor(Long instructorId) {
+    //     List<Course> courses = courseRepository.findAllByInstructorId(instructorId);
+    //     List<InstructorGetCourseResponse> responseList = new ArrayList<>();
+    //     for (Course course : courses) {
+    //         List<Student> studentList = course.getEnrollment().stream()
+    //                 .map(Enrollment::getStudent)
+    //                 .collect(Collectors.toList());
 
-            InstructorGetCourseResponse response = new InstructorGetCourseResponse(
-                    course.getCourseId(),
-                    course.getCourseThumbnail(),
-                    course.getTitle(),
-                    course.getDescription(),
-                    course.getPrice(),
-                    course.getCategory().getCategoryId(),
-                    studentList,
-                    course.getCreatedAt(),
-                    "Approved" // Assuming default status
-            );
+    //         InstructorGetCourseResponse response = new InstructorGetCourseResponse(
+    //                 course.getCourseId(),
+    //                 course.getCourseThumbnail(),
+    //                 course.getTitle(),
+    //                 course.getDescription(),
+    //                 course.getPrice(),
+    //                 course.getCategory().getCategoryId(),
+    //                 studentList,
+    //                 course.getCreatedAt(),
+    //                 "Approved" // Assuming default status
+    //         );
 
-            responseList.add(response);
-        }
+    //         responseList.add(response);
+    //     }
 
-        return responseList;
-    }
+    //     return responseList;
+    // }
 }
