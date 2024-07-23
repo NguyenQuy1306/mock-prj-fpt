@@ -11,5 +11,6 @@ public class CheckoutReq {
     Long idCart;
     @NotNull(message = "idCartItems is mandatory")
     Long[] idCourses;
-    String code;
+
+    Long idDiscount = null;
 }
