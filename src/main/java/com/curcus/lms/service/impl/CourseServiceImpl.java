@@ -32,7 +32,7 @@ import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.StudentResponse;
@@ -267,13 +267,13 @@ public class CourseServiceImpl implements CourseService {
     
     @Transactional
     @Override
-    public List<CourseDetailResponse> getCoursebyInstructorId(Long id){
+    public List<CourseDetailResponse2> getCoursebyInstructorId(Long id){
          List<Course> courses = courseRepository.findByInstructorUserId(id);
         return courses.stream().map(this::convertToCourseDetailResponse).collect(Collectors.toList());
     }
 
-    private CourseDetailResponse convertToCourseDetailResponse(Course course) {
-        return CourseDetailResponse.builder()
+    private CourseDetailResponse2 convertToCourseDetailResponse(Course course) {
+        return CourseDetailResponse2.builder()
                 .courseId(course.getCourseId())
                 .courseThumbnail(course.getCourseThumbnail())
                 .title(course.getTitle())

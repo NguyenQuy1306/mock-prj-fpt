@@ -29,7 +29,7 @@ import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.request.InstructorUpdateRequest;
 import com.curcus.lms.model.response.ApiResponse;
-import com.curcus.lms.model.response.CourseDetailResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
 import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
@@ -209,10 +209,10 @@ public class InstructorController {
     }
 
     @GetMapping(value="/{id}/course")
-    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getCourse(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse2>>> getCourse(@PathVariable Long id){
         try{
-            List<CourseDetailResponse> CDR=courseService.getCoursebyInstructorId(id);
-            ApiResponse<List<CourseDetailResponse>> apiResponse = new ApiResponse<>();
+            List<CourseDetailResponse2> CDR=courseService.getCoursebyInstructorId(id);
+            ApiResponse<List<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
             apiResponse.ok(CDR);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }catch (NotFoundException ex) {

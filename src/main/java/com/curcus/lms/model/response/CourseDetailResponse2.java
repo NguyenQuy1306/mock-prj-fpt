@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDetailResponse {
+public class CourseDetailResponse2 {
     private Long courseId;
     private String courseThumbnail;
     private String title;
