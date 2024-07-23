@@ -36,7 +36,7 @@ public class ResponseCode {
                 map.put("MSG 23", "Internal Server Error");
                 break;
             case 24:
-                map.put("MSG 24", "Enrollment not found for this student and course");
+                map.put("MSG 24", "Student has not enrolled the course");
                 break;
             case 25:
                 map.put("MSG 25", "Already exists");
