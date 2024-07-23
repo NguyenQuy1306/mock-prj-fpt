@@ -204,6 +204,7 @@ public class DiscountServiceImpl implements DiscountService {
             throw new NotFoundException("DiscountId " + discountId + "has not exist in studentId " + studentId);
         }
         studentDiscount.setIsUsed(true);
+        studentDiscountRepository.save(studentDiscount);
     }
 
 }
