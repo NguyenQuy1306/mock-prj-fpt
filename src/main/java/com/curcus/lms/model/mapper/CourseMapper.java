@@ -107,26 +107,12 @@ public abstract class CourseMapper {
     }
 
     // CourseSearchResponse
-    @Mapping(target = "instructor", expression = "java(getInstructorResponseById(course.getInstructor().getUserId()))")
     @Mapping(target = "totalReviews", source = "totalRating")
     @Mapping(source = "course.category.categoryName", target = "categoryName")
     @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
     @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
-
-
-//    @Named("getTotalViewByCourseId")
-//    protected Long getTotalViewByCourseId(Long courseId) {
-//        return ratingRepository.countByCourse_CourseId(courseId);
-//    }
-
-
-    protected InstructorPublicResponse getInstructorResponseById(Long instructorId) {
-        return instructorMapper.toInstructorPublicResponse(
-                instructorRepository.findById(instructorId).orElse(null)
-        );
-    }
 
     @Named("getPrePriceByCourseId")
     protected Long getPrePriceByCourseId(Long courseId) {

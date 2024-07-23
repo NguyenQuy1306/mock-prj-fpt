@@ -3,23 +3,21 @@ package com.curcus.lms.model.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CourseSearchResponse implements Serializable {
     private Long courseId;
     private String courseThumbnail;
     private String title;
-    private String description;
-    private Long price;
 
     private Double avgRating;
-
-    private InstructorPublicResponse instructor;
 
     private Long totalReviews;
 
@@ -29,10 +27,6 @@ public class CourseSearchResponse implements Serializable {
 
     private Long aftPrice;
 
-    public CourseSearchResponse() {
-        this.prePrice = price; // default value
-        this.aftPrice = price; // default value
-    }
 
     @Override
     public String toString() {
@@ -40,9 +34,6 @@ public class CourseSearchResponse implements Serializable {
                 "courseId=" + courseId +
                 ", courseThumbnail='" + courseThumbnail + '\'' +
                 ", title='" + title + '\'' +
-                ", description=" + description +
-                ", price=" + price +
-                ", instructor=" + instructor +
                 ", avgRating=" + avgRating +
                 ", totalReviews=" + totalReviews +
                 ", categoryName='" + categoryName + '\'' +
@@ -61,9 +52,6 @@ public class CourseSearchResponse implements Serializable {
         return Objects.equals(courseId, that.courseId) &&
                 Objects.equals(courseThumbnail, that.courseThumbnail) &&
                 Objects.equals(title, that.title) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(price, that.price) &&
-                Objects.equals(instructor, that.instructor) &&
                 Objects.equals(avgRating, that.avgRating) &&
                 Objects.equals(totalReviews, that.totalReviews) &&
                 Objects.equals(categoryName, that.categoryName) &&
@@ -73,8 +61,7 @@ public class CourseSearchResponse implements Serializable {
 
     @Override
     public int hashCode() {return Objects.hash(
-            courseId, courseThumbnail, title,
-            description, price, instructor, avgRating,
+            courseId, courseThumbnail, title, avgRating,
             totalReviews, categoryName, prePrice, aftPrice
     );}
 }
