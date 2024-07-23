@@ -1,5 +1,7 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.response.CourseStatusResponse;
 import com.curcus.lms.service.CategorySevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,16 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.entity.Category;
-import com.curcus.lms.model.entity.Content;
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Section;
 
 import com.curcus.lms.model.mapper.ContentMapper;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
@@ -255,6 +251,32 @@ public class CourseServiceImpl implements CourseService {
         }
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toResponse);
+    }
+
+    @Override
+    public CourseStatusResponse updateCourseStatus(Long courseId, String status) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
+        switch (status) {
+            case "CREATED":
+                course.setStatus(CourseStatus.CREATED);
+                break;
+            case "PENDING_APPROVAL":
+                course.setStatus(CourseStatus.PENDING_APPROVAL);
+                break;
+            case "APPROVED":
+                course.setStatus(CourseStatus.APPROVED);
+                break;
+            case "REJECTED":
+                course.setStatus(CourseStatus.REJECTED);
+                break;
+            default:
+                throw new ValidationException("Invalid request");
+        }
+        courseRepository.save(course);
+        CourseStatusResponse courseStatusResponse = new CourseStatusResponse();
+        courseStatusResponse.setStatus(status);
+        courseStatusResponse.setCourseId(courseId);
+        return courseStatusResponse;
     }
 
 }

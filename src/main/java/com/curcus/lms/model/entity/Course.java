@@ -43,8 +43,9 @@ public class Course {
     @Column(nullable = true, columnDefinition = "double precision default 0.0")
     private Double avgRating;
 
-    @ColumnDefault("false")
-    private Boolean approved;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'CREATED'")
+    private CourseStatus status;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")

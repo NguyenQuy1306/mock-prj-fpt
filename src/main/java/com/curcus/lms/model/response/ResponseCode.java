@@ -8,7 +8,7 @@ public class ResponseCode {
         Map<String, String> map = new HashMap<String, String>();
         switch (code) {
             case 1:
-                map.put("MSG 1", "Please fill in all the information");
+                map.put("MSG 1", "Invalid Request");
                 break;
             case 2:
                 map.put("MSG 2", "User already exists in the system");

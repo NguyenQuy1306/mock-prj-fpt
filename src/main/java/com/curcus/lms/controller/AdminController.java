@@ -3,14 +3,12 @@ package com.curcus.lms.controller;
 
 
 import com.curcus.lms.exception.NotFoundException;
-import com.curcus.lms.model.entity.Admin;
-import com.curcus.lms.model.request.ApproveRequest;
+import com.curcus.lms.model.request.CourseStatusRequest;
 import com.curcus.lms.model.request.CategoryRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.AdminService;
 import com.curcus.lms.service.CategorySevice;
 import jakarta.validation.Valid;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,25 +71,5 @@ public class AdminController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/courses/approve")
-    public ResponseEntity<ApiResponse<Boolean>> approveCourse(@Valid @RequestBody ApproveRequest approveRequest,
-                                                              BindingResult bindingResult) {
-        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-        try {
-            if (bindingResult.hasErrors()) {
-                apiResponse.error(ResponseCode.getError(1));
-                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-            }
 
-            apiResponse.ok(adminService.approveCourse(approveRequest.getCourseId(), approveRequest.getApproved()));
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch(NotFoundException e) {
-            apiResponse.error(ResponseCode.getError(10));
-            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
-        } catch(Exception e) {
-            apiResponse.error(ResponseCode.getError(23));
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

@@ -2,6 +2,7 @@ package com.curcus.lms.service;
 
 import java.util.List;
 
+import com.curcus.lms.model.response.CourseStatusResponse;
 import org.springframework.validation.BindingResult;
 import java.util.Optional;
 
@@ -53,6 +54,8 @@ public interface CourseService {
     void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
 
     SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
+
+    CourseStatusResponse updateCourseStatus(Long courseId, String status);
 
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);

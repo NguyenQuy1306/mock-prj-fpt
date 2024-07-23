@@ -2,10 +2,13 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Admin;
 import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.CourseStatus;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.response.AdminResponse;
+import com.curcus.lms.model.response.CourseStatusResponse;
 import com.curcus.lms.repository.AdminRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.service.AdminService;
@@ -51,11 +54,4 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    @Override
-    public Boolean approveCourse(Long courseId, Boolean approved) {
-            Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
-            course.setApproved(approved);
-            courseRepository.save(course);
-            return approved;
-    }
 }
