@@ -292,10 +292,10 @@ public class CourseServiceImpl implements CourseService {
         StudentResponse response = new StudentResponse();
         response.setStudentId(student.getUserId().intValue());
         response.setName(student.getName());
-        response.setEmail(student.getEmail());
-        response.setFirstName(student.getFirstName());
-        response.setLastName(student.getLastName());
-        response.setPhoneNumber(student.getPhoneNumber());
+        // response.setEmail(student.getEmail());
+        // response.setFirstName(student.getFirstName());
+        // response.setLastName(student.getLastName());
+        // response.setPhoneNumber(student.getPhoneNumber());
         return response;
     }
 }
