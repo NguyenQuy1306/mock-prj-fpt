@@ -227,7 +227,7 @@ public class StudentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
-    @GetMapping("/{studentId}/last-five-years")
+    @GetMapping("/{studentId}/purchaseCoursesInFiveYear")
     public ResponseEntity<ApiResponse<Map<Integer, Integer>>> getCoursesPurchasedLastFiveYears(@PathVariable Long studentId) {
         try{    
             Map<Integer, Integer> temp=studentService.getCoursesPurchasedLastFiveYears(studentId);
@@ -248,7 +248,7 @@ public class StudentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
-    @GetMapping("/{studentId}/totalPurchaseCourse")
+    @GetMapping("/{studentId}/totalPurchaseCourses")
     public ResponseEntity<ApiResponse<Integer>> totalPurchaseCourse(@PathVariable Long studentId) {
         try{    
             Integer temp=studentService.getTotalPurchaseCourse(studentId);
