@@ -25,6 +25,7 @@ public abstract class OthersMapper {
     @Mapping(source = "course.courseId", target = "courseId")
     @Mapping(source = "rating", target = "rating")
     @Mapping(source = "comment", target = "comment")
+    @Mapping(source = "ratingDate", target = "ratingDate")
     public abstract RatingResponse toRatingResponse(Rating rating);
 
     public abstract List<RatingResponse> toRatingResponseList(List<Rating> ratings);

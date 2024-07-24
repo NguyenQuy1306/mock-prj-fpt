@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,6 +50,7 @@ public class RatingServiceImpl implements RatingService {
             if (newRating != null) {
                 newRating.setRating(ratingRequest.getRating());
                 newRating.setComment(ratingRequest.getComment());
+                newRating.setRatingDate(LocalDateTime.now());
 
                 return othersMapper.toRatingResponse(ratingRepository.save(newRating));
             } else
@@ -157,7 +160,7 @@ public class RatingServiceImpl implements RatingService {
         if (ratingRepository.existsByStudent_UserIdAndCourse_CourseId(ratingRequest.getStudentId(), ratingRequest.getCourseId())) {
             throw new UniqueConstraintException("Rating already exists");
         }
-
+        LocalDateTime currentDateTime = LocalDateTime.now();
         Student student = studentRepository.findById(ratingRequest.getStudentId()).orElseThrow();
         Course course = courseRepository.findById(ratingRequest.getCourseId()).orElseThrow();
         Rating rating = new Rating();
@@ -165,6 +168,7 @@ public class RatingServiceImpl implements RatingService {
         rating.setCourse(course);
         rating.setComment(ratingRequest.getComment());
         rating.setRating(ratingRequest.getRating());
+        rating.setRatingDate(currentDateTime);
         return othersMapper.toRatingResponse(ratingRepository.save(rating));
     }
 }
