@@ -27,7 +27,7 @@ public class CourseDetailResponse {
 
     private Double avgRating;
 
-    private User instructor;
+    private InstructorResponse instructor;
 
     private Category category;
 
