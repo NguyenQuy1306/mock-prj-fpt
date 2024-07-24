@@ -2,6 +2,7 @@ package com.curcus.lms.util;
 
 import java.io.IOException;
 
+import com.curcus.lms.model.entity.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -49,8 +50,33 @@ public class FileAsyncUtil {
 	    
 	    updateContentUrl(contentId, url);
 	}
+	@Async
+	public void uploadImageAsync(Long courseId, MultipartFile file) {
+		ContentType contentType = getContentType(file);
+		String url = null;
+		try {
+			switch (contentType) {
+				case IMAGE:
+					url = cloudinaryService.uploadImage(file);
+					break;
+				default:
+					throw new InvalidFileTypeException("Unsupported file type, content for section must be: " + FileValidation.ALLOWED_IMAGE_TYPES);
+			}
+		} catch (IOException e) {
+			// Handle the exception
+			System.out.println("cloudinary server error");
+			throw new RuntimeException(e);
+		}
 
-	@Transactional
+		updateCourseThumbnail(courseId, url);
+	}
+
+	public void updateCourseThumbnail(Long courseId, String url) {
+		Course course = courseRepository.findById(courseId).orElseThrow(
+				() -> new NotFoundException("Course not found with id " + courseId));
+		course.setCourseThumbnail(url);
+		courseRepository.save(course);
+	}
 	public void updateContentUrl(Long contentId, String url) {
 	    Content content = contentRepository.findById(contentId).orElseThrow(
 	            () -> new NotFoundException("Content not found with id " + contentId));
@@ -87,4 +113,14 @@ public class FileAsyncUtil {
 	            throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_VIDEO_TYPES+FileValidation.ALLOWED_FILE_TYPES);
 		}
 	}
+	public void validImage(MultipartFile file) {
+		ContentType contentType = getContentType(file);
+		switch (contentType) {
+			case IMAGE:
+				break;
+			default:
+				throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_IMAGE_TYPES);
+		}
+	}
+	
 }
