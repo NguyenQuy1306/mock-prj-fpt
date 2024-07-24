@@ -31,7 +31,7 @@ public interface CourseService {
 
     ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
     
-    ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
+    // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
 
     List<ContentCreateResponse> updateContentPositions(Long id, @Valid List<ContentUpdatePositionRequest> positionUpdates);
 }

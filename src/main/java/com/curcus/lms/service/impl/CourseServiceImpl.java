@@ -135,14 +135,14 @@ public class CourseServiceImpl implements CourseService {
         return sectionCreateResponse;
     }
 
-    @Override
-    public ContentCreateResponse updateContent(Long id, ContentUpdateRequest contentUpdateRequest) {
-        Content content = contentRepository.findById(contentUpdateRequest.getId())
-                    .orElseThrow(() -> new ApplicationException("Content not found"));
-        content = contentMapper.toEntity(contentUpdateRequest);
-        content = contentRepository.save(content);
-        return contentMapper.toResponse(content);
-    }
+    // @Override
+    // public ContentCreateResponse updateContent(Long id, ContentUpdateRequest contentUpdateRequest) {
+    //     Content content = contentRepository.findById(contentUpdateRequest.getId())
+    //                 .orElseThrow(() -> new ApplicationException("Content not found"));
+    //     content = contentMapper.toEntity(contentUpdateRequest);
+    //     content = contentRepository.save(content);
+    //     return contentMapper.toResponse(content);
+    // }
 
     @Override
     public List<ContentCreateResponse> updateContentPositions(Long id, List<ContentUpdatePositionRequest> positionUpdates){
@@ -181,7 +181,6 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
 
-            // Chuyển đổi danh sách Content thành danh sách ContentCreateResponse
             List<ContentCreateResponse> responseList = new ArrayList<>();
             for (Content content : updatedContents) {
                 ContentCreateResponse response = contentMapper.toResponse(content);

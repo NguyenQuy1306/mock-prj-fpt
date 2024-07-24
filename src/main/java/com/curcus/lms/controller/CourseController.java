@@ -97,15 +97,15 @@ public class CourseController {
 
     }
 
-    @PutMapping(value="sections/{id}/updateContent")
-    public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
-                @PathVariable Long id,
-            @RequestBody @Valid ContentUpdateRequest contentUpdateRequest) {
-        ContentCreateResponse contentUpdateResponse = courseService.updateContent(id, contentUpdateRequest);
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.ok(contentUpdateResponse);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    }
+    // @PutMapping(value="sections/{id}/updateContent")
+    // public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
+    //             @PathVariable Long id,
+    //         @RequestBody @Valid ContentUpdateRequest contentUpdateRequest) {
+    //     ContentCreateResponse contentUpdateResponse = courseService.updateContent(id, contentUpdateRequest);
+    //     ApiResponse apiResponse = new ApiResponse<>();
+    //     apiResponse.ok(contentUpdateResponse);
+    //     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    // }
 
     @PutMapping("/sections/{sectionId}/contents/positions")
     public ResponseEntity<ApiResponse<List<ContentCreateResponse>>> updateContentPositions(
