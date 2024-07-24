@@ -97,7 +97,8 @@ public class CartServiceImpl implements CartService {
                 throw new NotFoundException("Course has not existed with id " + courseId);
             }
             // check valid studentId
-            if (studentService.findById(studentId) == null) {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
                 throw new NotFoundException("Student has not existed with id " + studentId);
             }
             // check enrolled course
@@ -110,7 +111,6 @@ public class CartServiceImpl implements CartService {
             Cart cart = getCartById(studentId);
             if (cart == null) {
                 cart = new Cart();
-                Student student = studentRepository.findById(studentId).orElse(null);
                 cart.setStudent(student);
                 cartRepository.save(cart);
             }
@@ -136,6 +136,7 @@ public class CartServiceImpl implements CartService {
             throw ex;
         }
     }
+
 
     public CartResponse getById(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElse(null);
