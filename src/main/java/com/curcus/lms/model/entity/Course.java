@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 @Table(name = "courses")
 public class Course {
     @Id

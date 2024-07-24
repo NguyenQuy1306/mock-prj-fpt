@@ -204,8 +204,10 @@ public class CourseController {
             @RequestParam(required = false) Boolean isFree,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "0") Long minStar,
+//            @RequestParam(defaultValue = "5") Long maxStar,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String direction // parameter for sorting direction
+            @RequestParam(required = false) String direction// parameter for sorting direction
     ) {
         if (sort != null && !CourseSearchOptions.SORT_OPTIONS.contains(sort)) {
             throw new SearchOptionsException("Invalid sort parameter.");
