@@ -76,10 +76,10 @@ public class SecurityConfig {
 
 
     // enable method security
-    @ConditionalOnProperty(prefix = "security",
-            name = "enabled",
-            havingValue = "true")
-    @EnableMethodSecurity
-    static class Dummy {
-    }
+    // @ConditionalOnProperty(prefix = "security",
+    //         name = "enabled",
+    //         havingValue = "true")
+    // @EnableMethodSecurity
+    // static class Dummy {
+    // }
 }
