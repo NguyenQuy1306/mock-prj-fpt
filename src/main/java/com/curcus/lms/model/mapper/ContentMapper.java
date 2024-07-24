@@ -14,6 +14,7 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;

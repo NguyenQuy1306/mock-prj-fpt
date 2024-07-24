@@ -24,6 +24,7 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.CourseRequest;
@@ -31,6 +32,9 @@ import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
+import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -52,6 +56,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PutMapping;
 
+
 @RestController
 @RequestMapping("/api/courses")
 @Validated
@@ -62,47 +67,47 @@ public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
 
-    @GetMapping(value = {"", "/list"})
-    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> getAllCourses(
-            @RequestParam(value = "category", required = false) Long category,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<CourseSearchResponse> coursePage;
-
-            if (category == null) {
-                coursePage = courseService.findAll(pageable);
-            } else {
-                coursePage = courseService.findByCategory(category, pageable);
-            }
-
-            if (coursePage.isEmpty()) {
-                throw new NotFoundException("Course not found.");
-            }
-
-            MetadataResponse metadata = new MetadataResponse(
-                    coursePage.getTotalElements(),
-                    coursePage.getTotalPages(),
-                    coursePage.getNumber(),
-                    coursePage.getSize(),
-                    (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
-                    (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
-                    "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
-                    "/api/courses/list?page=0"
-            );
-
-            ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
-            Map<String, Object> responseMetadata = new HashMap<>();
-            responseMetadata.put("pagination", metadata);
-            apiResponse.ok(coursePage.getContent(), responseMetadata);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
-        }
-    }
+//    @GetMapping(value = {"", "/list"})
+//    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> getAllCourses(
+//            @RequestParam(value = "category", required = false) Long category,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        try {
+//            Pageable pageable = PageRequest.of(page, size);
+//            Page<CourseSearchResponse> coursePage;
+//
+//            if (category == null) {
+//                coursePage = courseService.findAll(pageable);
+//            } else {
+//                coursePage = courseService.findByCategory(category, pageable);
+//            }
+//
+//            if (coursePage.isEmpty()) {
+//                throw new NotFoundException("Course not found.");
+//            }
+//
+//            MetadataResponse metadata = new MetadataResponse(
+//                    coursePage.getTotalElements(),
+//                    coursePage.getTotalPages(),
+//                    coursePage.getNumber(),
+//                    coursePage.getSize(),
+//                    (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
+//                    (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
+//                    "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
+//                    "/api/courses/list?page=0"
+//            );
+//
+//            ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
+//            Map<String, Object> responseMetadata = new HashMap<>();
+//            responseMetadata.put("pagination", metadata);
+//            apiResponse.ok(coursePage.getContent(), responseMetadata);
+//            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+//        } catch (NotFoundException ex) {
+//            throw ex;
+//        } catch (Exception ex) {
+//            throw new ApplicationException();
+//        }
+//    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #courseRequest.instructorId)")
     @PutMapping(value = "/updateCourse")
@@ -168,7 +173,7 @@ public class CourseController {
 
     }
     private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice, Boolean isFree, String sort, String direction) {
-        StringBuilder baseUrl = new StringBuilder("/api/courses/courses/search?");
+        StringBuilder baseUrl = new StringBuilder("/api/courses/search?");
         if (instructorId != null) baseUrl.append("instructorId=").append(instructorId).append("&");
         if (categoryId != null) baseUrl.append("categoryId=").append(categoryId).append("&");
         if (title != null) baseUrl.append("title=").append(title).append("&");
@@ -190,7 +195,7 @@ public class CourseController {
                 baseUrlStr + "page=0&size=" + size
         );
     }
-    @GetMapping("courses/search")
+    @GetMapping({"search","", "/list"})
     public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> searchCourses(
             @RequestParam(required = false) Long instructorId,
             @RequestParam(required = false) Long categoryId,
@@ -258,5 +263,24 @@ public class CourseController {
         apiResponse.ok(course);
 
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
+    // @PutMapping(value="sections/{id}/updateContent")
+    // public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
+    //             @PathVariable Long id,
+    //         @RequestBody @Valid ContentUpdateRequest contentUpdateRequest) {
+    //     ContentCreateResponse contentUpdateResponse = courseService.updateContent(id, contentUpdateRequest);
+    //     ApiResponse apiResponse = new ApiResponse<>();
+    //     apiResponse.ok(contentUpdateResponse);
+    //     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    // }
+
+    @PutMapping("/sections/{sectionId}/contents/positions")
+    public ResponseEntity<ApiResponse<List<ContentCreateResponse>>> updateContentPositions(
+            @PathVariable Long sectionId,
+            @RequestBody @Valid ContentPositionUpdateWrapper wrapper) {
+        List<ContentCreateResponse> updatedContents = courseService.updateContentPositions(sectionId, wrapper.getUpdates());
+        ApiResponse<List<ContentCreateResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(updatedContents);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

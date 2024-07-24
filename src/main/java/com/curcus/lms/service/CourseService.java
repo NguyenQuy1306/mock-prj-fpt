@@ -14,11 +14,14 @@ import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
 import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 
@@ -61,4 +64,9 @@ public interface CourseService {
 
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);
+    List<CourseDetailResponse2> getCoursebyInstructorId(Long id);
+    
+    // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
+
+    List<ContentCreateResponse> updateContentPositions(Long id, @Valid List<ContentUpdatePositionRequest> positionUpdates);
 }
