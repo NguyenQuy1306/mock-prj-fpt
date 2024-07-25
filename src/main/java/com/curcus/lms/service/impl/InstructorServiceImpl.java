@@ -14,6 +14,7 @@ import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.response.InstructorGetCourseResponse;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.service.CloudinaryService;
+import com.curcus.lms.util.FileAsyncUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,7 @@ public class InstructorServiceImpl implements InstructorService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private CloudinaryService cloudinaryService;
-
+    private FileAsyncUtil fileAsyncUtil;
     @Override
     public List<InstructorResponse> findAll() {
         try {
@@ -113,8 +113,9 @@ public class InstructorServiceImpl implements InstructorService {
                 newInstructor.setPhoneNumber(instructorUpdateRequest.getPhoneNumber());
             }
             if (instructorUpdateRequest.getAvt() != null) {
-                newInstructor.setAvtUrl(
-                        uploadAndGetUrl(instructorUpdateRequest.getAvt())
+                fileAsyncUtil.uploadAvatarAsync(
+                        id,
+                        instructorUpdateRequest.getAvt()
                 );
             }
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
@@ -122,35 +123,6 @@ public class InstructorServiceImpl implements InstructorService {
             throw ex;
         }
 
-    }
-
-    private String uploadAndGetUrl(MultipartFile file) {
-        ContentType contentType = getContentType(file);
-        try {
-            switch (contentType) {
-                case IMAGE:
-                    return cloudinaryService.uploadImage(file);
-                default:
-                    throw new InvalidFileTypeException("Unsupported file type");
-            }
-        } catch (IOException | InvalidFileTypeException e) {
-            throw new InvalidFileTypeException("Unsupported file type");
-        }
-    }
-
-    protected ContentType getContentType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType != null) {
-            if (contentType.startsWith("video")) {
-                return ContentType.VIDEO;
-            } else if (contentType.startsWith("image")) {
-                return ContentType.IMAGE;
-            } else {
-                return ContentType.DOCUMENT;
-            }
-        } else {
-            return ContentType.UNKNOWN;
-        }
     }
 
     @Override

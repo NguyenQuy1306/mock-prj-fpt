@@ -3,6 +3,8 @@ package com.curcus.lms.util;
 import java.io.IOException;
 
 import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.User;
+import com.curcus.lms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,8 @@ public class FileAsyncUtil {
     protected CourseRepository courseRepository;
     @Autowired
     protected ContentRepository contentRepository;
+	@Autowired
+	protected UserRepository userRepository;
 	@Async
 	public void uploadFileAsync(Long contentId, MultipartFile file) {
 	    ContentType contentType = getContentType(file);
@@ -77,6 +81,34 @@ public class FileAsyncUtil {
 		course.setCourseThumbnail(url);
 		courseRepository.save(course);
 	}
+
+	@Async
+	public void uploadAvatarAsync(Long userId, MultipartFile file) {
+		ContentType contentType = getContentType(file);
+		String url = null;
+		try {
+			switch (contentType) {
+				case IMAGE:
+					url = cloudinaryService.uploadImage(file);
+					break;
+				default:
+					throw new InvalidFileTypeException("Unsupported file type, content for section must be: " + FileValidation.ALLOWED_IMAGE_TYPES);
+			}
+		} catch (IOException e) {
+			// Handle the exception
+			System.out.println("cloudinary server error");
+			throw new RuntimeException(e);
+		}
+
+		updateAvatar(userId, url);
+	}
+	public void updateAvatar(Long userId, String url) {
+		User user = userRepository.findById(userId).orElseThrow(
+				() -> new NotFoundException("Course not found with id " + userId));
+		user.setAvtUrl(url);
+		userRepository.save(user);
+	}
+
 	public void updateContentUrl(Long contentId, String url) {
 	    Content content = contentRepository.findById(contentId).orElseThrow(
 	            () -> new NotFoundException("Content not found with id " + contentId));

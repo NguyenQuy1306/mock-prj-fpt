@@ -5,6 +5,7 @@ import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.service.CloudinaryService;
+import com.curcus.lms.util.FileAsyncUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class StudentServiceImpl implements StudentService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private CloudinaryService cloudinaryService;
+    private FileAsyncUtil fileAsyncUtil;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -113,8 +114,9 @@ public class StudentServiceImpl implements StudentService {
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
 
             if (studentRequest.getAvt() != null) {
-                newStudent.setAvtUrl(
-                        uploadAndGetUrl(studentRequest.getAvt())
+                fileAsyncUtil.uploadAvatarAsync(
+                        studentId,
+                        studentRequest.getAvt()
                 );
             }
 
@@ -123,35 +125,6 @@ public class StudentServiceImpl implements StudentService {
             throw ex;
         }
 
-    }
-
-    private String uploadAndGetUrl(MultipartFile file) {
-        ContentType contentType = getContentType(file);
-        try {
-            switch (contentType) {
-                case IMAGE:
-                    return cloudinaryService.uploadImage(file);
-                default:
-                    throw new InvalidFileTypeException("Unsupported file type");
-            }
-        } catch (IOException | InvalidFileTypeException e) {
-            throw new InvalidFileTypeException("Unsupported file type");
-        }
-    }
-
-    protected ContentType getContentType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType != null) {
-            if (contentType.startsWith("video")) {
-                return ContentType.VIDEO;
-            } else if (contentType.startsWith("image")) {
-                return ContentType.IMAGE;
-            } else {
-                return ContentType.DOCUMENT;
-            }
-        } else {
-            return ContentType.UNKNOWN;
-        }
     }
 
     @Override
@@ -343,9 +316,9 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentStatisticResponse studentStatistic(Long studentId)
     {
-        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId), 
-                                                                  totalFinishCourse(studentId), 
-                                                                  getCoursesPurchasedLastFiveYears(studentId), 
+        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId),
+                                                                  totalFinishCourse(studentId),
+                                                                  getCoursesPurchasedLastFiveYears(studentId),
                                                                   finishCourseFiveYears(studentId));
         return statisticResponse;
     }
