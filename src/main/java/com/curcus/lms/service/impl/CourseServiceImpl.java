@@ -35,12 +35,6 @@ import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
-import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -281,9 +275,9 @@ public class CourseServiceImpl implements CourseService {
     
     @Transactional
     @Override
-    public List<CourseDetailResponse2> getCoursebyInstructorId(Long id){
-         List<Course> courses = courseRepository.findByInstructorUserId(id);
-        return courses.stream().map(this::convertToCourseDetailResponse).collect(Collectors.toList());
+    public Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable){
+         Page<Course> courses = courseRepository.findByInstructorUserId(id,pageable);
+        return courses.map(this::convertToCourseDetailResponse);
     }
 
 
@@ -318,10 +312,6 @@ public class CourseServiceImpl implements CourseService {
         StudentResponse response = new StudentResponse();
         response.setStudentId(student.getUserId().intValue());
         response.setName(student.getName());
-        // response.setEmail(student.getEmail());
-        // response.setFirstName(student.getFirstName());
-        // response.setLastName(student.getLastName());
-        // response.setPhoneNumber(student.getPhoneNumber());
         return response;
     }
     // @Override

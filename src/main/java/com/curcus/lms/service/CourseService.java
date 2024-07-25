@@ -26,9 +26,6 @@ import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.validation.BindingResult;
 
 public interface CourseService {
     // List<CourseResponse> findByCategory(Long categoryId);
@@ -64,7 +61,7 @@ public interface CourseService {
 
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);
-    List<CourseDetailResponse2> getCoursebyInstructorId(Long id);
+    Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable);
     
     // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
 
