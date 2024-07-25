@@ -23,11 +23,17 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public void updateModel(Model model, Long studentId, Long courseId) {
-        if(!enrollmentRepository.existsByStudent_UserIdAndCourse_CourseIdAndIsComplete(studentId, courseId, true)) {
+        if (!enrollmentRepository.existsByStudent_UserIdAndCourse_CourseId(studentId, courseId)) {
+            throw new NotFoundException("Student has not enrolled this course");
+        }
+        if (!enrollmentRepository.existsByStudent_UserIdAndCourse_CourseIdAndIsComplete(studentId, courseId, true)) {
             throw new NotFoundException("Student has not completed this course");
         }
-        Student student = studentRepository.findById(studentId).orElseThrow(()->new NotFoundException("Student not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(()->new NotFoundException("Course not found"));
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new NotFoundException("Student not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
         model.addAttribute("studentName", student.getName());
         model.addAttribute("courseName", course.getTitle());
     }

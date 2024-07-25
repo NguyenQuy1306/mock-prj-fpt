@@ -43,42 +43,38 @@ public class SecurityConfig {
             "/api/cart/**",
             "/api/ratings/**",
             "/api/courses",
-            "/api/courses/list"
+            "/api/courses/list",
+            "/api/certificate"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
 
         if (securityEnabled) {
-             http.authorizeHttpRequests(req ->
-                    req.requestMatchers(WHITE_LIST_URL)
-                            .permitAll()
-                            .anyRequest()
-                            .authenticated());
+            http.authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
         } else {
             http.authorizeHttpRequests(req -> req.anyRequest().permitAll());
         }
 
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .logout(logout ->
-                    logout.logoutUrl("/api/v1/auth/logout")
-                            .addLogoutHandler(logoutHandler)
-                            .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-            );
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(
+                                (request, response, authentication) -> SecurityContextHolder.clearContext()));
         return http.build();
     }
 
-
     // enable method security
-    @ConditionalOnProperty(prefix = "security",
-            name = "enabled",
-            havingValue = "true")
+    @ConditionalOnProperty(prefix = "security", name = "enabled", havingValue = "true")
     @EnableMethodSecurity
     static class Dummy {
     }
