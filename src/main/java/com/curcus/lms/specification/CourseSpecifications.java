@@ -1,4 +1,5 @@
 package com.curcus.lms.specification;
+import com.curcus.lms.model.entity.CourseStatus;
 import org.springframework.data.jpa.domain.Specification;
 import com.curcus.lms.model.entity.Course;
 public class CourseSpecifications {
@@ -26,5 +27,10 @@ public class CourseSpecifications {
     public static Specification<Course> hasPriceGreaterThanOrEqualTo(Long price) {
         return (root, query, criteriaBuilder) ->
                 price == null ? criteriaBuilder.conjunction() : criteriaBuilder.greaterThanOrEqualTo(root.get("price"), price);
+    }
+
+    public static Specification<Course> hasStatus(CourseStatus status) {
+        return (root, query, criteriaBuilder) ->
+                status == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("status"), status);
     }
 }

@@ -233,7 +233,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Pageable pageable) {
         // TODO Auto-generated method stub
-        Specification<Course> spec = Specification.where(null);
+        Specification<Course> spec = Specification.where(CourseSpecifications.hasStatus(CourseStatus.APPROVED));
         if (instructorId != null) {
             spec = spec.and(CourseSpecifications.hasInstructorId(instructorId));
         }
