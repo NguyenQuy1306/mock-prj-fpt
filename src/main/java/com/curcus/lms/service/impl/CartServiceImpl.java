@@ -16,6 +16,7 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.CartResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseResponseForCart;
 import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.EnrollmentService;
@@ -97,7 +98,8 @@ public class CartServiceImpl implements CartService {
                 throw new NotFoundException("Course has not existed with id " + courseId);
             }
             // check valid studentId
-            if (studentService.findById(studentId) == null) {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
                 throw new NotFoundException("Student has not existed with id " + studentId);
             }
             // check enrolled course
@@ -110,7 +112,6 @@ public class CartServiceImpl implements CartService {
             Cart cart = getCartById(studentId);
             if (cart == null) {
                 cart = new Cart();
-                Student student = studentRepository.findById(studentId).orElse(null);
                 cart.setStudent(student);
                 cartRepository.save(cart);
             }
@@ -159,7 +160,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CourseResponse> getListCourseFromCart(Long studentId) {
+    public List<CourseResponseForCart> getListCourseFromCart(Long studentId) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
             if (student == null) {
@@ -173,11 +174,18 @@ public class CartServiceImpl implements CartService {
             if (cartItems == null) {
                 return List.of();
             }
-            List<CourseResponse> courseResponses = courseMapper
-                    .toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
-            return courseResponses;
-        } catch (Exception ex) {
+            List<CourseResponseForCart> courseResponseForCarts = cartItems.stream()
+                    .map(CartItems::getCourse)
+                    .map(courseMapper::toResponseCourseCart)
+                    .collect(Collectors.toList());
+
+            return courseResponseForCarts;
+        } catch (NotFoundException ex) {
             throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
         }
     }
 

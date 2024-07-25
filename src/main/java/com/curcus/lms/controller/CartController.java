@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.GetExchange;
+
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
@@ -19,6 +22,7 @@ import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseResponseForCart;
 import com.curcus.lms.service.CartService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -65,24 +69,27 @@ public class CartController {
         }
     }
 
-    @PostMapping(value = "/{studentId}/listCourse")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
+    @GetMapping(value = "/{studentId}/listCourse")
+    public ResponseEntity<ApiResponse<List<CourseResponseForCart>>> getListCourseFromCart(
+            @PathVariable Long studentId) {
         try {
-            List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            List<CourseResponseForCart> courseResponses = cartService.getListCourseFromCart(studentId);
+            ApiResponse<List<CourseResponseForCart>> apiResponse = new ApiResponse<>();
             apiResponse.ok(courseResponses);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
         } catch (ValidationException ex) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
         }
+
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId, @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
+            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
         try {
             cartService.copyCartToOrder(studentId, courseIds, totalPrice);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -134,4 +141,3 @@ public class CartController {
         }
     }
 }
-

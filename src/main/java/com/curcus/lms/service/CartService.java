@@ -8,6 +8,7 @@ import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.CartItemsResponse;
 import com.curcus.lms.model.response.CartResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseResponseForCart;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface CartService {
 
     void deleteCart(Long studentId);
 
-    List<CourseResponse> getListCourseFromCart(Long studentId);
+    List<CourseResponseForCart> getListCourseFromCart(Long studentId);
 
     void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice);
 }

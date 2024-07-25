@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,6 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 @Table(name = "courses")
 public class Course {
     @Id
@@ -43,6 +47,10 @@ public class Course {
 
     @Column(nullable = true, columnDefinition = "bigint default 0")
     private Long totalRating;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'CREATED'")
+    private CourseStatus status;
+
     @ManyToOne
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;

@@ -1,6 +1,7 @@
 package com.curcus.lms.controller;
 
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -31,6 +31,8 @@ import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.PutMapping;
+import com.curcus.lms.model.dto.*;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -62,47 +65,47 @@ public class CourseController {
     @Autowired
     private CourseMapper courseMapper;
 
-    @GetMapping(value = {"", "/list"})
-    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> getAllCourses(
-            @RequestParam(value = "category", required = false) Long category,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<CourseSearchResponse> coursePage;
-
-            if (category == null) {
-                coursePage = courseService.findAll(pageable);
-            } else {
-                coursePage = courseService.findByCategory(category, pageable);
-            }
-
-            if (coursePage.isEmpty()) {
-                throw new NotFoundException("Course not found.");
-            }
-
-            MetadataResponse metadata = new MetadataResponse(
-                    coursePage.getTotalElements(),
-                    coursePage.getTotalPages(),
-                    coursePage.getNumber(),
-                    coursePage.getSize(),
-                    (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
-                    (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
-                    "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
-                    "/api/courses/list?page=0"
-            );
-
-            ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
-            Map<String, Object> responseMetadata = new HashMap<>();
-            responseMetadata.put("pagination", metadata);
-            apiResponse.ok(coursePage.getContent(), responseMetadata);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException();
-        }
-    }
+//    @GetMapping(value = {"", "/list"})
+//    public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> getAllCourses(
+//            @RequestParam(value = "category", required = false) Long category,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        try {
+//            Pageable pageable = PageRequest.of(page, size);
+//            Page<CourseSearchResponse> coursePage;
+//
+//            if (category == null) {
+//                coursePage = courseService.findAll(pageable);
+//            } else {
+//                coursePage = courseService.findByCategory(category, pageable);
+//            }
+//
+//            if (coursePage.isEmpty()) {
+//                throw new NotFoundException("Course not found.");
+//            }
+//
+//            MetadataResponse metadata = new MetadataResponse(
+//                    coursePage.getTotalElements(),
+//                    coursePage.getTotalPages(),
+//                    coursePage.getNumber(),
+//                    coursePage.getSize(),
+//                    (coursePage.hasNext() ? "/api/courses/list?page=" + (coursePage.getNumber() + 1) : null),
+//                    (coursePage.hasPrevious() ? "/api/courses/list?page=" + (coursePage.getNumber() - 1) : null),
+//                    "/api/courses/list?page=" + (coursePage.getTotalPages() - 1),
+//                    "/api/courses/list?page=0"
+//            );
+//
+//            ApiResponse<List<CourseSearchResponse>> apiResponse = new ApiResponse<>();
+//            Map<String, Object> responseMetadata = new HashMap<>();
+//            responseMetadata.put("pagination", metadata);
+//            apiResponse.ok(coursePage.getContent(), responseMetadata);
+//            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+//        } catch (NotFoundException ex) {
+//            throw ex;
+//        } catch (Exception ex) {
+//            throw new ApplicationException();
+//        }
+//    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #courseRequest.instructorId)")
     @PutMapping(value = "/updateCourse")
@@ -168,7 +171,7 @@ public class CourseController {
 
     }
     private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice, Boolean isFree, String sort, String direction) {
-        StringBuilder baseUrl = new StringBuilder("/api/courses/courses/search?");
+        StringBuilder baseUrl = new StringBuilder("/api/courses/search?");
         if (instructorId != null) baseUrl.append("instructorId=").append(instructorId).append("&");
         if (categoryId != null) baseUrl.append("categoryId=").append(categoryId).append("&");
         if (title != null) baseUrl.append("title=").append(title).append("&");
@@ -190,7 +193,7 @@ public class CourseController {
                 baseUrlStr + "page=0&size=" + size
         );
     }
-    @GetMapping("courses/search")
+    @GetMapping({"search","", "/list"})
     public ResponseEntity<ApiResponse<List<CourseSearchResponse>>> searchCourses(
             @RequestParam(required = false) Long instructorId,
             @RequestParam(required = false) Long categoryId,
@@ -199,8 +202,10 @@ public class CourseController {
             @RequestParam(required = false) Boolean isFree,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "0") Long minStar,
+//            @RequestParam(defaultValue = "5") Long maxStar,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String direction // parameter for sorting direction
+            @RequestParam(required = false) String direction// parameter for sorting direction
     ) {
         if (sort != null && !CourseSearchOptions.SORT_OPTIONS.contains(sort)) {
             throw new SearchOptionsException("Invalid sort parameter.");
@@ -258,5 +263,61 @@ public class CourseController {
         apiResponse.ok(course);
 
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
+    // @PutMapping(value="sections/{id}/updateContent")
+    // public ResponseEntity<ApiResponse<ContentCreateResponse>> updateContent(
+    //             @PathVariable Long id,
+    //         @RequestBody @Valid ContentUpdateRequest contentUpdateRequest) {
+    //     ContentCreateResponse contentUpdateResponse = courseService.updateContent(id, contentUpdateRequest);
+    //     ApiResponse apiResponse = new ApiResponse<>();
+    //     apiResponse.ok(contentUpdateResponse);
+    //     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    // }
+
+    @PutMapping("/sections/{sectionId}/contents/positions")
+    public ResponseEntity<ApiResponse<List<ContentCreateResponse>>> updateContentPositions(
+            @PathVariable Long sectionId,
+            @RequestBody @Valid ContentPositionUpdateWrapper wrapper) {
+        List<ContentCreateResponse> updatedContents = courseService.updateContentPositions(sectionId, wrapper.getUpdates());
+        ApiResponse<List<ContentCreateResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(updatedContents);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #courseStatusRequest.courseId)" +
+            // instructor chỉ được đổi status sang CREATED hoặc PENDING_APPROVAL chứ ko được đổi sang APPROVED hay REJECTED
+            "and (#courseStatusRequest.status == 'CREATED' or #courseStatusRequest.status == 'PENDING_APPROVAL'))")
+    @PutMapping("/update-course-status")
+    public ResponseEntity<ApiResponse<CourseStatusResponse>> updateCourseStatus(@Valid @RequestBody CourseStatusRequest courseStatusRequest,
+                                                                                BindingResult bindingResult) {
+        ApiResponse<CourseStatusResponse> apiResponse = new ApiResponse<>();
+        try {
+            if (bindingResult.hasErrors()) {
+                apiResponse.error(ResponseCode.getError(1));
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            }
+
+            apiResponse.ok(courseService.updateCourseStatus(courseStatusRequest.getCourseId(), courseStatusRequest.getStatus()));
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch(NotFoundException e) {
+            apiResponse.error(ResponseCode.getError(10));
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        } catch(ValidationException e) {
+            apiResponse.error(ResponseCode.getError(1));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch(Exception e) {
+            apiResponse.error(ResponseCode.getError(23));
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{courseId}/sections/positions")
+    public ResponseEntity<ApiResponse<List<SectionUpdatePositionRes>>> updateSectionPositions(
+            @PathVariable Long courseId,
+            @RequestBody @Valid SectionPositionUpdateWrapper wrapper) {
+        List<SectionUpdatePositionRes> updatedSections = courseService.updateSectionPositions(courseId, wrapper.getUpdates());
+        ApiResponse<List<SectionUpdatePositionRes>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(updatedSections);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

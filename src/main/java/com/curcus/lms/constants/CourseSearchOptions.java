@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CourseSearchOptions {
-	public static final List<String> SORT_OPTIONS = Arrays.asList("title", "price", "instructorId", "categoryId");
+	public static final List<String> SORT_OPTIONS = Arrays.asList("title", "price", "instructorId", "categoryId", "avgRating", "createdAt");
     public static final List<String> DIRECTION_OPTIONS = Arrays.asList("asc", "desc");
     public static final Map<String, Object> HINTS_MAP;
     

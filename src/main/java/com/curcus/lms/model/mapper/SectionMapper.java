@@ -12,6 +12,7 @@ public interface SectionMapper {
     SectionCreateResponse toResponse(Section section);
 
     @Mapping(source = "sectionName", target = "sectionName")
+    @Mapping(source = "position", target = "position")
     @Mapping(source = "contents", target = "contents")
     SectionDetailResponse toDetailResponse(Section section);
 }

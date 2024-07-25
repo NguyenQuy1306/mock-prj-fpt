@@ -5,20 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +32,6 @@ import java.util.Optional;
 public class StudentController {
     @Autowired
     private StudentService studentService;
-    @Autowired
-    private SpringTemplateEngine templateEngine;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = { "", "/list" })
@@ -228,6 +227,26 @@ public class StudentController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+    @GetMapping("/{studentId}/statistic")
+    public ResponseEntity<ApiResponse<StudentStatisticResponse>> studentStatistic(@PathVariable Long studentId) {
+        try{    
+            StudentStatisticResponse temp=studentService.studentStatistic(studentId);
+            ApiResponse<StudentStatisticResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(temp);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+        catch (ValidationException ex) {
+            throw ex;
+        }
+        catch (NotFoundException ex){
+            throw ex;
+        }
+        catch (Exception ex){
+            throw new ApplicationException();
+        }
+        
+    }
 
 
 }

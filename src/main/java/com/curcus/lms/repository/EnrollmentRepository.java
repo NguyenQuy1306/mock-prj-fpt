@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import com.curcus.lms.model.entity.Enrollment;
 
+import java.util.Date;
 import java.util.List;
+import com.curcus.lms.model.entity.Student;
+
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
@@ -20,4 +23,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     boolean existsByStudent_UserIdAndCourse_CourseId(Long userId, Long courseId);
     boolean existsByStudent_UserIdAndCourse_CourseIdAndIsComplete(Long userId, Long courseId, Boolean isComplete);
+
+    @Query("SELECT COUNT(*) FROM Enrollment e WHERE e.student.userId = :studentId ")
+    Integer totalPurchaseCourse(@Param("studentId") Long studentId);
+
+    List<Enrollment> findByStudent(Student student);
 }
