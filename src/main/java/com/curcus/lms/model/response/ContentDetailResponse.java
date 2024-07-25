@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class ContentDetailResponse {
     private ContentType type;
-    private String url;
+    private String content;
     private Long position;
 }

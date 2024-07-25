@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.CategorySevice;
 import java.io.Console;
@@ -29,12 +30,7 @@ import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
-import com.curcus.lms.model.request.ContentCreateRequest;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.model.request.SectionRequest;
+
 
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.model.response.CourseDetailResponse2;
@@ -168,10 +164,11 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseMapper.toEntity(courseCreateRequest);
         Course savedCourse = courseRepository.save(course);
         return courseMapper.toResponse(savedCourse);
+
     }
 
     @Override
-    public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
+    public ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
         fileAsyncUtil.validContent(contentCreateRequest.getFile());
@@ -179,6 +176,16 @@ public class CourseServiceImpl implements CourseService {
 
 		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
         return contentMapper.toResponse(content);
+
+    }
+
+    @Override
+    public ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest) {
+        // TODO Auto-generated method stub
+        Content content = contentMapper.toEntity(contentCreateRequest);
+        content = contentRepository.save(content);
+        return contentMapper.toResponse(content);
+
     }
 
     @Override
