@@ -9,5 +9,6 @@ import java.util.Set;
 @Setter
 public class SectionDetailResponse {
     private String sectionName;
+    private Long position;
     private Set<ContentDetailResponse> contents;
 }

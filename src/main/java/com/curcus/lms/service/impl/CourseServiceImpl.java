@@ -31,6 +31,7 @@ import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
@@ -40,7 +41,6 @@ import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
-
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
@@ -184,6 +184,7 @@ public class CourseServiceImpl implements CourseService {
 
         section.setCourse(course);
         section.setSectionName(sectionRequest.getSectionName());
+        section.setPosition(sectionRequest.getPosition());
         SectionCreateResponse sectionCreateResponse = sectionMapper.toResponse(sectionRepository.save(section));
         return sectionCreateResponse;
     }
@@ -370,6 +371,63 @@ public class CourseServiceImpl implements CourseService {
             // return updatedContents.stream()
             //                         .map(contentMapper::toResponse)
             //                         .collect(Collectors.toList());
+        }catch(ApplicationException ex){
+            throw ex;
+        }
+    }
+    @Override
+    public List<SectionUpdatePositionRes> updateSectionPositions(Long id, List<SectionUpdatePositionRequest> positionUpdates){
+        try{
+            Course course = courseRepository.findById(id)
+            .orElseThrow(() -> new ApplicationException("Course not found with id: " + id));
+            
+            List<Section> updatedSections = new ArrayList<>();
+            for (SectionUpdatePositionRequest update : positionUpdates) {
+                Section section = course.getSections().stream()
+                    .filter(s -> s.getSectionId().equals(update.getSectionId()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Section not found"));
+
+                section.setPosition(update.getNewPosition());
+                updatedSections.add(section);
+                
+                sectionRepository.save(section);
+            }
+            updatedSections.sort(Comparator.comparingLong(s -> s.getPosition()));
+            boolean needsAdjustment = false;
+            for (int i = 0; i < updatedSections.size()-1; i++) {
+                if (updatedSections.get(i).getPosition()==updatedSections.get(i+1).getPosition()) {
+                    throw new ApplicationException("Position is invalid");
+                }
+            }
+            for (int i = 0; i < updatedSections.size(); i++) {
+                if (updatedSections.get(i).getPosition() != i + 1) {
+                    needsAdjustment = true;
+                    break;
+                }
+            }
+
+            if (needsAdjustment) {
+                for (int i = 0; i < updatedSections.size(); i++) {
+                    Section section = updatedSections.get(i);
+                    section.setPosition((long) (i + 1));
+                    sectionRepository.save(section);
+                }
+            }
+
+            List<SectionUpdatePositionRes> responseList = new ArrayList<>();
+            for (Section section : updatedSections) {
+                SectionUpdatePositionRes response = new SectionUpdatePositionRes();
+                response.setSectionId(section.getSectionId());
+                response.setTitle(section.getSectionName());
+                response.setPosition(section.getPosition());
+                response.setContentIds(section.getContents().stream()
+                        .map(Content::getId)
+                        .collect(Collectors.toList()));
+                responseList.add(response);
+            }
+
+            return responseList;
         }catch(ApplicationException ex){
             throw ex;
         }

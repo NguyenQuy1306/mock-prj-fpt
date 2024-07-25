@@ -2,7 +2,6 @@ package com.curcus.lms.service;
 
 import java.util.List;
 
-import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.*;
 import org.springframework.validation.BindingResult;
 import java.util.Optional;
@@ -15,15 +14,11 @@ import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
 
 import jakarta.validation.Valid;
 
@@ -66,4 +61,5 @@ public interface CourseService {
     // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
 
     List<ContentCreateResponse> updateContentPositions(Long id, @Valid List<ContentUpdatePositionRequest> positionUpdates);
+    List<SectionUpdatePositionRes> updateSectionPositions(Long id, @Valid List<SectionUpdatePositionRequest> positionUpdates);
 }

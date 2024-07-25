@@ -18,13 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.request.CourseRequest;
@@ -34,7 +32,6 @@ import com.curcus.lms.model.request.SectionRequest;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -55,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.PutMapping;
-
+import com.curcus.lms.model.dto.*;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -283,6 +280,16 @@ public class CourseController {
         List<ContentCreateResponse> updatedContents = courseService.updateContentPositions(sectionId, wrapper.getUpdates());
         ApiResponse<List<ContentCreateResponse>> apiResponse = new ApiResponse<>();
         apiResponse.ok(updatedContents);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/{courseId}/sections/positions")
+    public ResponseEntity<ApiResponse<List<SectionUpdatePositionRes>>> updateSectionPositions(
+            @PathVariable Long courseId,
+            @RequestBody @Valid SectionPositionUpdateWrapper wrapper) {
+        List<SectionUpdatePositionRes> updatedSections = courseService.updateSectionPositions(courseId, wrapper.getUpdates());
+        ApiResponse<List<SectionUpdatePositionRes>> apiResponse = new ApiResponse<>();
+        apiResponse.ok(updatedSections);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }
