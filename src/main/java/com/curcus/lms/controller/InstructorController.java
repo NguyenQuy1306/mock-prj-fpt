@@ -27,6 +27,10 @@ import com.curcus.lms.service.InstructorService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 @RestController
 @RequestMapping("/api/instructors")
 @CrossOrigin(origins = "*")
@@ -198,10 +202,11 @@ public class InstructorController {
     }
 
     @GetMapping(value="/{id}/course")
-    public ResponseEntity<ApiResponse<List<CourseDetailResponse2>>> getCourse(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<Page<CourseDetailResponse2>>> getCourse(@PathVariable Long id, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "5") int size ){
         try{
-            List<CourseDetailResponse2> CDR=courseService.getCoursebyInstructorId(id);
-            ApiResponse<List<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
+            Pageable pageable = PageRequest.of(page, size);
+            Page<CourseDetailResponse2> CDR=courseService.getCoursebyInstructorId(id,pageable);
+            ApiResponse<Page<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
             apiResponse.ok(CDR);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }catch (NotFoundException ex) {

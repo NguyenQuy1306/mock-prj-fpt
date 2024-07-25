@@ -135,8 +135,8 @@ public class DiscountController {
         }
     }
 
-    @PostMapping(value = "/addDiscountToCourse")
-    public ResponseEntity<ApiResponse<StudentDiscount>> addDiscountToCourse(
+    @PostMapping(value = "/addDiscountToStudent")
+    public ResponseEntity<ApiResponse<StudentDiscount>> addDiscountToStudent(
             @RequestParam Long discountId, @RequestParam Long studentId) {
         try {
             StudentDiscountResponse studentDiscountResponse = discountService.addDiscountToStudent(discountId,
@@ -149,4 +149,21 @@ public class DiscountController {
         }
     }
 
+    @GetMapping(value = "/getDiscountByCode/{code}")
+    public ResponseEntity<ApiResponse<Long>> getDiscountByCode(
+            @RequestParam Long studentId, @PathVariable("code") String discountCode) {
+        try {
+            Long discountId = discountService.findDiscountByCode(discountCode,
+                    studentId);
+            ApiResponse<Long> apiResponse = new ApiResponse<>();
+            apiResponse.ok(discountId);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
+        }
+    }
 }

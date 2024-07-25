@@ -30,9 +30,11 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
             "FROM Course c " +
             "JOIN OrderItems oi ON oi.course.courseId = c.courseId " +
             "WHERE c.instructor.userId = :instructorId " +
+            "AND c.price > 0 " +
             "GROUP BY c " +
             "ORDER BY COUNT(c) DESC")
     Page<Course> getTheMostPurchasedCourses(@Param("instructorId") Long instructorId, Pageable pageable);
+
 
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
 
@@ -45,5 +47,5 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
     @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate;")
     Long getTotalCoursesForYears(Long instructorId, LocalDate startDate, LocalDate endDate);
     // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id = :instructorId", nativeQuery = true)
-    List<Course> findByInstructorUserId(@Param("instructorId") Long instructorId);
+    Page<Course> findByInstructorUserId(@Param("instructorId") Long instructorId, Pageable pageable);
 }

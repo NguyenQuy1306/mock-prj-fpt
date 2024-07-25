@@ -16,7 +16,7 @@ import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StatisticResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -229,10 +229,10 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping("/{studentId}/statistic")
-    public ResponseEntity<ApiResponse<StatisticResponse>> studentStatistic(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<StudentStatisticResponse>> studentStatistic(@PathVariable Long studentId) {
         try{    
-            StatisticResponse temp=studentService.studentStatistic(studentId);
-            ApiResponse<StatisticResponse> apiResponse = new ApiResponse<>();
+            StudentStatisticResponse temp=studentService.studentStatistic(studentId);
+            ApiResponse<StudentStatisticResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(temp);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }

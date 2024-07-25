@@ -43,7 +43,9 @@ public class SecurityConfig {
             "/api/cart/**",
             "/api/ratings/**",
             "/api/courses",
-            "/api/courses/list"
+            "/api/courses/list",
+            "/api/certificate",
+            "/api/discounts/*"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -76,10 +78,8 @@ public class SecurityConfig {
 
 
     // enable method security
-    // @ConditionalOnProperty(prefix = "security",
-    //         name = "enabled",
-    //         havingValue = "true")
-    // @EnableMethodSecurity
-    // static class Dummy {
-    // }
+    @ConditionalOnProperty(prefix = "security", name = "enabled", havingValue = "true")
+    @EnableMethodSecurity
+    static class Dummy {
+    }
 }

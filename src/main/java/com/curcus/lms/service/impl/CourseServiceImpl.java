@@ -1,6 +1,8 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.response.CourseStatusResponse;
 import com.curcus.lms.service.CategorySevice;
 import java.io.Console;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Category;
@@ -25,28 +26,22 @@ import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.Student;
+
 import com.curcus.lms.model.mapper.ContentMapper;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
-import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
-
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
@@ -194,6 +189,7 @@ public class CourseServiceImpl implements CourseService {
 
         section.setCourse(course);
         section.setSectionName(sectionRequest.getSectionName());
+        section.setPosition(sectionRequest.getPosition());
         SectionCreateResponse sectionCreateResponse = sectionMapper.toResponse(sectionRepository.save(section));
         return sectionCreateResponse;
     }
@@ -260,7 +256,7 @@ public class CourseServiceImpl implements CourseService {
             Boolean isFree,
             Pageable pageable) {
         // TODO Auto-generated method stub
-        Specification<Course> spec = Specification.where(null);
+        Specification<Course> spec = Specification.where(CourseSpecifications.hasStatus(CourseStatus.APPROVED));
         if (instructorId != null) {
             spec = spec.and(CourseSpecifications.hasInstructorId(instructorId));
         }
@@ -282,12 +278,12 @@ public class CourseServiceImpl implements CourseService {
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toCourseSearchResponse);
     }
-    
+
     @Transactional
     @Override
-    public List<CourseDetailResponse2> getCoursebyInstructorId(Long id){
-         List<Course> courses = courseRepository.findByInstructorUserId(id);
-        return courses.stream().map(this::convertToCourseDetailResponse).collect(Collectors.toList());
+    public Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable){
+         Page<Course> courses = courseRepository.findByInstructorUserId(id,pageable);
+        return courses.map(this::convertToCourseDetailResponse);
     }
 
 
@@ -322,10 +318,6 @@ public class CourseServiceImpl implements CourseService {
         StudentResponse response = new StudentResponse();
         response.setStudentId(student.getUserId().intValue());
         response.setName(student.getName());
-        // response.setEmail(student.getEmail());
-        // response.setFirstName(student.getFirstName());
-        // response.setLastName(student.getLastName());
-        // response.setPhoneNumber(student.getPhoneNumber());
         return response;
     }
     // @Override
@@ -342,12 +334,12 @@ public class CourseServiceImpl implements CourseService {
         try{
             Section section = sectionRepository.findById(id)
             .orElseThrow(() -> new ApplicationException("Section not found with id: " + id));
-            
+
             List<Content> updatedContents = new ArrayList<>();
             for (ContentUpdatePositionRequest update : positionUpdates) {
                 Content content = contentRepository.findById(update.getContentId())
                     .orElseThrow(() -> new ApplicationException("Content not found"));
-        
+
                 content.setPosition(update.getNewPosition());
                 updatedContents.add(content);
                 contentRepository.save(content);
@@ -384,6 +376,89 @@ public class CourseServiceImpl implements CourseService {
             // return updatedContents.stream()
             //                         .map(contentMapper::toResponse)
             //                         .collect(Collectors.toList());
+        }catch(ApplicationException ex){
+            throw ex;
+        }
+    }
+    @Override
+    public CourseStatusResponse updateCourseStatus(Long courseId, String status) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
+        switch (status) {
+            case "CREATED":
+                course.setStatus(CourseStatus.CREATED);
+                break;
+            case "PENDING_APPROVAL":
+                course.setStatus(CourseStatus.PENDING_APPROVAL);
+                break;
+            case "APPROVED":
+                course.setStatus(CourseStatus.APPROVED);
+                break;
+            case "REJECTED":
+                course.setStatus(CourseStatus.REJECTED);
+                break;
+            default:
+                throw new ValidationException("Invalid request");
+        }
+        courseRepository.save(course);
+        CourseStatusResponse courseStatusResponse = new CourseStatusResponse();
+        courseStatusResponse.setStatus(status);
+        courseStatusResponse.setCourseId(courseId);
+        return courseStatusResponse;
+    }
+
+    @Override
+    public List<SectionUpdatePositionRes> updateSectionPositions(Long id, List<SectionUpdatePositionRequest> positionUpdates){
+        try{
+            Course course = courseRepository.findById(id)
+            .orElseThrow(() -> new ApplicationException("Course not found with id: " + id));
+            
+            List<Section> updatedSections = new ArrayList<>();
+            for (SectionUpdatePositionRequest update : positionUpdates) {
+                Section section = course.getSections().stream()
+                    .filter(s -> s.getSectionId().equals(update.getSectionId()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Section not found"));
+
+                section.setPosition(update.getNewPosition());
+                updatedSections.add(section);
+                
+                sectionRepository.save(section);
+            }
+            updatedSections.sort(Comparator.comparingLong(s -> s.getPosition()));
+            boolean needsAdjustment = false;
+            for (int i = 0; i < updatedSections.size()-1; i++) {
+                if (updatedSections.get(i).getPosition()==updatedSections.get(i+1).getPosition()) {
+                    throw new ApplicationException("Position is invalid");
+                }
+            }
+            for (int i = 0; i < updatedSections.size(); i++) {
+                if (updatedSections.get(i).getPosition() != i + 1) {
+                    needsAdjustment = true;
+                    break;
+                }
+            }
+
+            if (needsAdjustment) {
+                for (int i = 0; i < updatedSections.size(); i++) {
+                    Section section = updatedSections.get(i);
+                    section.setPosition((long) (i + 1));
+                    sectionRepository.save(section);
+                }
+            }
+
+            List<SectionUpdatePositionRes> responseList = new ArrayList<>();
+            for (Section section : updatedSections) {
+                SectionUpdatePositionRes response = new SectionUpdatePositionRes();
+                response.setSectionId(section.getSectionId());
+                response.setTitle(section.getSectionName());
+                response.setPosition(section.getPosition());
+                response.setContentIds(section.getContents().stream()
+                        .map(Content::getId)
+                        .collect(Collectors.toList()));
+                responseList.add(response);
+            }
+
+            return responseList;
         }catch(ApplicationException ex){
             throw ex;
         }

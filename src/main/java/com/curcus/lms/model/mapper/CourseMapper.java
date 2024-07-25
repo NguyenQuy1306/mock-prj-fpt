@@ -68,10 +68,14 @@ public abstract class CourseMapper {
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
-
     public abstract CourseResponse toResponse(Course course);
 
+    @Mapping(source = "course.instructor.name", target = "instructorName")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    public abstract CourseResponseForCart toResponseCourseCart(Course course);
+
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
+
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
     // @Mapping(target = "category", expression =
@@ -88,7 +92,7 @@ public abstract class CourseMapper {
     @Mapping(target = "courseThumbnail", constant = "https://dribbble.com/tags/thumbnail-for-courses/")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-    
+
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));
@@ -110,6 +114,7 @@ public abstract class CourseMapper {
     @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
     @Mapping(target = "instructor", expression = "java(getInstructorPublicResponse(course.getInstructor().getUserId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
+
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
 
     @Named("getPrePriceByCourseId")

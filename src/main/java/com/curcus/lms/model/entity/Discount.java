@@ -12,6 +12,8 @@ import java.sql.Date;
 import java.util.Set;
 import java.util.UUID;
 
+import com.curcus.lms.util.CodeDicsountUtil;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class Discount {
     @PrePersist
     protected void onCreate() {
         if (this.code == null) {
-            this.code = UUID.randomUUID().toString();
+            this.code = CodeDicsountUtil.generateDiscountCode();
         }
     }
 

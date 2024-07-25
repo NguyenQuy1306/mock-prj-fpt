@@ -21,7 +21,8 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sectionId;
-
+    @Column(nullable = false)
+    private Long position;
     @ManyToOne
     @JoinColumn(name = "course_id", referencedColumnName = "courseId")
     private Course course;
