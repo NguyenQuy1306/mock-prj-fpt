@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -26,8 +25,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${mail.backend_host}")
-    // @Value("http://localhost:8080")
+    // @Value("${mail.backend_host}")
+    @Value("http://localhost:8080")
     private String PREFIX;
 
     private class MailSenderRunnable implements Runnable {

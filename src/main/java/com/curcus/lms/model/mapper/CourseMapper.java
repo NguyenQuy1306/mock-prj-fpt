@@ -98,7 +98,7 @@ public abstract class CourseMapper {
     // return userRepository.findById(id).orElse(null);
     @Mapping(target = "instructor", expression = "java(findInstructorById(courseCreateRequest.getInstructorId()))")
     @Mapping(target = "category", expression = "java(findCategoryById(courseCreateRequest.getCategoryId()))")
-    @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
+    @Mapping(target = "courseThumbnail", constant = "https://dribbble.com/tags/thumbnail-for-courses/")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
 
@@ -112,34 +112,9 @@ public abstract class CourseMapper {
                 () -> new NotFoundException("Category has not existed with id " + id));
     }
 
-    protected String uploadAndGetUrl(MultipartFile file) {
-        ContentType contentType = getContentType(file);
-        try {
-            switch (contentType) {
-                case IMAGE:
-                    return cloudinaryService.uploadImage(file);
-                default:
-                    throw new InvalidFileTypeException("Unsupported file type");
-            }
-        } catch (IOException | InvalidFileTypeException e) {
-            throw new InvalidFileTypeException("Unsupported file type");
-        }
-    }
 
-    protected ContentType getContentType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType != null) {
-            if (contentType.startsWith("video")) {
-                return ContentType.VIDEO;
-            } else if (contentType.startsWith("image")) {
-                return ContentType.IMAGE;
-            } else {
-                return ContentType.DOCUMENT;
-            }
-        } else {
-            return ContentType.UNKNOWN;
-        }
-    }
+
+
 
     // CourseSearchResponse
     @Mapping(target = "totalReviews", source = "totalRating")
