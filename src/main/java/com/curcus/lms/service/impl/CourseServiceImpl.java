@@ -1,6 +1,8 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.response.CourseStatusResponse;
 import com.curcus.lms.service.CategorySevice;
 import java.io.Console;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Category;
@@ -25,8 +26,8 @@ import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.Student;
+
 import com.curcus.lms.model.mapper.ContentMapper;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
@@ -251,7 +252,7 @@ public class CourseServiceImpl implements CourseService {
             Boolean isFree,
             Pageable pageable) {
         // TODO Auto-generated method stub
-        Specification<Course> spec = Specification.where(null);
+        Specification<Course> spec = Specification.where(CourseSpecifications.hasStatus(CourseStatus.APPROVED));
         if (instructorId != null) {
             spec = spec.and(CourseSpecifications.hasInstructorId(instructorId));
         }
@@ -273,7 +274,7 @@ public class CourseServiceImpl implements CourseService {
         Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toCourseSearchResponse);
     }
-    
+
     @Transactional
     @Override
     public Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable){
@@ -329,12 +330,12 @@ public class CourseServiceImpl implements CourseService {
         try{
             Section section = sectionRepository.findById(id)
             .orElseThrow(() -> new ApplicationException("Section not found with id: " + id));
-            
+
             List<Content> updatedContents = new ArrayList<>();
             for (ContentUpdatePositionRequest update : positionUpdates) {
                 Content content = contentRepository.findById(update.getContentId())
                     .orElseThrow(() -> new ApplicationException("Content not found"));
-        
+
                 content.setPosition(update.getNewPosition());
                 updatedContents.add(content);
                 contentRepository.save(content);
@@ -375,6 +376,32 @@ public class CourseServiceImpl implements CourseService {
             throw ex;
         }
     }
+    @Override
+    public CourseStatusResponse updateCourseStatus(Long courseId, String status) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
+        switch (status) {
+            case "CREATED":
+                course.setStatus(CourseStatus.CREATED);
+                break;
+            case "PENDING_APPROVAL":
+                course.setStatus(CourseStatus.PENDING_APPROVAL);
+                break;
+            case "APPROVED":
+                course.setStatus(CourseStatus.APPROVED);
+                break;
+            case "REJECTED":
+                course.setStatus(CourseStatus.REJECTED);
+                break;
+            default:
+                throw new ValidationException("Invalid request");
+        }
+        courseRepository.save(course);
+        CourseStatusResponse courseStatusResponse = new CourseStatusResponse();
+        courseStatusResponse.setStatus(status);
+        courseStatusResponse.setCourseId(courseId);
+        return courseStatusResponse;
+    }
+
     @Override
     public List<SectionUpdatePositionRes> updateSectionPositions(Long id, List<SectionUpdatePositionRequest> positionUpdates){
         try{

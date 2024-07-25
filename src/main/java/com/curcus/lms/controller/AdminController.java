@@ -2,12 +2,10 @@ package com.curcus.lms.controller;
 
 
 
-import com.curcus.lms.model.entity.Admin;
+import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.model.request.CourseStatusRequest;
 import com.curcus.lms.model.request.CategoryRequest;
-import com.curcus.lms.model.response.AdminResponse;
-import com.curcus.lms.model.response.ApiResponse;
-import com.curcus.lms.model.response.CategoryResponse;
-import com.curcus.lms.model.response.ResponseCode;
+import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.AdminService;
 import com.curcus.lms.service.CategorySevice;
 import jakarta.validation.Valid;
@@ -73,4 +71,6 @@ public class AdminController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }

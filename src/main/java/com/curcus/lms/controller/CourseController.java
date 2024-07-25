@@ -1,6 +1,7 @@
 package com.curcus.lms.controller;
 
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -281,6 +282,33 @@ public class CourseController {
         ApiResponse<List<ContentCreateResponse>> apiResponse = new ApiResponse<>();
         apiResponse.ok(updatedContents);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #courseStatusRequest.courseId)" +
+            // instructor chỉ được đổi status sang CREATED hoặc PENDING_APPROVAL chứ ko được đổi sang APPROVED hay REJECTED
+            "and (#courseStatusRequest.status == 'CREATED' or #courseStatusRequest.status == 'PENDING_APPROVAL'))")
+    @PutMapping("/update-course-status")
+    public ResponseEntity<ApiResponse<CourseStatusResponse>> updateCourseStatus(@Valid @RequestBody CourseStatusRequest courseStatusRequest,
+                                                                                BindingResult bindingResult) {
+        ApiResponse<CourseStatusResponse> apiResponse = new ApiResponse<>();
+        try {
+            if (bindingResult.hasErrors()) {
+                apiResponse.error(ResponseCode.getError(1));
+                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            }
+
+            apiResponse.ok(courseService.updateCourseStatus(courseStatusRequest.getCourseId(), courseStatusRequest.getStatus()));
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch(NotFoundException e) {
+            apiResponse.error(ResponseCode.getError(10));
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        } catch(ValidationException e) {
+            apiResponse.error(ResponseCode.getError(1));
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        } catch(Exception e) {
+            apiResponse.error(ResponseCode.getError(23));
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{courseId}/sections/positions")
