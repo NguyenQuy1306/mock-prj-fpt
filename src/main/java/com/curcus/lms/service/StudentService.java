@@ -3,7 +3,7 @@ package com.curcus.lms.service;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StatisticResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 
 import java.util.HashMap;
@@ -39,6 +39,6 @@ public interface StudentService {
 
     HashMap<String, Integer> finishCourseFiveYears(Long studentId);
      
-    StatisticResponse studentStatistic(Long studentId);
+    StudentStatisticResponse studentStatistic(Long studentId);
 
 }
