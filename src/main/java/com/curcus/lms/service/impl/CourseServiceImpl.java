@@ -51,6 +51,7 @@ import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
 
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -82,7 +83,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private FileAsyncUtil fileAsyncUtil;
-
 
     @Override
     public Page<CourseSearchResponse> findAll(Pageable pageable) {
@@ -176,7 +176,7 @@ public class CourseServiceImpl implements CourseService {
         fileAsyncUtil.validContent(contentCreateRequest.getFile());
         content = contentRepository.save(content);
 
-		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
+        fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
         return contentMapper.toResponse(content);
     }
 
@@ -247,6 +247,7 @@ public class CourseServiceImpl implements CourseService {
             throw new ApplicationException();
         }
     }
+
     @Override
     public Page<CourseSearchResponse> searchCourses(
             Long instructorId,
@@ -275,17 +276,16 @@ public class CourseServiceImpl implements CourseService {
         if (isFree != null) {
             spec = spec.and(CourseSpecifications.isFree(isFree));
         }
-        Page<Course> coursePage=  courseRepository.findAll(spec, pageable);
+        Page<Course> coursePage = courseRepository.findAll(spec, pageable);
         return coursePage.map(courseMapper::toCourseSearchResponse);
     }
 
     @Transactional
     @Override
-    public Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable){
-         Page<Course> courses = courseRepository.findByInstructorUserId(id,pageable);
+    public Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable) {
+        Page<Course> courses = courseRepository.findByInstructorUserId(id, pageable);
         return courses.map(this::convertToCourseDetailResponse);
     }
-
 
     @Override
     public CourseDetailResponse getCourseDetails(Long courseId) {
@@ -296,7 +296,6 @@ public class CourseServiceImpl implements CourseService {
         CourseDetailResponse courseDetailResponse = courseMapper.toDetailResponse(course);
         return courseDetailResponse;
     }
-
 
     private CourseDetailResponse2 convertToCourseDetailResponse(Course course) {
         return CourseDetailResponse2.builder()
@@ -321,24 +320,26 @@ public class CourseServiceImpl implements CourseService {
         return response;
     }
     // @Override
-    // public ContentCreateResponse updateContent(Long id, ContentUpdateRequest contentUpdateRequest) {
-    //     Content content = contentRepository.findById(contentUpdateRequest.getId())
-    //                 .orElseThrow(() -> new ApplicationException("Content not found"));
-    //     content = contentMapper.toEntity(contentUpdateRequest);
-    //     content = contentRepository.save(content);
-    //     return contentMapper.toResponse(content);
+    // public ContentCreateResponse updateContent(Long id, ContentUpdateRequest
+    // contentUpdateRequest) {
+    // Content content = contentRepository.findById(contentUpdateRequest.getId())
+    // .orElseThrow(() -> new ApplicationException("Content not found"));
+    // content = contentMapper.toEntity(contentUpdateRequest);
+    // content = contentRepository.save(content);
+    // return contentMapper.toResponse(content);
     // }
 
     @Override
-    public List<ContentCreateResponse> updateContentPositions(Long id, List<ContentUpdatePositionRequest> positionUpdates){
-        try{
+    public List<ContentCreateResponse> updateContentPositions(Long id,
+            List<ContentUpdatePositionRequest> positionUpdates) {
+        try {
             Section section = sectionRepository.findById(id)
-            .orElseThrow(() -> new ApplicationException("Section not found with id: " + id));
+                    .orElseThrow(() -> new ApplicationException("Section not found with id: " + id));
 
             List<Content> updatedContents = new ArrayList<>();
             for (ContentUpdatePositionRequest update : positionUpdates) {
                 Content content = contentRepository.findById(update.getContentId())
-                    .orElseThrow(() -> new ApplicationException("Content not found"));
+                        .orElseThrow(() -> new ApplicationException("Content not found"));
 
                 content.setPosition(update.getNewPosition());
                 updatedContents.add(content);
@@ -346,8 +347,8 @@ public class CourseServiceImpl implements CourseService {
             }
             updatedContents.sort(Comparator.comparingLong(Content::getPosition));
             boolean needsAdjustment = false;
-            for (int i = 0; i < updatedContents.size()-1; i++) {
-                if (updatedContents.get(i).getPosition()==updatedContents.get(i+1).getPosition()) {
+            for (int i = 0; i < updatedContents.size() - 1; i++) {
+                if (updatedContents.get(i).getPosition() == updatedContents.get(i + 1).getPosition()) {
                     throw new ApplicationException("Position is invalid");
                 }
             }
@@ -374,15 +375,17 @@ public class CourseServiceImpl implements CourseService {
 
             return responseList;
             // return updatedContents.stream()
-            //                         .map(contentMapper::toResponse)
-            //                         .collect(Collectors.toList());
-        }catch(ApplicationException ex){
+            // .map(contentMapper::toResponse)
+            // .collect(Collectors.toList());
+        } catch (ApplicationException ex) {
             throw ex;
         }
     }
+
     @Override
     public CourseStatusResponse updateCourseStatus(Long courseId, String status) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundException("Course not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
         switch (status) {
             case "CREATED":
                 course.setStatus(CourseStatus.CREATED);
@@ -407,27 +410,29 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<SectionUpdatePositionRes> updateSectionPositions(Long id, List<SectionUpdatePositionRequest> positionUpdates){
-        try{
+    public List<SectionUpdatePositionRes> updateSectionPositions(Long id,
+            List<SectionUpdatePositionRequest> positionUpdates) {
+        try {
             Course course = courseRepository.findById(id)
-            .orElseThrow(() -> new ApplicationException("Course not found with id: " + id));
-            
+                    .orElseThrow(() -> new ApplicationException("Course not found with id: " + id));
+
             List<Section> updatedSections = new ArrayList<>();
+
             for (SectionUpdatePositionRequest update : positionUpdates) {
-                Section section = course.getSections().stream()
-                    .filter(s -> s.getSectionId().equals(update.getSectionId()))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("Section not found"));
+
+                Section section = sectionRepository.findById(update.getSectionId())
+                        .orElseThrow(
+                                () -> new ApplicationException("Section not found with Id " + update.getSectionId()));
 
                 section.setPosition(update.getNewPosition());
                 updatedSections.add(section);
-                
+
                 sectionRepository.save(section);
             }
             updatedSections.sort(Comparator.comparingLong(s -> s.getPosition()));
             boolean needsAdjustment = false;
-            for (int i = 0; i < updatedSections.size()-1; i++) {
-                if (updatedSections.get(i).getPosition()==updatedSections.get(i+1).getPosition()) {
+            for (int i = 0; i < updatedSections.size() - 1; i++) {
+                if (updatedSections.get(i).getPosition() == updatedSections.get(i + 1).getPosition()) {
                     throw new ApplicationException("Position is invalid");
                 }
             }
@@ -459,7 +464,7 @@ public class CourseServiceImpl implements CourseService {
             }
 
             return responseList;
-        }catch(ApplicationException ex){
+        } catch (ApplicationException ex) {
             throw ex;
         }
     }
