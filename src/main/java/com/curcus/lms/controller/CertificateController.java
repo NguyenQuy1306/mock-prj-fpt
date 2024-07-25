@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 
-@RestController
+@Controller
 @RequestMapping("/api/certificate")
 public class CertificateController {
     @Autowired
     private CertificateService certificateService;
 
     @GetMapping(value = "")
-    public String certificate(Model model, @RequestParam Long studentId, @RequestParam Long courseId) {
+    public ModelAndView certificate(Model model, @RequestParam Long studentId, @RequestParam Long courseId) {
         try {
             certificateService.updateModel(model, studentId, courseId);
-            return "certificate";
+            return new ModelAndView("certificate");
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
