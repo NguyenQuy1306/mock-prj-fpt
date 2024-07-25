@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -136,5 +137,17 @@ public class GlobalExceptionHandler {
         responseMetadata.put("searchOptions", CourseSearchOptions.HINTS_MAP);
         apiResponse.error(error,responseMetadata);
         return apiResponse;
+    }
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ApiResponse handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("errorCode", "400");
+        error.put("errorMessage", "MAX_UPLOAD_SIZE_EXCEEDED");
+        error.put("details", ex.getMessage());
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.error(error);
+        return    apiResponse;
     }
 }

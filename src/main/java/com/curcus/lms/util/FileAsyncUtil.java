@@ -6,6 +6,7 @@ import com.curcus.lms.model.entity.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.*;
 import com.curcus.lms.constants.ContentType;
@@ -47,6 +48,10 @@ public class FileAsyncUtil {
 	    	System.out.println("cloudinary server error");
 	    	throw new RuntimeException(e);
 	    }
+		catch (MaxUploadSizeExceededException e) {
+			System.out.println("max upload size exceeded");
+			throw new RuntimeException(e);
+		}
 	    
 	    updateContentUrl(contentId, url);
 	}
