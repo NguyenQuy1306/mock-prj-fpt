@@ -1,4 +1,5 @@
 package com.curcus.lms.model.mapper;
+
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.RatingRepository;
@@ -55,7 +56,6 @@ public abstract class CourseMapper {
     @Autowired
     protected CourseRepository courseRepository;
 
-
     @Mapping(source = "courseThumbnail", target = "courseThumbnail")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "description", target = "description")
@@ -68,10 +68,14 @@ public abstract class CourseMapper {
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
-
     public abstract CourseResponse toResponse(Course course);
 
+    @Mapping(source = "course.instructor.name", target = "instructorName")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    public abstract CourseResponseForCart toResponseCourseCart(Course course);
+
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
+
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
     // @Mapping(target = "category", expression =
@@ -88,7 +92,7 @@ public abstract class CourseMapper {
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
-    
+
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));
@@ -134,6 +138,7 @@ public abstract class CourseMapper {
     @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
     @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
+
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
 
     @Named("getPrePriceByCourseId")
@@ -153,7 +158,5 @@ public abstract class CourseMapper {
         }
         return null;
     }
-
-
 
 }

@@ -22,6 +22,7 @@ import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseResponseForCart;
 import com.curcus.lms.service.CartService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -69,19 +70,21 @@ public class CartController {
     }
 
     @GetMapping(value = "/{studentId}/listCourse")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<List<CourseResponseForCart>>> getListCourseFromCart(
+            @PathVariable Long studentId) {
         try {
-            List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            List<CourseResponseForCart> courseResponses = cartService.getListCourseFromCart(studentId);
+            ApiResponse<List<CourseResponseForCart>> apiResponse = new ApiResponse<>();
             apiResponse.ok(courseResponses);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
         } catch (ValidationException ex) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
         }
+
     }
 
     @PostMapping("/checkout")
