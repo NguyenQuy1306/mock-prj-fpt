@@ -135,8 +135,8 @@ public class DiscountController {
         }
     }
 
-    @PostMapping(value = "/addDiscountToCourse")
-    public ResponseEntity<ApiResponse<StudentDiscount>> addDiscountToCourse(
+    @PostMapping(value = "/addDiscountToStudent")
+    public ResponseEntity<ApiResponse<StudentDiscount>> addDiscountToStudent(
             @RequestParam Long discountId, @RequestParam Long studentId) {
         try {
             StudentDiscountResponse studentDiscountResponse = discountService.addDiscountToStudent(discountId,
