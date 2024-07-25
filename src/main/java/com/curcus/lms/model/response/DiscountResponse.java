@@ -19,6 +19,8 @@ public class DiscountResponse {
 
     private String description;
 
+    private String code;
+
     private Long value;
 
     private Date startDate;

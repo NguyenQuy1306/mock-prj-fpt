@@ -12,5 +12,6 @@ import java.util.List;
 
 @Repository
 public interface DiscountRepository extends JpaRepository<Discount, Long> {
-
+    @Query("SELECT a FROM Discount a WHERE a.code.userId = :discountCode")
+    Discount findDiscountByCode(@Param("discountCode") String discountCode);
 }

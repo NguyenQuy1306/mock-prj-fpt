@@ -30,9 +30,11 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
             "FROM Course c " +
             "JOIN OrderItems oi ON oi.course.courseId = c.courseId " +
             "WHERE c.instructor.userId = :instructorId " +
+            "AND c.price > 0 " +
             "GROUP BY c " +
             "ORDER BY COUNT(c) DESC")
     Page<Course> getTheMostPurchasedCourses(@Param("instructorId") Long instructorId, Pageable pageable);
+
 
     Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.GetExchange;
+
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
@@ -83,7 +85,8 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId, @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
+            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
         try {
             cartService.copyCartToOrder(studentId, courseIds, totalPrice);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -135,4 +138,3 @@ public class CartController {
         }
     }
 }
-

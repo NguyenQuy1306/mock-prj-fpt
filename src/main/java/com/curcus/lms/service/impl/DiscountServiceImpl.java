@@ -207,4 +207,25 @@ public class DiscountServiceImpl implements DiscountService {
         studentDiscountRepository.save(studentDiscount);
     }
 
+    @Override
+    public Long findDiscountByCode(String discountCode, Long studentId) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
+            Discount discount = discountRepository.findDiscountByCode(discountCode);
+            if (discount == null) {
+                throw new NotFoundException("Discount has not existed with discountCode " + discountCode);
+            }
+            StudentDiscountId studentDiscountId = new StudentDiscountId(studentId, discount.getDiscountId());
+            StudentDiscount studentDiscount = studentDiscountRepository.findById(studentDiscountId).orElse(null);
+            if (studentDiscount == null) {
+                throw new NotFoundException("Discount has not existed with studentId " + studentId);
+            }
+            return discount.getDiscountId();
+        } catch (NotFoundException ex) {
+            throw ex;
+        }
+    }
 }

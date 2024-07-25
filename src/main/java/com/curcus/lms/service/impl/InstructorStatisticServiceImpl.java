@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.curcus.lms.model.response.InstructorStatisticResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
@@ -43,15 +45,18 @@ public class InstructorStatisticServiceImpl implements InstructorStatisticServic
     }
 
     @Override
-    public CourseResponse GetTheMostPurchasedCourse(Long instructorId) {
+    public CourseResponse getTheMostPurchasedCourse(Long instructorId) {
         Pageable pageable = PageRequest.of(0, 1);
-        Course course = courseRepository.getTheMostPurchasedCourses(instructorId, pageable).stream().findFirst()
-                .orElseThrow(() -> new NotFoundException("Course not found"));
-        return courseMapper.toResponse(course);
-        // throw new UnsupportedOperationException("Unimplemented method
-        // 'getRevenueStatisticsForYears'");
+        Optional<Course> courseOptional = courseRepository.getTheMostPurchasedCourses(instructorId, pageable).stream().findFirst();
 
+        if (courseOptional.isPresent()) {
+            return courseMapper.toResponse(courseOptional.get());
+        } else {
+            return new CourseResponse();
+        }
+        // throw new UnsupportedOperationException("Unimplemented method 'getRevenueStatisticsForYears'");
     }
+
 
     @Override
     public Map<Long, Long> getRevenueStatisticsForYears(Long instructorId, int numberyear) {
@@ -90,6 +95,19 @@ public class InstructorStatisticServiceImpl implements InstructorStatisticServic
     @Override
     public Long getTotalUsersBuyedCourses(Long instructorId) {
         return orderItemsRepository.getTotalUsersBuyedCourses(instructorId);
+    }
+
+
+    @Override
+    public InstructorStatisticResponse getStatistic(Long instructorId, int yearCount) {
+        InstructorStatisticResponse statisticResponse = new InstructorStatisticResponse();
+        statisticResponse.setTotalRevenue(getTotalrevenue(instructorId));
+        statisticResponse.setNumberOfCourses(getTotalCourses(instructorId));
+        statisticResponse.setTotalUserBoughtCourse(getTotalUsersBuyedCourses(instructorId));
+        statisticResponse.setMostPurchasedCourse(getTheMostPurchasedCourse(instructorId));
+        statisticResponse.setCourseCountPerYear(getTotalCoursesForYears(instructorId, yearCount));
+        statisticResponse.setRevenuePerYear(getRevenueStatisticsForYears(instructorId, yearCount));
+        return statisticResponse;
     }
 
 }
