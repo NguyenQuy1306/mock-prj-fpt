@@ -158,14 +158,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public CourseResponse saveCourse(CourseCreateRequest courseCreateRequest) {
         // TODO Auto-generated method stub
         Course course = courseMapper.toEntity(courseCreateRequest);
+        fileAsyncUtil.validImage(courseCreateRequest.getCourseThumbnail());
         Course savedCourse = courseRepository.save(course);
+        fileAsyncUtil.uploadImageAsync(course.getCourseId(), courseCreateRequest.getCourseThumbnail());
         return courseMapper.toResponse(savedCourse);
     }
 
     @Override
+    @Transactional
     public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
