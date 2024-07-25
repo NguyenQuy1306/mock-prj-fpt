@@ -2,14 +2,12 @@ package com.curcus.lms.model.mapper;
 
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
-import com.curcus.lms.repository.RatingRepository;
-
-import com.curcus.lms.model.response.CourseSearchResponse;
-import com.curcus.lms.model.response.InstructorPublicResponse;
-import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.*;
+
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +20,19 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.CloudinaryService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import java.util.Comparator;
 
 @Mapper(componentModel = "spring")
 public abstract class CourseMapper {
@@ -64,7 +62,18 @@ public abstract class CourseMapper {
     @Mapping(source = "avgRating", target = "avgRating")
     @Mapping(source = "instructor", target = "instructor")
     @Mapping(source = "category", target = "category")
+    @Mapping(target = "sections", expression = "java(mapSortedSections(course))")
     public abstract CourseDetailResponse toDetailResponse(Course course);
+
+    protected List<SectionDetailResponse> mapSortedSections(Course course) {
+        return course.getSections().stream()
+                .sorted(Comparator.comparing(Section::getPosition))
+                .map(this::mapSection)
+                .collect(Collectors.toList());
+    }
+
+    protected abstract SectionDetailResponse mapSection(Section section);
+
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
