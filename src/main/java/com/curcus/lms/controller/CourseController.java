@@ -227,7 +227,10 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #courseStatusRequest.courseId)" +
+            // instructor chỉ được đổi status sang CREATED hoặc PENDING_APPROVAL chứ ko được đổi sang APPROVED hay REJECTED
+            "and (#courseStatusRequest.status == 'CREATED' or #courseStatusRequest.status == 'PENDING_APPROVAL'))")
     @PutMapping("/update-course-status")
     public ResponseEntity<ApiResponse<CourseStatusResponse>> updateCourseStatus(@Valid @RequestBody CourseStatusRequest courseStatusRequest,
                                                                                 BindingResult bindingResult) {
