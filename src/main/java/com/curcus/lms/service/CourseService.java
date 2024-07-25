@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.response.CourseStatusResponse;
 import org.springframework.validation.BindingResult;
 import java.util.Optional;
 
@@ -59,10 +60,12 @@ public interface CourseService {
     CourseDetailResponse getCourseDetails(Long courseId);
 
 
+    CourseStatusResponse updateCourseStatus(Long courseId, String status);
+
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);
     Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable);
-    
+
     // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
 
     List<ContentCreateResponse> updateContentPositions(Long id, @Valid List<ContentUpdatePositionRequest> positionUpdates);
