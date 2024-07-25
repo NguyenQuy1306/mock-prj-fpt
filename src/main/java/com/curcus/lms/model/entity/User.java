@@ -31,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = true)
+    private String avtUrl;
+
     private String firstName;
     private String lastName;
     @Column(nullable = true, unique = true)

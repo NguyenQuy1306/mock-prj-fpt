@@ -13,6 +13,7 @@ public class UserResponse implements Serializable {
         private int userId;
         private String name;
         private String email;
+        private String avtUrl;
         private String firstName;
         private String lastName;
         private String phoneNumber;
@@ -26,6 +27,7 @@ public class UserResponse implements Serializable {
                     ", firstName='" + firstName + '\'' +
                     ", lastName='" + lastName + '\'' +
                     ", phoneNumber='" + phoneNumber + '\'' +
+                    ", avtUrl='" + avtUrl + '\'' +
                     '}';
         }
 
@@ -38,11 +40,12 @@ public class UserResponse implements Serializable {
             UserResponse that = (UserResponse) o;
             return Objects.equals(userId, that.userId) && Objects.equals(name, that.name)
                     && Objects.equals(email, that.email) && Objects.equals(firstName, that.firstName)
-                    && Objects.equals(lastName, that.lastName) && Objects.equals(phoneNumber, that.phoneNumber);
+                    && Objects.equals(lastName, that.lastName) && Objects.equals(phoneNumber, that.phoneNumber)
+                    && Objects.equals(avtUrl, that.avtUrl);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(userId, name, email, firstName, lastName, phoneNumber);
+            return Objects.hash(userId, name, email, firstName, lastName, phoneNumber, avtUrl);
         }
 }

@@ -92,7 +92,7 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<StudentResponse>> updateStudent(@PathVariable Long id,
-            @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
+                                                                      @ModelAttribute @RequestBody @Valid StudentRequest studentRequest, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors())
                 throw new Exception("Request is not valid");

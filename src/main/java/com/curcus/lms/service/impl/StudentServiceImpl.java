@@ -1,7 +1,10 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.constants.ContentType;
+import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,9 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneId;
@@ -50,6 +55,9 @@ public class StudentServiceImpl implements StudentService {
     private CourseRepository courseRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -103,11 +111,47 @@ public class StudentServiceImpl implements StudentService {
                 if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
+
+            if (studentRequest.getAvt() != null) {
+                newStudent.setAvtUrl(
+                        uploadAndGetUrl(studentRequest.getAvt())
+                );
+            }
+
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
             throw ex;
         }
 
+    }
+
+    private String uploadAndGetUrl(MultipartFile file) {
+        ContentType contentType = getContentType(file);
+        try {
+            switch (contentType) {
+                case IMAGE:
+                    return cloudinaryService.uploadImage(file);
+                default:
+                    throw new InvalidFileTypeException("Unsupported file type");
+            }
+        } catch (IOException | InvalidFileTypeException e) {
+            throw new InvalidFileTypeException("Unsupported file type");
+        }
+    }
+
+    protected ContentType getContentType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType != null) {
+            if (contentType.startsWith("video")) {
+                return ContentType.VIDEO;
+            } else if (contentType.startsWith("image")) {
+                return ContentType.IMAGE;
+            } else {
+                return ContentType.DOCUMENT;
+            }
+        } else {
+            return ContentType.UNKNOWN;
+        }
     }
 
     @Override

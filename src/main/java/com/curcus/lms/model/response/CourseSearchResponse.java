@@ -27,6 +27,7 @@ public class CourseSearchResponse implements Serializable {
 
     private Long aftPrice;
 
+    private InstructorPublicResponse instructor;
 
     @Override
     public String toString() {

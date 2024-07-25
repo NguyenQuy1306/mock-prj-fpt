@@ -22,6 +22,7 @@ public interface UserMapper {
     @Mapping(source = "firstName", target = "firstName")
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
+    @Mapping(source = "avtUrl", target = "avtUrl")
     StudentResponse toResponse(Student student);
 
     List<StudentResponse> toResponseList(List<Student> studentList);
@@ -59,4 +60,6 @@ public interface UserMapper {
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     UserResponse toUserResponse(Instructor instructor);
+
+
 }

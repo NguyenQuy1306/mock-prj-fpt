@@ -10,18 +10,14 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InstructorPublicResponse {
-    private Long instructorId;
+    private String avtUrl;
     private String name;
-    private String firstName;
-    private String lastName;
 
     @Override
     public String toString() {
         return "InstructorResponse{" +
-                "instructorId=" + instructorId +
+                "avtUrl=" + avtUrl + '\'' +
                 ", name='" + name + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
                 '}';
     }
 
@@ -33,15 +29,13 @@ public class InstructorPublicResponse {
         if (o == null || getClass() != o.getClass())
             return false;
         InstructorPublicResponse that = (InstructorPublicResponse) o;
-        return Objects.equals(instructorId, that.instructorId) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(firstName, that.firstName) &&
-                Objects.equals(lastName, that.lastName);
+        return Objects.equals(avtUrl, that.avtUrl) &&
+                Objects.equals(name, that.name);
     }
 
 
     @Override
     public int hashCode() {
-        return Objects.hash(instructorId, name, firstName, lastName);
+        return Objects.hash(avtUrl, name);
     }
 }

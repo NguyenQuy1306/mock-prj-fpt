@@ -61,6 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setName(request.getName());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
+            user.setAvtUrl("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vecteezy.com%2Ffree-vector%2Fuser-icon&psig=AOvVaw2pZJaxsovqmDuBsUPr-0nA&ust=1721966244522000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJCVs5mmwYcDFQAAAAAdAAAAABAE");
 
             if (user instanceof Instructor) {
                 System.out.println("The user is an Instructor.");
