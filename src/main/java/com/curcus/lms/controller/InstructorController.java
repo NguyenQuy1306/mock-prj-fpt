@@ -42,12 +42,13 @@ public class InstructorController {
     @Autowired
     private InstructorService instructorService;
 
-    @GetMapping(value = {""})
+    @GetMapping(value = { "" })
     public ResponseEntity<ApiResponse<List<InstructorResponse>>> getAllInstructors() {
         try {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findAll());
-            if (instructorService.findAll().size() == 0) throw new NotFoundException("Instructor not found.");
+            if (instructorService.findAll().size() == 0)
+                throw new NotFoundException("Instructor not found.");
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -59,12 +60,13 @@ public class InstructorController {
 
     }
 
-    @GetMapping(value = {"/name/{name}"})
+    @GetMapping(value = { "/name/{name}" })
     public ResponseEntity<ApiResponse<List<InstructorResponse>>> getInstructorsByName(@PathVariable String name) {
         try {
             ApiResponse<List<InstructorResponse>> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorService.findByName(name));
-            if (instructorService.findByName(name).size() == 0) throw new NotFoundException("Instructor not found.");
+            if (instructorService.findByName(name).size() == 0)
+                throw new NotFoundException("Instructor not found.");
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -76,7 +78,7 @@ public class InstructorController {
 
     }
 
-    @GetMapping(value = {"/id/{id}"})
+    @GetMapping(value = { "/id/{id}" })
     public ResponseEntity<ApiResponse<InstructorResponse>> findById(@PathVariable Long id) {
         try {
             Optional<InstructorResponse> instructorResponse = instructorService.findById(id);
@@ -97,16 +99,15 @@ public class InstructorController {
 
     }
 
-
     @PostMapping
-    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(@Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<InstructorResponse>> createInstructor(
+            @Valid @RequestBody InstructorRequest instructorRequest, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> errors = new HashMap<>();
 
                 bindingResult.getFieldErrors().forEach(
-                        error -> errors.put(error.getField(), error.getDefaultMessage())
-                );
+                        error -> errors.put(error.getField(), error.getDefaultMessage()));
                 throw new ValidationException(errors);
             }
             InstructorResponse instructorResponse = instructorService.createInstructor(instructorRequest);
@@ -123,15 +124,15 @@ public class InstructorController {
 
     }
 
-    @PutMapping(value = {"/{id}"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
+    @PutMapping(value = { "/{id}" })
+    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id,
+            @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> errors = new HashMap<>();
 
                 bindingResult.getFieldErrors().forEach(
-                        error -> errors.put(error.getField(), error.getDefaultMessage())
-                );
+                        error -> errors.put(error.getField(), error.getDefaultMessage()));
                 throw new ValidationException(errors);
             }
             InstructorResponse instructorResponse = instructorService.updateInstructor(instructorUpdateRequest, id);
@@ -147,8 +148,9 @@ public class InstructorController {
         }
     }
 
-    @PutMapping(value = {"/{id}/updatepassword"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructorPassword(@PathVariable Long id, @Valid @RequestParam String password) {
+    @PutMapping(value = { "/{id}/updatepassword" })
+    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructorPassword(@PathVariable Long id,
+            @Valid @RequestParam String password) {
         try {
             InstructorResponse instructorResponse = instructorService.updateInstructorPassword(id, password);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
@@ -163,8 +165,9 @@ public class InstructorController {
         }
     }
 
-    @PutMapping(value = {"/{id}/recoverpassword"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> recoverInstructorPassword(@PathVariable Long id, @Valid @RequestParam String password) {
+    @PutMapping(value = { "/{id}/recoverpassword" })
+    public ResponseEntity<ApiResponse<InstructorResponse>> recoverInstructorPassword(@PathVariable Long id,
+            @Valid @RequestParam String password) {
         try {
             InstructorResponse instructorResponse = instructorService.recoverInstructorPassword(id, password);
             ApiResponse<InstructorResponse> apiResponse = new ApiResponse<>();
@@ -179,7 +182,7 @@ public class InstructorController {
         }
     }
 
-    @DeleteMapping(value = {"/{id}"})
+    @DeleteMapping(value = { "/{id}" })
     public ResponseEntity<ApiResponse<Void>> deleteInstructor(@PathVariable Long id) {
         try {
             instructorService.deleteInstructor(id);
@@ -194,15 +197,18 @@ public class InstructorController {
             throw new ApplicationException();
         }
 
-
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
-    @PostMapping (value = "{id}/update-address")
-    public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id, @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {
+    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and
+    // authentication.principal.getId() == #id)")
+    @PostMapping(value = "{id}/update-address")
+    public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id,
+            @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {
         try {
-            if (bindingResult.hasErrors()) throw new Exception("Request invalid");
-            UserAddressResponse instructorResponse = instructorService.updateInstructorAddress(id, studentAddressRequest);
+            if (bindingResult.hasErrors())
+                throw new Exception("Request invalid");
+            UserAddressResponse instructorResponse = instructorService.updateInstructorAddress(id,
+                    studentAddressRequest);
             ApiResponse<UserAddressResponse> apiResponse = new ApiResponse<>();
             apiResponse.ok(instructorResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);

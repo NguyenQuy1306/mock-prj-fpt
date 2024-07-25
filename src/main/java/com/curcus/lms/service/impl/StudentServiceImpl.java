@@ -4,11 +4,19 @@ import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.UserAddressResponse;
 import com.curcus.lms.repository.*;
+
+import org.apache.kafka.common.security.oauthbearer.internals.secured.ValidateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.service.StudentService;
+
+import jakarta.validation.ConstraintViolationException;
+
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.DuplicatePhoneNumberException;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
@@ -17,8 +25,6 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +46,7 @@ public class StudentServiceImpl implements StudentService {
     private CourseRepository courseRepository;
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public List<StudentResponse> findAll() {
         try {
@@ -63,8 +70,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(StudentRequest studentRequest) {
         try {
-            if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("Email đã tồn tại");
-            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
+            if (studentRepository.existsByEmail(studentRequest.getEmail()))
+                throw new ApplicationException("Email đã tồn tại");
+            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber()))
+                throw new ApplicationException("PhoneNumber đã tồn tại");
             Student newStudent = new Student();
             newStudent.setName(studentRequest.getName());
             newStudent.setEmail(studentRequest.getEmail());
@@ -82,14 +91,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudent(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Tài khoản không tồn tại");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
             newStudent.setFirstName(studentRequest.getFirstName());
             newStudent.setLastName(studentRequest.getLastName());
 
-            if(!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
-                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber đã tồn tại");
+            if (!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
+                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber()))
+                    throw new ApplicationException("PhoneNumber đã tồn tại");
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
             return userMapper.toResponse(studentRepository.save(newStudent));
@@ -102,11 +113,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudentPassword(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Tài khoản không tồn tại");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
-            if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
-            if(newStudent.getPassword().equals(studentRequest.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
+            if (studentRequest.getPassword() == "")
+                throw new ApplicationException("Please enter a password");
+            if (newStudent.getPassword().equals(studentRequest.getPassword()))
+                throw new ApplicationException("New password cannot be the same as the old password");
             newStudent.setPassword(studentRequest.getPassword());
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
@@ -118,7 +132,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long studentId) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Tài khoản không tồn tại");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Tài khoản không tồn tại");
             studentRepository.deleteById(studentId);
         } catch (ApplicationException ex) {
             throw ex;
@@ -130,16 +145,17 @@ public class StudentServiceImpl implements StudentService {
     public List<EnrollmentResponse> getCoursesByStudentId(Long studentId) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) throw new ApplicationException("Tài khoản không tồn tại");
+            if (student == null)
+                throw new ApplicationException("Tài khoản không tồn tại");
             List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
-            List<EnrollmentResponse> enrollmentResponses = enrollments.stream().map(enrollment -> new EnrollmentResponse(
-                enrollment.getEnrollmentId(),
-                enrollment.getStudent().getUserId(),
-                enrollment.getCourse().getCourseId(),
-                enrollment.getEnrollmentDate(),
-                enrollment.getIsComplete()
-                )
-            ).collect(Collectors.toList());
+            List<EnrollmentResponse> enrollmentResponses = enrollments.stream()
+                    .map(enrollment -> new EnrollmentResponse(
+                            enrollment.getEnrollmentId(),
+                            enrollment.getStudent().getUserId(),
+                            enrollment.getCourse().getCourseId(),
+                            enrollment.getEnrollmentDate(),
+                            enrollment.getIsComplete()))
+                    .collect(Collectors.toList());
             return enrollmentResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -150,9 +166,11 @@ public class StudentServiceImpl implements StudentService {
     public List<CourseResponse> getListCourseFromCart(Long studentId) {
         try {
             Cart cart = cartRepository.findByStudent_UserId(studentId);
-            if (cart == null) throw new ApplicationException("Giỏ hàng không tồn tại");
+            if (cart == null)
+                throw new ApplicationException("Giỏ hàng không tồn tại");
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
+            List<CourseResponse> courseResponses = cartItems.stream()
+                    .map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
             return courseResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -181,8 +199,7 @@ public class StudentServiceImpl implements StudentService {
                     savedEnrollment.getStudent().getUserId(),
                     savedEnrollment.getCourse().getCourseId(),
                     savedEnrollment.getEnrollmentDate(),
-                    savedEnrollment.getIsComplete()
-            );
+                    savedEnrollment.getIsComplete());
 
         } catch (ApplicationException ex) {
             throw ex;
@@ -211,17 +228,31 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest) {
-        Student user = studentRepository.findById(userId)
-                .orElseThrow(() -> new ApplicationException("User not found with id: " + userId));
+        try {
+            Student user = studentRepository.findById(userId)
+                    .orElseThrow(() -> new ApplicationException("Student not found with id: " + userId));
 
-        Optional.ofNullable(addressRequest.getFirstName()).ifPresent(user::setFirstName);
-        Optional.ofNullable(addressRequest.getLastName()).ifPresent(user::setLastName);
-        Optional.ofNullable(addressRequest.getPhoneNumber()).ifPresent(user::setPhoneNumber);
-        Optional.ofNullable(addressRequest.getUserAddress()).ifPresent(user::setUserAddress);
-        Optional.ofNullable(addressRequest.getUserCity()).ifPresent(user::setUserCity);
-        Optional.ofNullable(addressRequest.getUserCountry()).ifPresent(user::setUserCountry);
-        Optional.ofNullable(addressRequest.getUserPostalCode()).ifPresent(user::setUserPostalCode);
-        studentRepository.save(user);
-        return userMapper.toUserAddressResponse(user);
+            Optional.ofNullable(addressRequest.getFirstName()).ifPresent(user::setFirstName);
+            Optional.ofNullable(addressRequest.getLastName()).ifPresent(user::setLastName);
+            Optional.ofNullable(addressRequest.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+            Optional.ofNullable(addressRequest.getUserAddress()).ifPresent(user::setUserAddress);
+            Optional.ofNullable(addressRequest.getUserCity()).ifPresent(user::setUserCity);
+            Optional.ofNullable(addressRequest.getUserCountry()).ifPresent(user::setUserCountry);
+            Optional.ofNullable(addressRequest.getUserPostalCode()).ifPresent(user::setUserPostalCode);
+            studentRepository.save(user);
+            return userMapper.toUserAddressResponse(user);
+        } catch (DataIntegrityViolationException ex) {
+            if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new DuplicatePhoneNumberException(
+                        "Phone number " + addressRequest.getPhoneNumber() + " already exists.");
+            }
+            throw ex;
+        }
+
+        catch (com.curcus.lms.exception.NotFoundException ex) {
+            throw ex;
+        } catch (ValidateException ex) {
+            throw ex;
+        }
     }
 }

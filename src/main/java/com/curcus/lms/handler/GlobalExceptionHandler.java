@@ -1,11 +1,13 @@
 package com.curcus.lms.handler;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.DuplicatePhoneNumberException;
 import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -115,6 +117,17 @@ public class GlobalExceptionHandler {
         error.put("errorMessage", "INVALID_FILE_TYPE");
         error.put("details", ex.getMessage());
 
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.error(error);
+        return apiResponse;
+    }
+
+    @ExceptionHandler(DuplicatePhoneNumberException.class)
+    public ApiResponse handleDuplicatePhoneNumberException(DuplicatePhoneNumberException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("errorCode", "409");
+        error.put("errorMessage", "CONFLICT");
+        error.put("details", ex.getMessage());
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.error(error);
         return apiResponse;

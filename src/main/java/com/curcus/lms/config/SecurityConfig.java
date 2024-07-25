@@ -31,82 +31,97 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui/**",
-            "/webjars/**",
-            "/swagger-ui.html",
-            "/api/v1/auth/register",
-            "/api/v1/auth/authenticate",
-            "/api/password-reset/request",
-            "/api/password-reset/reset",
-            "/api/courses/**",
-            "/api/**"
-    };
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
-    private final LogoutHandler logoutHandler;
-    
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.anyRequest().permitAll())
-//                .authorizeHttpRequests(req ->
-//                        req.requestMatchers(WHITE_LIST_URL)
-//                                .permitAll()
-//
-//                                /// --------------------- STUDENT --------------------------------
-//                                // /api/students/{id}
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(GET, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_READ.getPermission())
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(PUT, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(DELETE, "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_DELETE.getPermission())
-//
-//                                // /api/students/{id}/changePassword
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(PUT, "/api/students/[0-9]+/changePassword")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
-//
-//                                // /api/students
-//                                .requestMatchers(GET, "/api/students").hasAnyAuthority(STUDENT_READ.getPermission())
-//                                .requestMatchers(POST, "/api/students").hasAnyAuthority(STUDENT_CREATE.getPermission())
-//
-//                                // /api/students/{studentId}/courses/{courseId}
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/courses/[0-9]+")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
-//
-//                                // /api/students/{studentId}/enrollFromCart
-//                                .requestMatchers(RegexRequestMatcher.regexMatcher(POST, "/api/students/[0-9]+/enrollFromCart")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
-//
-//                                // /api/students/{id}/courses
-//                                .requestMatchers(GET, "/api/students/[0-9]+/courses").hasAnyAuthority(COURSE_READ.getPermission())
-//
-//                                // /api/students/{id}/cart
-//                                .requestMatchers(GET, "/api/students/[0-9]+/cart").hasAnyAuthority(CART_READ.getPermission())
-//
-//                                // /api/students/list
-//                                .requestMatchers(GET, "/api/students/list").hasAnyAuthority(STUDENT_READ.getPermission())
-//
-//                                // ------------------------------------- ADMIN ------------------------------------
-//                                .requestMatchers(GET, "/api/admins/[0-9]+").hasAnyAuthority(ADMIN_READ.getPermission())
-//                                .requestMatchers(GET, "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
-//
-//                                .anyRequest()
-//                                .authenticated()
-//                )
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
+        private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**",
+                        "/v2/api-docs",
+                        "/v3/api-docs",
+                        "/v3/api-docs/**",
+                        "/swagger-resources",
+                        "/swagger-resources/**",
+                        "/configuration/ui",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**",
+                        "/swagger-ui.html",
+                        "/api/v1/auth/register",
+                        "/api/v1/auth/authenticate",
+                        "/api/password-reset/request",
+                        "/api/password-reset/reset",
+                        "/api/courses/**",
+                        "/api/**",
+                        "/api/students",
+                        "/api/students/{id}/update-address"
+        };
+        private final JwtAuthenticationFilter jwtAuthFilter;
+        private final AuthenticationProvider authenticationProvider;
+        private final LogoutHandler logoutHandler;
 
-        return http.build();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(req -> req.anyRequest().permitAll())
+                                // .authorizeHttpRequests(req ->
+                                // req.requestMatchers(WHITE_LIST_URL)
+                                // .permitAll()
+                                //
+                                // /// --------------------- STUDENT --------------------------------
+                                // // /api/students/{id}
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(GET,
+                                // "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_READ.getPermission())
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(PUT,
+                                // "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(DELETE,
+                                // "/api/students/[0-9]+")).hasAnyAuthority(STUDENT_DELETE.getPermission())
+                                //
+                                // // /api/students/{id}/changePassword
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(PUT,
+                                // "/api/students/[0-9]+/changePassword")).hasAnyAuthority(STUDENT_UPDATE.getPermission())
+                                //
+                                // // /api/students
+                                // .requestMatchers(GET,
+                                // "/api/students").hasAnyAuthority(STUDENT_READ.getPermission())
+                                // .requestMatchers(POST,
+                                // "/api/students").hasAnyAuthority(STUDENT_CREATE.getPermission())
+                                //
+                                // // /api/students/{studentId}/courses/{courseId}
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(POST,
+                                // "/api/students/[0-9]+/courses/[0-9]+")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
+                                //
+                                // // /api/students/{studentId}/enrollFromCart
+                                // .requestMatchers(RegexRequestMatcher.regexMatcher(POST,
+                                // "/api/students/[0-9]+/enrollFromCart")).hasAnyAuthority(ENROLLMENT_CREATE.getPermission())
+                                //
+                                // // /api/students/{id}/courses
+                                // .requestMatchers(GET,
+                                // "/api/students/[0-9]+/courses").hasAnyAuthority(COURSE_READ.getPermission())
+                                //
+                                // // /api/students/{id}/cart
+                                // .requestMatchers(GET,
+                                // "/api/students/[0-9]+/cart").hasAnyAuthority(CART_READ.getPermission())
+                                //
+                                // // /api/students/list
+                                // .requestMatchers(GET,
+                                // "/api/students/list").hasAnyAuthority(STUDENT_READ.getPermission())
+                                //
+                                // // ------------------------------------- ADMIN
+                                // ------------------------------------
+                                // .requestMatchers(GET,
+                                // "/api/admins/[0-9]+").hasAnyAuthority(ADMIN_READ.getPermission())
+                                // .requestMatchers(GET,
+                                // "/api/admins/add-category").hasAnyAuthority(CATEGORY_CREATE.getPermission())
+                                //
+                                // .anyRequest()
+                                // .authenticated()
+                                // )
+                                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout")
+                                                .addLogoutHandler(logoutHandler)
+                                                .logoutSuccessHandler((request, response,
+                                                                authentication) -> SecurityContextHolder
+                                                                                .clearContext()));
+
+                return http.build();
+        }
 }
