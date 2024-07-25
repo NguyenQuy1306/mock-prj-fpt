@@ -26,13 +26,7 @@ import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
-import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.model.request.ContentCreateRequest;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -345,4 +339,20 @@ public class CourseController {
         System.out.println("checkkk");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/courses/getUnapprovedCourses")
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> unapprovedCourse(@RequestParam Long adminId) {
+        ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+        try {
+            apiResponse.ok(courseService.unapprovedCourse(adminId));
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (Exception e) {
+            apiResponse.error(ResponseCode.getError(23));
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

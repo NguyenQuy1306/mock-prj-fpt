@@ -20,32 +20,37 @@ import java.util.Optional;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecificationExecutor<Course> {
-    Page<Course> findByCategory(Category category, Pageable pageable);
+        Page<Course> findByCategory(Category category, Pageable pageable);
 
-    List<Course> findByCategory(Category category);
+        List<Course> findByCategory(Category category);
 
-    Page<Course> findAll(Pageable pageable);
+        Page<Course> findAll(Pageable pageable);
 
-    @Query("SELECT c " +
-            "FROM Course c " +
-            "JOIN OrderItems oi ON oi.course.courseId = c.courseId " +
-            "WHERE c.instructor.userId = :instructorId " +
-            "AND c.price > 0 " +
-            "GROUP BY c " +
-            "ORDER BY COUNT(c) DESC")
-    Page<Course> getTheMostPurchasedCourses(@Param("instructorId") Long instructorId, Pageable pageable);
+        @Query("SELECT c " +
+                        "FROM Course c " +
+                        "JOIN OrderItems oi ON oi.course.courseId = c.courseId " +
+                        "WHERE c.instructor.userId = :instructorId " +
+                        "AND c.price > 0 " +
+                        "GROUP BY c " +
+                        "ORDER BY COUNT(c) DESC")
+        Page<Course> getTheMostPurchasedCourses(@Param("instructorId") Long instructorId, Pageable pageable);
 
+        Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
 
-    Boolean existsByInstructor_UserIdAndCourseId(Long userId, Long courseId);
+        @EntityGraph(attributePaths = { "sections", "sections.contents", "instructor", "category" })
+        Course findWithSectionsByCourseId(Long courseId);
 
-    @EntityGraph(attributePaths = {"sections", "sections.contents", "instructor", "category"})
-            Course findWithSectionsByCourseId(Long courseId);
+        @Query("SELECT COUNT(c) FROM Course c WHERE c.instructor.userId = :userId")
+        Long countCoursesOfInstructor(@Param("userId") Long userId);
 
-    @Query("SELECT COUNT(c) FROM Course c WHERE c.instructor.userId = :userId")
-    Long countCoursesOfInstructor(@Param("userId") Long userId);
+        @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate;")
+        Long getTotalCoursesForYears(Long instructorId, LocalDate startDate, LocalDate endDate);
 
-    @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate;")
-    Long getTotalCoursesForYears(Long instructorId, LocalDate startDate, LocalDate endDate);
-    // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id = :instructorId", nativeQuery = true)
-    Page<Course> findByInstructorUserId(@Param("instructorId") Long instructorId, Pageable pageable);
+        // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id =
+        // :instructorId", nativeQuery = true)
+        Page<Course> findByInstructorUserId(@Param("instructorId") Long instructorId, Pageable pageable);
+
+        @Query(value = "select * from courses a where a.status = :status ", nativeQuery = true)
+        List<Course> getCourseByIsApproved(@Param("status") String status);
+
 }

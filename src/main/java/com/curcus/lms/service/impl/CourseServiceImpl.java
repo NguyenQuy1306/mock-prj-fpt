@@ -2,7 +2,6 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.entity.*;
-import com.curcus.lms.model.response.CourseStatusResponse;
 import com.curcus.lms.service.CategorySevice;
 import java.io.Console;
 import java.util.ArrayList;
@@ -21,12 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.entity.Category;
-import com.curcus.lms.model.entity.Content;
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.entity.Student;
-
 import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
@@ -37,6 +30,7 @@ import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
+import com.curcus.lms.repository.AdminRepository;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
@@ -80,7 +74,8 @@ public class CourseServiceImpl implements CourseService {
     private InstructorValidator instructorValidator;
     @Autowired
     private InstructorService instructorService;
-
+    @Autowired
+    private AdminRepository adminRepository;
     @Autowired
     private FileAsyncUtil fileAsyncUtil;
 
@@ -468,4 +463,20 @@ public class CourseServiceImpl implements CourseService {
             throw ex;
         }
     }
+
+    @Override
+    public List<CourseResponse> unapprovedCourse(Long adminId) {
+        Admin admin = adminRepository.findById(adminId).orElse(null);
+        if (admin == null) {
+            throw new NotFoundException("Admin has not existed with adminId " + adminId);
+        }
+        List<CourseResponse> courseResponse = courseMapper
+                .toResponseList(courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name()));
+        ;
+        if (courseResponse == null || courseResponse.isEmpty()) {
+            throw new NotFoundException("No course is unapproved");
+        }
+        return courseResponse;
+    }
+
 }
