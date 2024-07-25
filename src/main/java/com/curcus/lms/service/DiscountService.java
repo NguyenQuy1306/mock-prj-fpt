@@ -42,4 +42,6 @@ public interface DiscountService {
 
     void deleteDiscountFromStudent(Long discountId, Long studentId);
 
+    Long findDiscountByCode(String discountCode, Long studentId);
+
 }
