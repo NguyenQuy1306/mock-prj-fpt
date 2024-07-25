@@ -3,6 +3,7 @@ package com.curcus.lms.service.impl;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.repository.CartItemsRepository;
@@ -11,6 +12,7 @@ import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.entity.Enrollment;
@@ -20,13 +22,15 @@ import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -44,6 +48,8 @@ public class StudentServiceImpl implements StudentService {
     private CartItemsRepository cartItemsRepository;
     @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -111,8 +117,8 @@ public class StudentServiceImpl implements StudentService {
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
             if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
-            if(newStudent.getPassword().equals(studentRequest.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
-            newStudent.setPassword(studentRequest.getPassword());
+            if(passwordEncoder.matches(studentRequest.getPassword(), newStudent.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
+            newStudent.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
             throw ex;
@@ -213,6 +219,91 @@ public class StudentServiceImpl implements StudentService {
         }
 
         return enrollmentResponses;
+    }
+
+    @Override
+    public  HashMap<String, Integer> getCoursesPurchasedLastFiveYears(Long studentId){
+
+        Student student = studentRepository.findById(studentId).orElse(null);
+
+        if (student==null) throw new NotFoundException("Student doesn't exist");
+
+        List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
+
+        HashMap<String, Integer> courseCount = new HashMap<>();
+
+        for (int i = 0; i < 5; i++) {
+            int year = LocalDate.now().getYear() - i;
+            LocalDate startOfYear = LocalDate.of(year, 1, 1);
+            LocalDate endOfYear = startOfYear.plusYears(1).minusDays(1);
+            int count = 0;
+            for (int j = 0; j < enrollments.size(); j++) {
+                Enrollment enrollment = enrollments.get(j);
+                LocalDate enrollmentDate = enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                if ((enrollmentDate.isAfter(startOfYear) || enrollmentDate.isEqual(startOfYear)) &&
+                    (enrollmentDate.isBefore(endOfYear) || enrollmentDate.isEqual(endOfYear))) {
+                    count++;
+                }
+            }
+            String temp=String.valueOf(year);
+            courseCount.put(temp, count);
+        }
+
+        return courseCount;
+    }
+
+    @Override
+    public  Integer getTotalPurchaseCourse(Long studentId){
+
+        Student student = studentRepository.findById(studentId).orElse(null);
+
+        if (student==null) throw new NotFoundException("Student doesn't exist");
+
+        return enrollmentRepository.totalPurchaseCourse(studentId);
+    }
+
+    @Override
+    public Integer totalFinishCourse(Long studentId){
+        try {
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
+            int totalFinishCourse = (int) enrollments.stream()
+                   .filter(Enrollment::getIsComplete)
+                   .count();
+            return totalFinishCourse;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public HashMap<String, Integer> finishCourseFiveYears(Long studentId){
+        try {
+            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
+            Year currentYear = Year.now();
+            HashMap<String, Integer> finishCourseFiveYears = new HashMap<String, Integer>();
+            Stream.iterate(currentYear, year -> year.minusYears(1)).limit(5).forEach(year -> {
+                String yearString = year.toString();
+                Integer count = (int) enrollments.stream()
+                       .filter(enrollment -> enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                               .getYear() == year.getValue())
+                       .filter(Enrollment::getIsComplete)
+                       .count();
+                finishCourseFiveYears.put(yearString, count);
+            });
+            return finishCourseFiveYears;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public StudentStatisticResponse studentStatistic(Long studentId)
+    {
+        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId), 
+                                                                  totalFinishCourse(studentId), 
+                                                                  getCoursesPurchasedLastFiveYears(studentId), 
+                                                                  finishCourseFiveYears(studentId));
+        return statisticResponse;
     }
 
 

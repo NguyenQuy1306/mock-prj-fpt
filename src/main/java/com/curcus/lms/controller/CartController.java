@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.GetExchange;
+
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
@@ -65,7 +68,7 @@ public class CartController {
         }
     }
 
-    @PostMapping(value = "/{studentId}/listCourse")
+    @GetMapping(value = "/{studentId}/listCourse")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
         try {
             List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
@@ -82,7 +85,8 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId, @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
+            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
         try {
             cartService.copyCartToOrder(studentId, courseIds, totalPrice);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -134,4 +138,3 @@ public class CartController {
         }
     }
 }
-

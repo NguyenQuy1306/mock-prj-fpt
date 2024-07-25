@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -18,6 +19,7 @@ public class RatingResponse implements Serializable {
     private Long courseId;
     private Long rating;
     private String comment;
+    private LocalDateTime ratingDate;
 
     @Override
     public String toString() {
@@ -27,6 +29,7 @@ public class RatingResponse implements Serializable {
                 ", courseId='" + courseId + '\'' +
                 ", rating='" + rating + '\'' +
                 ", comment='" + comment + '\'' +
+                ", dateTime=" + ratingDate +
                 '}';
     }
 
@@ -39,11 +42,11 @@ public class RatingResponse implements Serializable {
         RatingResponse that = (RatingResponse) o;
         return Objects.equals(ratingId, that.ratingId) && Objects.equals(studentId, that.studentId)
                 && Objects.equals(courseId, that.courseId) && Objects.equals(rating, that.rating)
-                && Objects.equals(comment, that.comment);
+                && Objects.equals(comment, that.comment) && Objects.equals(ratingDate, that.ratingDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ratingId, studentId, courseId, rating, comment);
+        return Objects.hash(ratingId, studentId, courseId, rating, comment, ratingDate);
     }
 }

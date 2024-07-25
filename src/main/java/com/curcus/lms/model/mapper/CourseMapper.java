@@ -1,11 +1,16 @@
 package com.curcus.lms.model.mapper;
+import com.curcus.lms.model.entity.Content;
+import com.curcus.lms.model.response.*;
+import com.curcus.lms.repository.RatingRepository;
 
 import com.curcus.lms.model.response.CourseSearchResponse;
+import com.curcus.lms.model.response.InstructorPublicResponse;
 import com.curcus.lms.model.response.InstructorResponse;
-import com.curcus.lms.repository.RatingRepository;
+import com.curcus.lms.repository.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +52,19 @@ public abstract class CourseMapper {
     @Autowired
     protected InstructorMapper instructorMapper;
 
+    @Autowired
+    protected CourseRepository courseRepository;
+
+
+    @Mapping(source = "courseThumbnail", target = "courseThumbnail")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "price", target = "price")
+    @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "avgRating", target = "avgRating")
+    @Mapping(source = "instructor", target = "instructor")
+    @Mapping(source = "category", target = "category")
+    public abstract CourseDetailResponse toDetailResponse(Course course);
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
@@ -111,23 +129,29 @@ public abstract class CourseMapper {
     }
 
     // CourseSearchResponse
-//    @Mapping(target = "position", source = "contentCreateRequest.sectionId")
-    @Mapping(target = "instructor", expression = "java(getInstructorResponseById(course.getInstructor().getUserId()))")
-    @Mapping(target = "totalReviews", source="course.courseId", qualifiedByName = "getTotalViewByCourseId")
+    @Mapping(target = "totalReviews", source = "totalRating")
     @Mapping(source = "course.category.categoryName", target = "categoryName")
+    @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
+    @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
 
-    @Named("getTotalViewByCourseId")
-    protected Long getTotalViewByCourseId(Long courseId) {
-
-        return ratingRepository.countByCourse_CourseId(courseId);
+    @Named("getPrePriceByCourseId")
+    protected Long getPrePriceByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getPrice();
+        }
+        return null;
     }
 
-    protected InstructorResponse getInstructorResponseById(Long constructorId) {
-        return instructorMapper.toResponse(
-                instructorRepository.findById(constructorId).orElse(null)
-        );
+    @Named("getAftPriceByCourseId")
+    protected Long getAftPriceByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course != null) {
+            return course.getPrice();
+        }
+        return null;
     }
 
 

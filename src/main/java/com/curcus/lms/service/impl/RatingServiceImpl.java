@@ -1,11 +1,13 @@
 package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.*;
+import com.curcus.lms.model.dto.RatingDetailDTO;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Rating;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.OthersMapper;
 import com.curcus.lms.model.request.RatingRequest;
+import com.curcus.lms.model.response.CourseRatingResponse;
 import com.curcus.lms.model.response.RatingResponse;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.RatingRepository;
@@ -16,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -46,6 +50,7 @@ public class RatingServiceImpl implements RatingService {
             if (newRating != null) {
                 newRating.setRating(ratingRequest.getRating());
                 newRating.setComment(ratingRequest.getComment());
+                newRating.setRatingDate(LocalDateTime.now());
 
                 return othersMapper.toRatingResponse(ratingRepository.save(newRating));
             } else
@@ -111,11 +116,51 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
+    public CourseRatingResponse getCourseRatingsByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new CourseException("Course not found")
+        );
+        List<Rating> ratings = ratingRepository.findAllByCourse_CourseId(courseId);
+        CourseRatingResponse courseRatingResponse = new CourseRatingResponse();
+
+        courseRatingResponse.setTotalRating(course.getTotalRating());
+        courseRatingResponse.setAvgRating(course.getAvgRating());
+
+        RatingDetailDTO ratingDetailDTO = new RatingDetailDTO();
+        if (ratings != null && !ratings.isEmpty()) {
+            for (Rating rating : ratings) {
+                switch (rating.getRating().intValue()) {
+                    case 1:
+                        ratingDetailDTO.setOneStar(ratingDetailDTO.getOneStar()+1);
+                        break;
+                    case 2:
+                        ratingDetailDTO.setTwoStar(ratingDetailDTO.getTwoStar()+1);
+                        break;
+                    case 3:
+                        ratingDetailDTO.setThreeStar(ratingDetailDTO.getThreeStar()+1);
+                        break;
+                    case 4:
+                        ratingDetailDTO.setFourStar(ratingDetailDTO.getFourStar()+1);
+                        break;
+                    case 5:
+                        ratingDetailDTO.setFiveStar(ratingDetailDTO.getFiveStar()+1);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        courseRatingResponse.setRatingDetailDTO(ratingDetailDTO);
+
+        return courseRatingResponse;
+    }
+
+    @Override
     public RatingResponse createRating(RatingRequest ratingRequest) {
         if (ratingRepository.existsByStudent_UserIdAndCourse_CourseId(ratingRequest.getStudentId(), ratingRequest.getCourseId())) {
             throw new UniqueConstraintException("Rating already exists");
         }
-
+        LocalDateTime currentDateTime = LocalDateTime.now();
         Student student = studentRepository.findById(ratingRequest.getStudentId()).orElseThrow();
         Course course = courseRepository.findById(ratingRequest.getCourseId()).orElseThrow();
         Rating rating = new Rating();
@@ -123,6 +168,7 @@ public class RatingServiceImpl implements RatingService {
         rating.setCourse(course);
         rating.setComment(ratingRequest.getComment());
         rating.setRating(ratingRequest.getRating());
+        rating.setRatingDate(currentDateTime);
         return othersMapper.toRatingResponse(ratingRepository.save(rating));
     }
 }
