@@ -2,6 +2,8 @@ package com.curcus.lms.service;
 
 import java.util.List;
 
+import com.curcus.lms.model.request.*;
+import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.*;
 
 import org.springframework.validation.BindingResult;
@@ -21,7 +23,15 @@ import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
+import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.SectionCreateResponse;
+
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.BindingResult;
 
 public interface CourseService {
     // List<CourseResponse> findByCategory(Long categoryId);
@@ -42,7 +52,9 @@ public interface CourseService {
     Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price,
             Boolean isFree, Pageable pageable);
 
-    ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
+    ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest);
+
+    ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
 
     Course findById(Long id);
 

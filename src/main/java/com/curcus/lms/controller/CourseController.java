@@ -1,7 +1,7 @@
 package com.curcus.lms.controller;
 
-import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.request.*;
+import com.curcus.lms.model.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,14 +19,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
+import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Section;
+import com.curcus.lms.model.request.CourseCreateRequest;
+import com.curcus.lms.model.request.SectionRequest;
+import com.curcus.lms.model.request.ContentCreateRequest;
+import com.curcus.lms.model.request.ContentUpdatePositionRequest;
+import com.curcus.lms.model.request.ContentUpdateRequest;
+import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -153,13 +162,27 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
-    @PostMapping(value = "/addContent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ContentCreateResponse>> createContent(
-            @ModelAttribute @Valid ContentCreateRequest contentCreateRequest) {
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PostMapping(value = "/addContent/document")
+    public ResponseEntity<ApiResponse<ContentCreateResponse>> createDocumentContent(
+         @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
-                .saveContent(contentCreateRequest);
+                    .saveDocumentContent(contentCreateRequest);
+
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(contentCreateResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+
+    }
+
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PostMapping(value = "/addContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ContentCreateResponse>> createVideoContent(
+            @ModelAttribute @Valid ContentVideoCreateRequest contentCreateRequest) {
+        ContentCreateResponse contentCreateResponse = courseService
+                    .saveContent(contentCreateRequest);
 
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);

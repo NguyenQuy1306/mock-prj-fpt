@@ -85,7 +85,7 @@ public class FileAsyncUtil {
 	public void updateContentUrl(Long contentId, String url) {
 	    Content content = contentRepository.findById(contentId).orElseThrow(
 	            () -> new NotFoundException("Content not found with id " + contentId));
-	    content.setUrl(url);
+	    content.setContent(url);
 	    contentRepository.save(content);
 	}
 	public ContentType getContentType(MultipartFile file) {

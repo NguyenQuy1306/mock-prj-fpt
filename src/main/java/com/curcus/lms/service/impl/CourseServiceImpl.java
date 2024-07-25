@@ -1,5 +1,6 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.service.CategorySevice;
@@ -18,24 +19,36 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.exception.ApplicationException;
+import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.entity.Category;
+import com.curcus.lms.model.entity.Content;
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.model.entity.Section;
+import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.ContentMapper;
+import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
 import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.repository.AdminRepository;
+
+import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.SectionCreateResponse;
+import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.repository.CategoryRepository;
 import com.curcus.lms.repository.ContentRepository;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.repository.SectionRepository;
+
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
@@ -45,7 +58,6 @@ import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
 
 import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -78,6 +90,7 @@ public class CourseServiceImpl implements CourseService {
     private AdminRepository adminRepository;
     @Autowired
     private FileAsyncUtil fileAsyncUtil;
+
 
     @Override
     public Page<CourseSearchResponse> findAll(Pageable pageable) {
@@ -164,15 +177,24 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    @Transactional
-    public ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest) {
+    public ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
         fileAsyncUtil.validContent(contentCreateRequest.getFile());
         content = contentRepository.save(content);
 
-        fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
+		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
         return contentMapper.toResponse(content);
+
+    }
+
+    @Override
+    public ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest) {
+        // TODO Auto-generated method stub
+        Content content = contentMapper.toEntity(contentCreateRequest);
+        content = contentRepository.save(content);
+        return contentMapper.toResponse(content);
+
     }
 
     @Override
@@ -242,7 +264,6 @@ public class CourseServiceImpl implements CourseService {
             throw new ApplicationException();
         }
     }
-
     @Override
     public Page<CourseSearchResponse> searchCourses(
             Long instructorId,
@@ -282,6 +303,7 @@ public class CourseServiceImpl implements CourseService {
         return courses.map(this::convertToCourseDetailResponse);
     }
 
+
     @Override
     public CourseDetailResponse getCourseDetails(Long courseId) {
         Course course = courseRepository.findWithSectionsByCourseId(courseId);
@@ -291,6 +313,7 @@ public class CourseServiceImpl implements CourseService {
         CourseDetailResponse courseDetailResponse = courseMapper.toDetailResponse(course);
         return courseDetailResponse;
     }
+
 
     private CourseDetailResponse2 convertToCourseDetailResponse(Course course) {
         return CourseDetailResponse2.builder()

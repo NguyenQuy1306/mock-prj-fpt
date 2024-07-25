@@ -12,10 +12,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class ContentCreateRequest {
-	@NotNull(message = "Section ID cannot be null")
+public class ContentVideoCreateRequest {
+    @NotNull(message = "Section ID cannot be null")
     private Long sectionId;
-
     @NotNull(message = "File cannot be null")
     private MultipartFile file;
 
