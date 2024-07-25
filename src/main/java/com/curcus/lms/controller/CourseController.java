@@ -28,11 +28,9 @@ import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
-import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.response.ApiResponse;
@@ -117,10 +115,9 @@ public class CourseController {
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-            // CourseResponse courseResponse = courseService.update(courseRequest,
-            // bindingResult);
+//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-            // apiResponse.ok(courseResponse);
+//            apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -182,7 +179,7 @@ public class CourseController {
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createVideoContent(
             @ModelAttribute @Valid ContentVideoCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
-                    .saveContent(contentCreateRequest);
+                    .saveVideoContent(contentCreateRequest);
 
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);

@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
 import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;

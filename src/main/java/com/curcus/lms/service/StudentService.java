@@ -1,10 +1,12 @@
 package com.curcus.lms.service;
 
 import com.curcus.lms.model.request.StudentRequest;
+import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.model.response.UserAddressResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,9 @@ public interface StudentService {
     Integer totalFinishCourse(Long studentId);
 
     HashMap<String, Integer> finishCourseFiveYears(Long studentId);
-     
+
     StudentStatisticResponse studentStatistic(Long studentId);
 
+
+    UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest);
 }

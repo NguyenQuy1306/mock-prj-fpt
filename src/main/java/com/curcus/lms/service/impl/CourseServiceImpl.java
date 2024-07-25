@@ -31,7 +31,6 @@ import com.curcus.lms.model.mapper.ContentMapper;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;

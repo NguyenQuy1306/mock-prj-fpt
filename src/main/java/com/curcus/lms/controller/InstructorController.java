@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.curcus.lms.model.request.UserAddressRequest;
+import com.curcus.lms.model.response.UserAddressResponse;
 import com.curcus.lms.model.response.InstructorGetCourseResponse;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,5 +227,28 @@ public class InstructorController {
         } catch (Exception ex) {
             throw new ApplicationException();
         }
+    }
+
+    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and
+    // authentication.principal.getId() == #id)")
+    @PostMapping(value = "{id}/update-address")
+    public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id,
+            @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {
+        try {
+            if (bindingResult.hasErrors())
+                throw new Exception("Request invalid");
+            UserAddressResponse instructorResponse = instructorService.updateInstructorAddress(id,
+                    studentAddressRequest);
+            ApiResponse<UserAddressResponse> apiResponse = new ApiResponse<>();
+            apiResponse.ok(instructorResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<UserAddressResponse> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
