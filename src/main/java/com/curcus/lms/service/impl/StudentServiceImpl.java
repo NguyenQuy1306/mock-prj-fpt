@@ -22,7 +22,7 @@ import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StatisticResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -297,9 +297,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StatisticResponse studentStatistic(Long studentId)
+    public StudentStatisticResponse studentStatistic(Long studentId)
     {
-        StatisticResponse statisticResponse=new StatisticResponse(getTotalPurchaseCourse(studentId), 
+        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId), 
                                                                   totalFinishCourse(studentId), 
                                                                   getCoursesPurchasedLastFiveYears(studentId), 
                                                                   finishCourseFiveYears(studentId));

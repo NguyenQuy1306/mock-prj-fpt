@@ -11,7 +11,7 @@ import java.util.*;
 @AllArgsConstructor
 @Setter
 @Getter
-public class StatisticResponse implements Serializable {
+public class StudentStatisticResponse implements Serializable {
 
     private Integer purchaseCourse;
     private Integer finishCourse;
@@ -20,7 +20,7 @@ public class StatisticResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "StatisticResponse{" +
+        return "StudentStatisticResponse{" +
                 "purchaseCourse=" + purchaseCourse +
                 ", finishCourse=" + finishCourse + '\'' + 
                 ", purchaseCourse5=" + purchaseCourse5 + '\'' + 
@@ -33,7 +33,7 @@ public class StatisticResponse implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        StatisticResponse that = (StatisticResponse) o;
+        StudentStatisticResponse that = (StudentStatisticResponse) o;
         return Objects.equals(purchaseCourse, that.purchaseCourse) && Objects.equals(finishCourse, that.finishCourse)
         && Objects.equals(purchaseCourse5, that.purchaseCourse5) && Objects.equals(finishCourse5, that.finishCourse5);
     }
