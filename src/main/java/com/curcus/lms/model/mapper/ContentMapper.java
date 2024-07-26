@@ -1,5 +1,7 @@
 package com.curcus.lms.model.mapper;
 
+import com.curcus.lms.model.request.ContentDocumentCreateRequest;
+import com.curcus.lms.model.request.ContentVideoCreateRequest;
 import com.curcus.lms.model.response.ContentDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,7 +15,7 @@ import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentCreateRequest;
+
 import com.curcus.lms.model.request.ContentUpdateRequest;
 import com.curcus.lms.model.response.ContentCreateResponse;
 import com.curcus.lms.repository.ContentRepository;
@@ -37,20 +39,27 @@ public abstract class ContentMapper {
     protected ContentRepository contentRepository;
 
     @Mapping(source = "type", target = "type")
-    @Mapping(source = "url", target = "url")
+    @Mapping(source = "content", target = "content")
     @Mapping(source = "position", target = "position")
     public abstract ContentDetailResponse toDetailResponse(Content content);
 
     @Mapping(expression = "java(content.getSection().getSectionId())", target = "sectionId")
+    @Mapping(source = "content", target = "content")
     public abstract ContentCreateResponse toResponse(Content content);
 
     @Mapping(target = "section", expression = "java(findSectionById(contentCreateRequest.getSectionId()))")
 //    @Mapping(target = "url", expression = "java(uploadAndGetUrl(contentCreateRequest.getFile()))")
-    @Mapping(target = "url", expression = "java(null)")
+    @Mapping(target = "content", expression = "java(null)")
     @Mapping(target = "type", expression = "java(getContentType(contentCreateRequest.getFile()))")
     @Mapping(target = "position", source = "contentCreateRequest.sectionId", qualifiedByName = "getLastPosition")
-    public abstract Content toEntity(ContentCreateRequest contentCreateRequest);
+    public abstract Content toEntity(ContentVideoCreateRequest contentCreateRequest);
 
+    @Mapping(target = "section", expression = "java(findSectionById(contentCreateRequest.getSectionId()))")
+//    @Mapping(target = "url", expression = "java(uploadAndGetUrl(contentCreateRequest.getFile()))")
+    @Mapping(source = "content", target = "content")
+    @Mapping(target = "type", expression = "java(com.curcus.lms.constants.ContentType.DOCUMENT)")
+    @Mapping(target = "position", source = "contentCreateRequest.sectionId", qualifiedByName = "getLastPosition")
+    public abstract Content toEntity(ContentDocumentCreateRequest contentCreateRequest);
 
     protected ContentType getContentType(MultipartFile file) {
         String contentType = file.getContentType();

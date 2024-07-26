@@ -2,19 +2,44 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.request.UserAddressRequest;
+import com.curcus.lms.model.response.UserAddressResponse;
+import com.curcus.lms.repository.*;
+
+
+import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import org.springframework.stereotype.Service;
 
+import com.curcus.lms.repository.CartItemsRepository;
+import com.curcus.lms.repository.CartRepository;
+import com.curcus.lms.repository.EnrollmentRepository;
+import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.StudentService;
+
+import jakarta.validation.ConstraintViolationException;
+
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.model.entity.Cart;
+import com.curcus.lms.model.entity.CartItems;
+import com.curcus.lms.model.entity.Enrollment;
+import com.curcus.lms.model.entity.Student;
+import com.curcus.lms.exception.DuplicatePhoneNumberException;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.StudentStatisticResponse;
+import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -41,6 +66,8 @@ public class StudentServiceImpl implements StudentService {
     private CourseRepository courseRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private SectionRepository sectionRepository;
 
@@ -292,11 +319,40 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentStatisticResponse studentStatistic(Long studentId)
     {
-        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId), 
-                                                                  totalFinishCourse(studentId), 
-                                                                  getCoursesPurchasedLastFiveYears(studentId), 
+        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId),
+                                                                  totalFinishCourse(studentId),
+                                                                  getCoursesPurchasedLastFiveYears(studentId),
                                                                   finishCourseFiveYears(studentId));
         return statisticResponse;
+    }
+
+    public UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest) {
+        try {
+            Student user = studentRepository.findById(userId)
+                    .orElseThrow(() -> new ApplicationException("Student not found with id: " + userId));
+
+            Optional.ofNullable(addressRequest.getFirstName()).ifPresent(user::setFirstName);
+            Optional.ofNullable(addressRequest.getLastName()).ifPresent(user::setLastName);
+            Optional.ofNullable(addressRequest.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+            Optional.ofNullable(addressRequest.getUserAddress()).ifPresent(user::setUserAddress);
+            Optional.ofNullable(addressRequest.getUserCity()).ifPresent(user::setUserCity);
+            Optional.ofNullable(addressRequest.getUserCountry()).ifPresent(user::setUserCountry);
+            Optional.ofNullable(addressRequest.getUserPostalCode()).ifPresent(user::setUserPostalCode);
+            studentRepository.save(user);
+            return userMapper.toUserAddressResponse(user);
+        } catch (DataIntegrityViolationException ex) {
+            if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new DuplicatePhoneNumberException(
+                        "Phone number " + addressRequest.getPhoneNumber() + " already exists.");
+            }
+            throw ex;
+        }
+
+        catch (com.curcus.lms.exception.NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        }
     }
 
     @Override
@@ -360,5 +416,4 @@ public class StudentServiceImpl implements StudentService {
         response.setCourseCompleted(false);
         return response;
     }
-
 }

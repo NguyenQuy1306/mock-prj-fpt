@@ -15,6 +15,6 @@ public class ContentCreateResponse {
     private Long id;
     private Long sectionId;
     private ContentType type;
-    private String url;
+    private String content;
     private Long position;
 }

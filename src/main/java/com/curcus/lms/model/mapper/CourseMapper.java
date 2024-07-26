@@ -2,14 +2,12 @@ package com.curcus.lms.model.mapper;
 
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
-import com.curcus.lms.repository.RatingRepository;
-
-import com.curcus.lms.model.response.CourseSearchResponse;
-import com.curcus.lms.model.response.InstructorPublicResponse;
-import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.*;
+
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +20,19 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.model.entity.Category;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
+import com.curcus.lms.model.entity.Section;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.CloudinaryService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import java.util.Comparator;
 
 @Mapper(componentModel = "spring")
 public abstract class CourseMapper {
@@ -64,7 +62,18 @@ public abstract class CourseMapper {
     @Mapping(source = "avgRating", target = "avgRating")
     @Mapping(source = "instructor", target = "instructor")
     @Mapping(source = "category", target = "category")
+    @Mapping(target = "sections", expression = "java(mapSortedSections(course))")
     public abstract CourseDetailResponse toDetailResponse(Course course);
+
+    protected List<SectionDetailResponse> mapSortedSections(Course course) {
+        return course.getSections().stream()
+                .sorted(Comparator.comparing(Section::getPosition))
+                .map(this::mapSection)
+                .collect(Collectors.toList());
+    }
+
+    protected abstract SectionDetailResponse mapSection(Section section);
+
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
@@ -75,6 +84,8 @@ public abstract class CourseMapper {
     public abstract CourseResponseForCart toResponseCourseCart(Course course);
 
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
+
+
 
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
@@ -89,7 +100,7 @@ public abstract class CourseMapper {
     // return userRepository.findById(id).orElse(null);
     @Mapping(target = "instructor", expression = "java(findInstructorById(courseCreateRequest.getInstructorId()))")
     @Mapping(target = "category", expression = "java(findCategoryById(courseCreateRequest.getCategoryId()))")
-    @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
+    @Mapping(target = "courseThumbnail", constant = "https://dribbble.com/tags/thumbnail-for-courses/")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
 
@@ -103,34 +114,9 @@ public abstract class CourseMapper {
                 () -> new NotFoundException("Category has not existed with id " + id));
     }
 
-    protected String uploadAndGetUrl(MultipartFile file) {
-        ContentType contentType = getContentType(file);
-        try {
-            switch (contentType) {
-                case IMAGE:
-                    return cloudinaryService.uploadImage(file);
-                default:
-                    throw new InvalidFileTypeException("Unsupported file type");
-            }
-        } catch (IOException | InvalidFileTypeException e) {
-            throw new InvalidFileTypeException("Unsupported file type");
-        }
-    }
 
-    protected ContentType getContentType(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType != null) {
-            if (contentType.startsWith("video")) {
-                return ContentType.VIDEO;
-            } else if (contentType.startsWith("image")) {
-                return ContentType.IMAGE;
-            } else {
-                return ContentType.DOCUMENT;
-            }
-        } else {
-            return ContentType.UNKNOWN;
-        }
-    }
+
+
 
     // CourseSearchResponse
     @Mapping(target = "totalReviews", source = "totalRating")

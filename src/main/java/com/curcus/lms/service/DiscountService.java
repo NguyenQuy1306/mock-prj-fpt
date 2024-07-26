@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import com.curcus.lms.model.entity.StudentDiscount;
 import com.curcus.lms.model.entity.Discount;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.DiscountRequest;
 import com.curcus.lms.model.request.SectionRequest;

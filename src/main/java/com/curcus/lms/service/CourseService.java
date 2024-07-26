@@ -2,8 +2,10 @@ package com.curcus.lms.service;
 
 import java.util.List;
 
+import com.curcus.lms.model.request.*;
+import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.*;
-import com.curcus.lms.model.response.CourseStatusResponse;
+
 import org.springframework.validation.BindingResult;
 import java.util.Optional;
 
@@ -13,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentCreateRequest;
 import com.curcus.lms.model.request.ContentUpdatePositionRequest;
 import com.curcus.lms.model.request.SectionUpdatePositionRequest;
 import com.curcus.lms.model.request.ContentUpdateRequest;
@@ -21,7 +22,15 @@ import com.curcus.lms.model.request.CourseCreateRequest;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.request.SectionRequest;
 
+import com.curcus.lms.model.response.ContentCreateResponse;
+import com.curcus.lms.model.response.CourseDetailResponse2;
+import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.SectionCreateResponse;
+
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.BindingResult;
 
 public interface CourseService {
     // List<CourseResponse> findByCategory(Long categoryId);
@@ -35,12 +44,16 @@ public interface CourseService {
     Page<CourseSearchResponse> findAll(Pageable pageable);
 
     CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
-    
-//    Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
-//    Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String title, Long minPrice, Long maxPrice, Pageable pageable);
-    Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price, Boolean isFree, Pageable pageable);
 
-    ContentCreateResponse saveContent(ContentCreateRequest contentCreateRequest);
+    // Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
+    // Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String
+    // title, Long minPrice, Long maxPrice, Pageable pageable);
+    Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price,
+            Boolean isFree, Pageable pageable);
+
+    ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest);
+
+    ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
 
     Course findById(Long id);
 
@@ -54,15 +67,21 @@ public interface CourseService {
 
     CourseDetailResponse getCourseDetails(Long courseId);
 
-
     CourseStatusResponse updateCourseStatus(Long courseId, String status);
 
     // CourseResponse update(CourseRequest courseRequest, BindingResult
     // bindingResult);
     Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable);
 
-    // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest contentUpdateRequest);
+    // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest
+    // contentUpdateRequest);
 
-    List<ContentCreateResponse> updateContentPositions(Long id, @Valid List<ContentUpdatePositionRequest> positionUpdates);
-    List<SectionUpdatePositionRes> updateSectionPositions(Long id, @Valid List<SectionUpdatePositionRequest> positionUpdates);
+    List<ContentCreateResponse> updateContentPositions(Long id,
+            @Valid List<ContentUpdatePositionRequest> positionUpdates);
+
+    List<SectionUpdatePositionRes> updateSectionPositions(Long id,
+            @Valid List<SectionUpdatePositionRequest> positionUpdates);
+
+    List<CourseResponse> unapprovedCourse(Long adminId);
+
 }

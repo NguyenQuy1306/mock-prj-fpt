@@ -2,9 +2,11 @@ package com.curcus.lms.util;
 
 import java.io.IOException;
 
+import com.curcus.lms.model.entity.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.*;
 import com.curcus.lms.constants.ContentType;
@@ -27,20 +29,10 @@ public class FileAsyncUtil {
     @Autowired
     protected ContentRepository contentRepository;
 	@Async
-	public void uploadFileAsync(Long contentId, MultipartFile file) {
-	    ContentType contentType = getContentType(file);
+	public void uploadFileAsync(Long contentId, byte[] file) {
 	    String url = null;
 	    try {
-	        switch (contentType) {
-	            case VIDEO:
-	                url = cloudinaryService.uploadVideo(file);
-	                break;
-	            case DOCUMENT:
-	                url = cloudinaryService.uploadFile(file);
-	                break;
-	            default:
-	                throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_VIDEO_TYPES+FileValidation.ALLOWED_FILE_TYPES);
-	        }
+			url=cloudinaryService.uploadFile(file);
 	    } catch (IOException e) {
 	        // Handle the exception
 	    	System.out.println("cloudinary server error");
@@ -49,12 +41,37 @@ public class FileAsyncUtil {
 	    
 	    updateContentUrl(contentId, url);
 	}
+	@Async
+	public void uploadImageAsync(Long courseId, MultipartFile file) {
+		ContentType contentType = getContentType(file);
+		String url = null;
+		try {
+			switch (contentType) {
+				case IMAGE:
+					url = cloudinaryService.uploadImage(file);
+					break;
+				default:
+					throw new InvalidFileTypeException("Unsupported file type, content for section must be: " + FileValidation.ALLOWED_IMAGE_TYPES);
+			}
+		} catch (IOException e) {
+			// Handle the exception
+			System.out.println("cloudinary server error");
+			throw new RuntimeException(e);
+		}
 
-	@Transactional
+		updateCourseThumbnail(courseId, url);
+	}
+
+	public void updateCourseThumbnail(Long courseId, String url) {
+		Course course = courseRepository.findById(courseId).orElseThrow(
+				() -> new NotFoundException("Course not found with id " + courseId));
+		course.setCourseThumbnail(url);
+		courseRepository.save(course);
+	}
 	public void updateContentUrl(Long contentId, String url) {
 	    Content content = contentRepository.findById(contentId).orElseThrow(
 	            () -> new NotFoundException("Content not found with id " + contentId));
-	    content.setUrl(url);
+	    content.setContent(url);
 	    contentRepository.save(content);
 	}
 	public ContentType getContentType(MultipartFile file) {
@@ -87,4 +104,14 @@ public class FileAsyncUtil {
 	            throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_VIDEO_TYPES+FileValidation.ALLOWED_FILE_TYPES);
 		}
 	}
+	public void validImage(MultipartFile file) {
+		ContentType contentType = getContentType(file);
+		switch (contentType) {
+			case IMAGE:
+				break;
+			default:
+				throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_IMAGE_TYPES);
+		}
+	}
+	
 }

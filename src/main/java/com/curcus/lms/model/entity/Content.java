@@ -28,7 +28,7 @@ public class Content {
     @Column(nullable = false)
     private ContentType type;
 
-    private String url;
+    private String content;
 
     @Column(nullable = false)
     private Long position;
