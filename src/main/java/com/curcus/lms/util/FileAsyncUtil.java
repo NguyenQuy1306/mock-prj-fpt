@@ -29,29 +29,15 @@ public class FileAsyncUtil {
     @Autowired
     protected ContentRepository contentRepository;
 	@Async
-	public void uploadFileAsync(Long contentId, MultipartFile file) {
-	    ContentType contentType = getContentType(file);
+	public void uploadFileAsync(Long contentId, byte[] file) {
 	    String url = null;
 	    try {
-	        switch (contentType) {
-	            case VIDEO:
-	                url = cloudinaryService.uploadVideo(file);
-	                break;
-	            case DOCUMENT:
-	                url = cloudinaryService.uploadFile(file);
-	                break;
-	            default:
-	                throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_VIDEO_TYPES+FileValidation.ALLOWED_FILE_TYPES);
-	        }
+			url=cloudinaryService.uploadFile(file);
 	    } catch (IOException e) {
 	        // Handle the exception
 	    	System.out.println("cloudinary server error");
 	    	throw new RuntimeException(e);
 	    }
-		catch (MaxUploadSizeExceededException e) {
-			System.out.println("max upload size exceeded");
-			throw new RuntimeException(e);
-		}
 	    
 	    updateContentUrl(contentId, url);
 	}

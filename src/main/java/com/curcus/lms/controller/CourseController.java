@@ -163,7 +163,7 @@ public class CourseController {
 //            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/document")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createDocumentContent(
-         @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
+         @RequestBody @Valid  ContentDocumentCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
                     .saveDocumentContent(contentCreateRequest);
 
@@ -177,7 +177,7 @@ public class CourseController {
 //            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createVideoContent(
-            @ModelAttribute @Valid ContentVideoCreateRequest contentCreateRequest) {
+            @ModelAttribute @Valid @RequestBody ContentVideoCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
                     .saveVideoContent(contentCreateRequest);
 
