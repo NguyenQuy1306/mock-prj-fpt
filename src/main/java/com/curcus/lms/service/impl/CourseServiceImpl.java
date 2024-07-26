@@ -6,11 +6,14 @@ import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import com.curcus.lms.service.CategorySevice;
 import java.io.Console;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.curcus.lms.validation.FileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -180,10 +183,15 @@ public class CourseServiceImpl implements CourseService {
     public ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest) {
         // TODO Auto-generated method stub
         Content content = contentMapper.toEntity(contentCreateRequest);
-        fileAsyncUtil.validContent(contentCreateRequest.getFile());
+        FileValidation.validateVideoType(contentCreateRequest.getFile().getOriginalFilename());
         content = contentRepository.save(content);
-
-		fileAsyncUtil.uploadFileAsync(content.getId(), contentCreateRequest.getFile());
+        byte[] fileBytes = null;
+        try {
+            fileBytes = contentCreateRequest.getFile().getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        fileAsyncUtil.uploadFileAsync(content.getId(), fileBytes);
         return contentMapper.toResponse(content);
 
     }
