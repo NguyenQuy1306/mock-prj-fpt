@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Setter
@@ -15,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 @Table(name = "enrollments")
 public class Enrollment {
 
@@ -29,7 +32,8 @@ public class Enrollment {
     private Course course;
     @Column(nullable = false)
     private Date enrollmentDate;
-    @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean isComplete;
-
+    @ColumnDefault("1")
+    private Long currentSectionPosition;
 }

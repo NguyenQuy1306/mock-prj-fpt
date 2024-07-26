@@ -7,6 +7,11 @@ import com.curcus.lms.model.response.UserAddressResponse;
 import com.curcus.lms.repository.*;
 
 
+import com.curcus.lms.exception.ValidationException;
+import com.curcus.lms.model.entity.*;
+import com.curcus.lms.model.request.SectionCompleteRequest;
+import com.curcus.lms.model.response.*;
+import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,6 +68,8 @@ public class StudentServiceImpl implements StudentService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SectionRepository sectionRepository;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -346,5 +353,67 @@ public class StudentServiceImpl implements StudentService {
         } catch (ValidationException ex) {
             throw ex;
         }
+    }
+
+    @Override
+    public SectionCompleteResponse completeSection(SectionCompleteRequest request) {
+        SectionCompleteResponse response = new SectionCompleteResponse();
+
+        Section currentSectionInRequest = sectionRepository.findById(request.getSectionId())
+                .orElseThrow(() -> new NotFoundException("Section not found"));
+
+        Course course = currentSectionInRequest.getCourse();
+
+        Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(request.getStudentId(), course.getCourseId());
+        if (enrollment==null) throw new NotFoundException("Student has not enrolled the course");
+        if (enrollment.getIsComplete()) {
+            throw new NotFoundException("No more sections to complete");
+        }
+
+        Section currentSectionInDB = sectionRepository.findByCourse_CourseIdAndPosition(course.getCourseId(), enrollment.getCurrentSectionPosition())
+                .orElseThrow(() -> new NotFoundException("No more sections to complete"));
+
+        // mismatch between current section in request and current section in database
+        if (currentSectionInRequest.getSectionId() != currentSectionInDB.getSectionId()) {
+            throw new ValidationException("This section is not the current section");
+        }
+
+        // check if current section is the last section
+        Section lastSection = sectionRepository.findTopByCourse_CourseIdOrderByPositionDesc(enrollment.getCourse().getCourseId())
+                .orElseThrow(() -> new NotFoundException("Last section doesn't exist"));
+        if (currentSectionInDB.getPosition() == lastSection.getPosition()) {
+            // complete last section -> complete course. current section -> null
+            enrollment.setCurrentSectionPosition(null);
+            enrollment.setIsComplete(true);
+        } else {
+            // +1 to current section
+            enrollment.setCurrentSectionPosition(enrollment.getCurrentSectionPosition() + 1);
+        }
+        enrollmentRepository.save(enrollment);
+
+        // return new current section
+        return getCurrentSection(request.getStudentId(), course.getCourseId());
+    }
+
+    @Override
+    public SectionCompleteResponse getCurrentSection(Long studentId, Long courseId) {
+        SectionCompleteResponse response = new SectionCompleteResponse();
+
+        Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, courseId);
+        if (enrollment==null) throw new NotFoundException("Student has not enrolled the course");
+        if (enrollment.getIsComplete()) {
+            response.setSectionId(null);
+            response.setPosition(null);
+            response.setCourseCompleted(true);
+            return response;
+        }
+
+        Section currentSection = sectionRepository.findByCourse_CourseIdAndPosition(courseId, enrollment.getCurrentSectionPosition())
+                .orElseThrow(() -> new NotFoundException("Section doesn't exist"));
+
+        response.setSectionId(currentSection.getSectionId());
+        response.setPosition(currentSection.getPosition());
+        response.setCourseCompleted(false);
+        return response;
     }
 }

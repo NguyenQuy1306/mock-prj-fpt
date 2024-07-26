@@ -1,5 +1,6 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.*;
@@ -281,5 +282,19 @@ public class StudentController {
 
     }
 
+    @GetMapping("/{studentId}/courses/{courseId}/current-section")
+    ResponseEntity<ApiResponse<SectionCompleteResponse>> getCurrentSection(@PathVariable Long studentId,
+                                                                           @PathVariable Long courseId) {
+        ApiResponse<SectionCompleteResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(studentService.getCurrentSection(studentId, courseId));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/complete-section")
+    ResponseEntity<ApiResponse<SectionCompleteResponse>> completeCurrentSection(@Valid @RequestBody SectionCompleteRequest request) {
+        ApiResponse<SectionCompleteResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(studentService.completeSection(request));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
 }

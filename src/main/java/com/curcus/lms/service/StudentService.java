@@ -1,6 +1,8 @@
 package com.curcus.lms.service;
 
+import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.request.StudentRequest;
+import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
@@ -45,4 +47,7 @@ public interface StudentService {
 
 
     UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest);
+    SectionCompleteResponse completeSection(SectionCompleteRequest request);
+
+    SectionCompleteResponse getCurrentSection(Long studentId, Long courseId);
 }
