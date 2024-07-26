@@ -1,10 +1,8 @@
 package com.curcus.lms.service;
 
+import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.request.StudentRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StudentStatisticResponse;
-import com.curcus.lms.model.response.StudentResponse;
+import com.curcus.lms.model.response.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,4 +39,7 @@ public interface StudentService {
      
     StudentStatisticResponse studentStatistic(Long studentId);
 
+    SectionCompleteResponse completeSection(SectionCompleteRequest request);
+
+    SectionCompleteResponse getCurrentSection(Long studentId, Long courseId);
 }

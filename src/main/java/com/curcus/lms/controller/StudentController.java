@@ -1,6 +1,8 @@
 package com.curcus.lms.controller;
 
+import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.request.StudentRequest;
+import com.curcus.lms.model.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +14,6 @@ import org.springframework.stereotype.Controller;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.response.ApiResponse;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.StudentResponse;
-import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -248,5 +245,19 @@ public class StudentController {
         
     }
 
+    @GetMapping("/{studentId}/courses/{courseId}/current-section")
+    ResponseEntity<ApiResponse<SectionCompleteResponse>> getCurrentSection(@PathVariable Long studentId,
+                                                                           @PathVariable Long courseId) {
+        ApiResponse<SectionCompleteResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(studentService.getCurrentSection(studentId, courseId));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/complete-section")
+    ResponseEntity<ApiResponse<SectionCompleteResponse>> completeCurrentSection(@Valid @RequestBody SectionCompleteRequest request) {
+        ApiResponse<SectionCompleteResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(studentService.completeSection(request));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
 }
