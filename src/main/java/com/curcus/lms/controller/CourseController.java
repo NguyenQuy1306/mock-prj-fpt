@@ -115,9 +115,10 @@ public class CourseController {
     public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@Valid @RequestBody CourseRequest courseRequest,
             BindingResult bindingResult) {
         try {
-//            CourseResponse courseResponse = courseService.update(courseRequest, bindingResult);
+            // CourseResponse courseResponse = courseService.update(courseRequest,
+            // bindingResult);
             ApiResponse apiResponse = new ApiResponse<>();
-//            apiResponse.ok(courseResponse);
+            // apiResponse.ok(courseResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
@@ -159,13 +160,15 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+    // "and
+    // @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(),
+    // #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/document")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createDocumentContent(
-         @RequestBody @Valid  ContentDocumentCreateRequest contentCreateRequest) {
+            @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
-                    .saveDocumentContent(contentCreateRequest);
+                .saveDocumentContent(contentCreateRequest);
 
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);
@@ -173,13 +176,15 @@ public class CourseController {
 
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+    // "and
+    // @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(),
+    // #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createVideoContent(
             @ModelAttribute @Valid @RequestBody ContentVideoCreateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
-                    .saveVideoContent(contentCreateRequest);
+                .saveVideoContent(contentCreateRequest);
 
         ApiResponse apiResponse = new ApiResponse<>();
         apiResponse.ok(contentCreateResponse);
@@ -362,10 +367,10 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/courses/getUnapprovedCourses")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> unapprovedCourse(@RequestParam Long adminId) {
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> unapprovedCourse() {
         ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
         try {
-            apiResponse.ok(courseService.unapprovedCourse(adminId));
+            apiResponse.ok(courseService.unapprovedCourse());
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;

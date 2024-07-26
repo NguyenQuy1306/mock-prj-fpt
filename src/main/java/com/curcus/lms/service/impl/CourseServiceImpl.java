@@ -61,6 +61,7 @@ import com.curcus.lms.validation.CourseValidator;
 import com.curcus.lms.validation.InstructorValidator;
 
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class CourseServiceImpl implements CourseService {
     @Autowired
@@ -93,7 +94,6 @@ public class CourseServiceImpl implements CourseService {
     private AdminRepository adminRepository;
     @Autowired
     private FileAsyncUtil fileAsyncUtil;
-
 
     @Override
     public Page<CourseSearchResponse> findAll(Pageable pageable) {
@@ -272,6 +272,7 @@ public class CourseServiceImpl implements CourseService {
             throw new ApplicationException();
         }
     }
+
     @Override
     public Page<CourseSearchResponse> searchCourses(
             Long instructorId,
@@ -311,7 +312,6 @@ public class CourseServiceImpl implements CourseService {
         return courses.map(this::convertToCourseDetailResponse);
     }
 
-
     @Override
     public CourseDetailResponse getCourseDetails(Long courseId) {
         Course course = courseRepository.findWithSectionsByCourseId(courseId);
@@ -321,7 +321,6 @@ public class CourseServiceImpl implements CourseService {
         CourseDetailResponse courseDetailResponse = courseMapper.toDetailResponse(course);
         return courseDetailResponse;
     }
-
 
     private CourseDetailResponse2 convertToCourseDetailResponse(Course course) {
         return CourseDetailResponse2.builder()
@@ -496,11 +495,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> unapprovedCourse(Long adminId) {
-        Admin admin = adminRepository.findById(adminId).orElse(null);
-        if (admin == null) {
-            throw new NotFoundException("Admin has not existed with adminId " + adminId);
-        }
+    public List<CourseResponse> unapprovedCourse() {
+
         List<CourseResponse> courseResponse = courseMapper
                 .toResponseList(courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name()));
         ;

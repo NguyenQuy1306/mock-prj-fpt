@@ -33,55 +33,55 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 
 public interface CourseService {
-    // List<CourseResponse> findByCategory(Long categoryId);
+        // List<CourseResponse> findByCategory(Long categoryId);
 
-    CourseResponse deleteCourse(Long id);
+        CourseResponse deleteCourse(Long id);
 
-    SectionCreateResponse createSection(SectionRequest sectionRequest);
+        SectionCreateResponse createSection(SectionRequest sectionRequest);
 
-    Page<CourseSearchResponse> findByCategory(Long categoryId, Pageable pageable);
+        Page<CourseSearchResponse> findByCategory(Long categoryId, Pageable pageable);
 
-    Page<CourseSearchResponse> findAll(Pageable pageable);
+        Page<CourseSearchResponse> findAll(Pageable pageable);
 
-    CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
+        CourseResponse saveCourse(CourseCreateRequest courseCreateRequest);
 
-    // Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
-    // Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String
-    // title, Long minPrice, Long maxPrice, Pageable pageable);
-    Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price,
-            Boolean isFree, Pageable pageable);
+        // Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
+        // Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String
+        // title, Long minPrice, Long maxPrice, Pageable pageable);
+        Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price,
+                        Boolean isFree, Pageable pageable);
 
-    ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest);
+        ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest);
 
-    ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
+        ContentCreateResponse saveDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
 
-    Course findById(Long id);
+        Course findById(Long id);
 
-    Instructor findByIdInstructor(Long id);
+        Instructor findByIdInstructor(Long id);
 
-    CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
+        CourseResponse update(CourseRequest courseRequest, BindingResult bindingResult);
 
-    void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
+        void checkCourseRequest(CourseRequest courseRequest, BindingResult bindingResult);
 
-    SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
+        SectionCreateResponse updateSection(Long sectionId, SectionRequest sectionRequest);
 
-    CourseDetailResponse getCourseDetails(Long courseId);
+        CourseDetailResponse getCourseDetails(Long courseId);
 
-    CourseStatusResponse updateCourseStatus(Long courseId, String status);
+        CourseStatusResponse updateCourseStatus(Long courseId, String status);
 
-    // CourseResponse update(CourseRequest courseRequest, BindingResult
-    // bindingResult);
-    Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable);
+        // CourseResponse update(CourseRequest courseRequest, BindingResult
+        // bindingResult);
+        Page<CourseDetailResponse2> getCoursebyInstructorId(Long id, Pageable pageable);
 
-    // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest
-    // contentUpdateRequest);
+        // ContentCreateResponse updateContent(Long id, @Valid ContentUpdateRequest
+        // contentUpdateRequest);
 
-    List<ContentCreateResponse> updateContentPositions(Long id,
-            @Valid List<ContentUpdatePositionRequest> positionUpdates);
+        List<ContentCreateResponse> updateContentPositions(Long id,
+                        @Valid List<ContentUpdatePositionRequest> positionUpdates);
 
-    List<SectionUpdatePositionRes> updateSectionPositions(Long id,
-            @Valid List<SectionUpdatePositionRequest> positionUpdates);
+        List<SectionUpdatePositionRes> updateSectionPositions(Long id,
+                        @Valid List<SectionUpdatePositionRequest> positionUpdates);
 
-    List<CourseResponse> unapprovedCourse(Long adminId);
+        List<CourseResponse> unapprovedCourse();
 
 }
