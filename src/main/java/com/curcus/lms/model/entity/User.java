@@ -22,7 +22,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "user_role", discriminatorType = DiscriminatorType.STRING)
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     @Column(nullable = false, unique = true)
     private String name;

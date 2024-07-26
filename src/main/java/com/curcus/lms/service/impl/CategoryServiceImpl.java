@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategorySevice {
         try {
 
             if (categoryRepository.existsByCategoryName(categoryRequest.getCategoryName()))
-                throw new ApplicationException("Category đã tồn tại");
+                throw new ApplicationException("CATEGORY ALREADY EXISTS");
             Category newCategory = Category.builder()
                     .categoryName(categoryRequest.getCategoryName())
                     .build();
