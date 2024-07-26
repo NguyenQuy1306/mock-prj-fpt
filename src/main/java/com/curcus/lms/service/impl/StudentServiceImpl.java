@@ -1,15 +1,16 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.UserAddressResponse;
 import com.curcus.lms.repository.*;
 
-import org.apache.kafka.common.security.oauthbearer.internals.secured.ValidateException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+
 import org.springframework.stereotype.Service;
 
 import com.curcus.lms.repository.CartItemsRepository;
@@ -342,7 +343,7 @@ public class StudentServiceImpl implements StudentService {
 
         catch (com.curcus.lms.exception.NotFoundException ex) {
             throw ex;
-        } catch (ValidateException ex) {
+        } catch (ValidationException ex) {
             throw ex;
         }
     }
