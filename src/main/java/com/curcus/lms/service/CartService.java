@@ -35,4 +35,6 @@ public interface CartService {
     List<CourseResponseForCart> getListCourseFromCart(Long studentId);
 
     void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice);
+
+    void deleteListCourseFromCart(Long studentId, List<Long> listCourseDelete);
 }
