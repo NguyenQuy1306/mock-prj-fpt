@@ -3,7 +3,6 @@ package com.curcus.lms.service;
 import java.util.List;
 
 import com.curcus.lms.model.request.*;
-import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.*;
 
 import org.springframework.validation.BindingResult;
@@ -15,17 +14,6 @@ import org.springframework.data.domain.Pageable;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.SectionUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -82,6 +70,6 @@ public interface CourseService {
         List<SectionUpdatePositionRes> updateSectionPositions(Long id,
                         @Valid List<SectionUpdatePositionRequest> positionUpdates);
 
-        List<CourseResponse> unapprovedCourse();
+        List<CourseDetailResponse2> unapprovedCourse(Pageable pageable);
 
 }

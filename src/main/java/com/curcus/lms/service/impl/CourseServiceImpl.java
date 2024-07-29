@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import com.curcus.lms.validation.FileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -460,9 +462,9 @@ public class CourseServiceImpl implements CourseService {
                 response.setTitle(section.getSectionName());
                 response.setPosition(section.getPosition());
                 List<Content> sortedContents = section.getContents().stream()
-                    .sorted(Comparator.comparing(Content::getPosition))
-                    .collect(Collectors.toList());
-                    boolean contentNeedsAdjustment = false;
+                        .sorted(Comparator.comparing(Content::getPosition))
+                        .collect(Collectors.toList());
+                boolean contentNeedsAdjustment = false;
                 for (int i = 0; i < sortedContents.size(); i++) {
                     if (sortedContents.get(i).getPosition() != i + 1) {
                         contentNeedsAdjustment = true;
@@ -490,15 +492,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> unapprovedCourse() {
 
-        List<CourseResponse> courseResponse = courseMapper
-                .toResponseList(courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name()));
-        ;
-        if (courseResponse == null || courseResponse.isEmpty()) {
+    public List<CourseDetailResponse2> unapprovedCourse(Pageable pageable) {
+        List<Page<CourseDetailResponse2>> courseResponsePages = new ArrayList<>();
+
+        List<Course> listCourses = courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name(),
+                pageable);
+        List<CourseDetailResponse2> courseDetails = courseMapper
+                .coursesToCourseDetailResponse2List(listCourses);
+
+        if (courseDetails.isEmpty() || courseDetails == null) {
             throw new NotFoundException("No course is unapproved");
         }
-        return courseResponse;
+        return courseDetails;
     }
-
 }

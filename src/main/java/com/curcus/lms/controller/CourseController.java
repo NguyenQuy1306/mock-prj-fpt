@@ -19,21 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.constants.CourseSearchOptions;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.SearchOptionsException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.dto.ContentPositionUpdateWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.SectionRequest;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -367,10 +360,15 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/courses/getUnapprovedCourses")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> unapprovedCourse() {
-        ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse2>>> unapprovedCourse(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        ApiResponse<List<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
         try {
-            apiResponse.ok(courseService.unapprovedCourse());
+
+            apiResponse.ok(courseService.unapprovedCourse(pageable));
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
             throw ex;
