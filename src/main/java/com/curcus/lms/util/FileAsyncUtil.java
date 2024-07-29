@@ -8,6 +8,7 @@ import com.curcus.lms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.*;
 import com.curcus.lms.constants.ContentType;
@@ -32,20 +33,10 @@ public class FileAsyncUtil {
 	@Autowired
 	protected UserRepository userRepository;
 	@Async
-	public void uploadFileAsync(Long contentId, MultipartFile file) {
-	    ContentType contentType = getContentType(file);
+	public void uploadFileAsync(Long contentId, byte[] file) {
 	    String url = null;
 	    try {
-	        switch (contentType) {
-	            case VIDEO:
-	                url = cloudinaryService.uploadVideo(file);
-	                break;
-	            case DOCUMENT:
-	                url = cloudinaryService.uploadFile(file);
-	                break;
-	            default:
-	                throw new InvalidFileTypeException("Unsupported file type, content for section must be: "+ FileValidation.ALLOWED_VIDEO_TYPES+FileValidation.ALLOWED_FILE_TYPES);
-	        }
+			url=cloudinaryService.uploadFile(file);
 	    } catch (IOException e) {
 	        // Handle the exception
 	    	System.out.println("cloudinary server error");
@@ -112,7 +103,7 @@ public class FileAsyncUtil {
 	public void updateContentUrl(Long contentId, String url) {
 	    Content content = contentRepository.findById(contentId).orElseThrow(
 	            () -> new NotFoundException("Content not found with id " + contentId));
-	    content.setUrl(url);
+	    content.setContent(url);
 	    contentRepository.save(content);
 	}
 	public ContentType getContentType(MultipartFile file) {

@@ -321,4 +321,29 @@ public class CartServiceImpl implements CartService {
             throw new ApplicationException();
         }
     }
+
+    public void deleteListCourseFromCart(Long studentId, List<Long> listCourseDelete) {
+        // check valid studentId
+        if (studentService.findById(studentId) == null) {
+            throw new NotFoundException("Student has not existed with id " + studentId);
+        }
+        // Check cart is created or not
+        Cart cart = cartRepository.getCartByStudentId(studentId);
+        if (cart == null) {
+            throw new ValidationException("Cart doesn't exist for studentId: " + studentId);
+        }
+        for (Long courseId : listCourseDelete) {
+            Course course = courseService.findById(courseId);
+            if (course == null) {
+                throw new NotFoundException("Course has not existed with id " + courseId);
+            }
+            // Check if course is in cart
+            if (getById(cart.getCartId(), courseId) == null) {
+                throw new ValidationException("CourseId " + courseId + " not found in cart");
+            }
+            CartItemsId cartItemsId = new CartItemsId(studentId, studentId);
+            cartItemRepository.deleteById(cartItemsId);
+        }
+
+    }
 }

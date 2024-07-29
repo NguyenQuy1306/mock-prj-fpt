@@ -1,10 +1,22 @@
 package com.curcus.lms.model.mapper;
 
+import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Section;
+import com.curcus.lms.model.entity.Content;
+
+import com.curcus.lms.model.response.CourseDetailResponse;
+import com.curcus.lms.model.response.ContentDetailResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.SectionDetailResponse;
+
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+import java.util.List;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface SectionMapper {
@@ -13,6 +25,16 @@ public interface SectionMapper {
 
     @Mapping(source = "sectionName", target = "sectionName")
     @Mapping(source = "position", target = "position")
-    @Mapping(source = "contents", target = "contents")
-    SectionDetailResponse toDetailResponse(Section section);
+    @Mapping(target = "contents", expression = "java(mapSortedContents(section))")
+    public abstract SectionDetailResponse toDetailResponse(Section section);
+
+    default List<ContentDetailResponse> mapSortedContents(Section section) {
+        
+        return section.getContents().stream()
+                .sorted(Comparator.comparing(Content::getPosition))
+                .map(this::mapContent)
+                .collect(Collectors.toList());
+    }
+
+    abstract ContentDetailResponse mapContent(Content content);
 }

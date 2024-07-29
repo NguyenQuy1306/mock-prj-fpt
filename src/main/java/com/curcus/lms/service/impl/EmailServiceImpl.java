@@ -25,8 +25,7 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    // @Value("${mail.backend_host}")
-    @Value("http://localhost:8080")
+    @Value("${mail.backend_host}")
     private String PREFIX;
 
     private class MailSenderRunnable implements Runnable {

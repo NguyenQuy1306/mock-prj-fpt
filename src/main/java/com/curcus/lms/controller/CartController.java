@@ -20,6 +20,7 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
+import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.CourseResponseForCart;
@@ -133,6 +134,19 @@ public class CartController {
     public ResponseEntity<ApiResponse<Void>> deleteCart(@RequestParam Long studentId) {
         try {
             cartService.deleteCart(studentId);
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.ok();
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (ValidationException ex) {
+            throw ex;
+        }
+    }
+
+    @DeleteMapping(value = "/deleteListCourseFromCart")
+    public ResponseEntity<ApiResponse<Void>> deleteListCourse(@RequestParam Long studentId,
+            @RequestParam List<Long> listCourseDelete) {
+        try {
+            cartService.deleteListCourseFromCart(studentId, listCourseDelete);
             ApiResponse<Void> apiResponse = new ApiResponse<>();
             apiResponse.ok();
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
