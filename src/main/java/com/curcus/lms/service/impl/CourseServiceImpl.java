@@ -26,32 +26,9 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.entity.Category;
-import com.curcus.lms.model.entity.Content;
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.ContentMapper;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
-import com.curcus.lms.model.response.StudentResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.ContentRepository;
-import com.curcus.lms.repository.CourseRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.SectionRepository;
-
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
@@ -482,7 +459,25 @@ public class CourseServiceImpl implements CourseService {
                 response.setSectionId(section.getSectionId());
                 response.setTitle(section.getSectionName());
                 response.setPosition(section.getPosition());
-                response.setContentIds(section.getContents().stream()
+                List<Content> sortedContents = section.getContents().stream()
+                    .sorted(Comparator.comparing(Content::getPosition))
+                    .collect(Collectors.toList());
+                    boolean contentNeedsAdjustment = false;
+                for (int i = 0; i < sortedContents.size(); i++) {
+                    if (sortedContents.get(i).getPosition() != i + 1) {
+                        contentNeedsAdjustment = true;
+                        break;
+                    }
+                }
+
+                if (contentNeedsAdjustment) {
+                    for (int i = 0; i < sortedContents.size(); i++) {
+                        Content content = sortedContents.get(i);
+                        content.setPosition((long) (i + 1));
+                        contentRepository.save(content);
+                    }
+                }
+                response.setContentIds(sortedContents.stream()
                         .map(Content::getId)
                         .collect(Collectors.toList()));
                 responseList.add(response);
