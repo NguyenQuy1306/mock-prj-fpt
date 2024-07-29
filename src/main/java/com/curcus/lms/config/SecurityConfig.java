@@ -21,7 +21,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    @Value("${security.enabled:true}")
+    @Value("${security.enabled}")
     private boolean securityEnabled;
 
     private static final String[] WHITE_LIST_URL = {
