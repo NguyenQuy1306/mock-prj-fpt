@@ -77,7 +77,7 @@ public class InstructorStatisticController {
         }
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @GetMapping(value = { "/{id}/topCourse" })
     public ResponseEntity<ApiResponse<CourseResponse>> GetTheMostPurchasedCourse(@PathVariable Long id) {
         try {

@@ -1,9 +1,6 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InactivatedUserException;
-import com.curcus.lms.exception.IncorrectPasswordException;
-import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.exception.*;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.AuthenticationRequest;
@@ -117,7 +114,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             var userDetails = UserDetailsImpl.builder()
                     .user(user)
-                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                    .role(switch(user.getDiscriminatorValue()) {
+                        case UserRole.Role.STUDENT -> Role.STUDENT;
+                        case UserRole.Role.INSTRUCTOR -> Role.INSTRUCTOR;
+                        case UserRole.Role.ADMIN -> Role.ADMIN;
+                        default -> throw new ValidationException("Invalid Role");
+                    })
                     .build();
             var jwtToken = jwtServiceImpl.generateToken(userDetails);
             var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);
@@ -136,10 +138,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             if (user instanceof Instructor) {
 //                System.out.println("The user is an Instructor.");
-                return userMapper.toUserResponse((Instructor) repository.save(user));
-            } else {
+                return userMapper.toUserResponse((Instructor) user);
+            } else if  (user instanceof Student){
 //                System.out.println("The user is a Student.");
-                return userMapper.toUserResponse((Student) repository.save(user));
+                return userMapper.toUserResponse((Student) user);
+            } else {
+                return userMapper.toUserResponse((Admin) user);
             }
         } catch (ApplicationException e) {
             throw e;

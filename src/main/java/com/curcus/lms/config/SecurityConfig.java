@@ -35,18 +35,19 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
+
+            // những API guest được access
             "/api/v1/auth/**",
-            "/api/v1/auth/register",
-            "/api/v1/auth/authenticate",
-            "/api/password-reset/request",
-            "/api/password-reset/reset",
-            "/api/cart/**",
-            "/api/ratings/**",
+            "/api/categories",
+            "/api/certificate",
             "/api/courses",
             "/api/courses/list",
-            "/api/certificate",
-            "/api/discounts/*",
-            "/api/courses/**"
+            "/api/courses/search",
+            "/api/courses/details/**",
+            "/api/password-reset/**",
+            "/api/payment/vn-pay-callback",
+            "/api/ratings/course/**",
+            "/api/ratings/course-rating/**"
     };
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

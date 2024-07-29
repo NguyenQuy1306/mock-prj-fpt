@@ -3,6 +3,7 @@ package com.curcus.lms.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,7 @@ public class DiscountController {
     @Autowired
     private StudentDiscountRepository studentDiscountRepository;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = { "", "/list" })
     public ResponseEntity<ApiResponse<List<DiscountResponse>>> getAllDiscountById(
             @RequestParam(value = "discountId", required = false) Long discountId) {
@@ -60,6 +62,7 @@ public class DiscountController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping(value = { "/listDiscountFromStudent" })
     public ResponseEntity<ApiResponse<List<StudentDiscountResponse>>> getListDiscountFromStudent(
             @RequestParam(value = "discountId", required = false) Long discountId,
@@ -87,6 +90,7 @@ public class DiscountController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/create")
     public ResponseEntity<ApiResponse<DiscountResponse>> createDiscount(
             @Valid @RequestBody DiscountRequest discountRequest) {
@@ -101,6 +105,7 @@ public class DiscountController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{discount_id}/updateDiscount")
     public ResponseEntity<ApiResponse<DiscountResponse>> updateCourse(@PathVariable Long discount_id,
             @Valid @RequestBody DiscountRequest discountRequest) {
@@ -122,6 +127,7 @@ public class DiscountController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ApiResponse<DiscountResponse>> deleteCourse(@Valid @PathVariable("id") Long id) {
         try {
@@ -135,6 +141,7 @@ public class DiscountController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/addDiscountToStudent")
     public ResponseEntity<ApiResponse<StudentDiscount>> addDiscountToStudent(
             @RequestParam Long discountId, @RequestParam Long studentId) {
@@ -149,6 +156,7 @@ public class DiscountController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping(value = "/getDiscountByCode/{code}")
     public ResponseEntity<ApiResponse<Long>> getDiscountByCode(
             @RequestParam Long studentId, @PathVariable("code") String discountCode) {
