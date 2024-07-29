@@ -60,7 +60,6 @@ public class AdminController {
     ) {
 
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
             throw new ValidationException(
                     bindingResult.getAllErrors().stream()
                             .collect(Collectors.toMap(
