@@ -38,7 +38,7 @@ public class SecurityConfig {
 
             // những API guest được access
             "/api/v1/auth/**",
-            "/api/categories",
+            "/api/categories/**",
             "/api/certificate",
             "/api/courses",
             "/api/courses/list",
