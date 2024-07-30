@@ -84,16 +84,12 @@ public abstract class CourseMapper {
 
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
 
-    @Mapping(source = "courseId", target = "courseId")
-    @Mapping(source = "courseThumbnail", target = "courseThumbnail")
-    @Mapping(source = "title", target = "title")
-    @Mapping(source = "description", target = "description")
-    @Mapping(source = "price", target = "price")
-    @Mapping(source = "category.categoryId", target = "categoryId")
-    @Mapping(source = "createdAt", target = "createDate", dateFormat = "yyyy-MM-dd")
-    @Mapping(source = "enrollment", target = "studentList")
-    @Mapping(target = "status", constant = "")
-    public abstract List<CourseDetailResponse2> coursesToCourseDetailResponse2List(List<Course> courses);
+    @Mapping(source = "course.category.categoryId", target = "categoryId")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    @Mapping(source = "course.instructor.userId", target = "instrcutorId")
+    @Mapping(source = "course.instructor.name", target = "instructorName")
+    @Mapping(source = "avgRating", target = "avgRating")
+    public abstract CourseDetailResponse3 coursesToCourseDetailResponse2List(Course course);
 
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")

@@ -361,17 +361,19 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/courses/getUnapprovedCourses")
-    public ResponseEntity<ApiResponse<List<CourseDetailResponse2>>> unapprovedCourse(
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse3>>> unapprovedCourse(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        ApiResponse<List<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
+        ApiResponse<List<CourseDetailResponse3>> apiResponse = new ApiResponse<>();
         try {
 
             apiResponse.ok(courseService.unapprovedCourse(pageable));
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
             throw ex;
         } catch (Exception e) {
             apiResponse.error(ResponseCode.getError(23));

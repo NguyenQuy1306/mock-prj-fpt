@@ -10,14 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class InstructorUpdateRequest {
-    @NotBlank(message = "Tên bị thiếu")
+    @NotBlank(message = "Name is mandatory.")
     private String name;
-    @NotBlank(message = "Mật khẩu bị thiếu")
     private String firstName;
     private String lastName;
-    @NotBlank(message = "Số điện thoại bị thiếu")
     private String phoneNumber;
-
-    private MultipartFile avt;
-
+    private String publicAvtId;
+    private String avt;
 }

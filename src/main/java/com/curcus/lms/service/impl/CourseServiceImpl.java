@@ -496,18 +496,24 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
 
-    public List<CourseDetailResponse2> unapprovedCourse(Pageable pageable) {
-        List<Page<CourseDetailResponse2>> courseResponsePages = new ArrayList<>();
-
-        List<Course> listCourses = courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name(),
-                pageable);
-        List<CourseDetailResponse2> courseDetails = courseMapper
-                .coursesToCourseDetailResponse2List(listCourses);
-
-        if (courseDetails.isEmpty() || courseDetails == null) {
-            throw new NotFoundException("No course is unapproved");
+    public List<CourseDetailResponse3> unapprovedCourse(Pageable pageable) {
+        try {
+            List<Course> listCourses = courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name(),
+                    pageable);
+            if (listCourses.isEmpty() || listCourses == null) {
+                throw new NotFoundException("No course is unapproved");
+            }
+            List<CourseDetailResponse3> courseDetails = listCourses.stream()
+                    .map(courseMapper::coursesToCourseDetailResponse2List)
+                    .collect(Collectors.toList());
+            return courseDetails;
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
         }
-        return courseDetails;
     }
 
     @Override

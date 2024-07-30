@@ -1,15 +1,12 @@
 package com.curcus.lms.controller;
 
 
-import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InactivatedUserException;
+import com.curcus.lms.exception.*;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.response.*;
-import com.curcus.lms.exception.IncorrectPasswordException;
 import com.curcus.lms.model.request.RegisterRequest;
-import com.curcus.lms.exception.UserNotFoundException;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.repository.UserRepository;
@@ -122,24 +119,20 @@ public class AuthenticationController {
         ApiResponse<LoginResponse> apiResponse = new ApiResponse<>();
         Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            errors = bindingResult.getAllErrors().stream()
-                    .collect(Collectors.toMap(
-                            error -> ((FieldError) error).getField(),
-                            error -> error.getDefaultMessage()
-                    ));
-            apiResponse.error(errors);
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+            throw new ValidationException(
+                    bindingResult.getAllErrors().stream()
+                            .collect(Collectors.toMap(
+                                    error -> ((FieldError) error).getField(),
+                                    error -> error.getDefaultMessage()
+                            )));
         }
 
         try {
             LoginResponse loginResponse = service.authenticate(request, response);
-
             apiResponse.ok(loginResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            apiResponse.error(ResponseCode.getError(8));
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        } catch (IncorrectPasswordException e) {
+        }
+        catch (IncorrectPasswordException e) {
             apiResponse.error(ResponseCode.getError(9));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
@@ -147,10 +140,6 @@ public class AuthenticationController {
 //            errors.put("message", "Account is inactivated");
 //            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
 //        }
-        catch (ApplicationException e) {
-            errors.put("message", e.getMessage());
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PostMapping("/refresh-token")
@@ -191,7 +180,7 @@ public class AuthenticationController {
             apiResponse.error(ResponseCode.getError(8));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }
-        if ( user.isActivated()) {
+        if (user.isActivated()) {
             apiResponse.error(ResponseCode.getError(11));
             return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         }

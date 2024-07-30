@@ -70,7 +70,7 @@ public interface CourseService {
         List<SectionUpdatePositionRes> updateSectionPositions(Long id,
                         @Valid List<SectionUpdatePositionRequest> positionUpdates);
 
-        List<CourseDetailResponse2> unapprovedCourse(Pageable pageable);
+        List<CourseDetailResponse3> unapprovedCourse(Pageable pageable);
 
         SectionDetailResponse2 getContentsBySection(Long id);
 }

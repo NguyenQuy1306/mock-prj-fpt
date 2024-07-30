@@ -104,7 +104,7 @@ public class InstructorServiceImpl implements InstructorService {
     public InstructorResponse updateInstructor(InstructorUpdateRequest instructorUpdateRequest, Long id) {
         try {
             if (instructorRepository.findById(id) == null)
-                throw new ApplicationException("Unknown account");
+                throw new NotFoundException("Unknown account");
             Instructor newInstructor = instructorRepository.findById(id).get();
             if (instructorUpdateRequest.getName() != null)
                 newInstructor.setName(instructorUpdateRequest.getName());
@@ -117,11 +117,11 @@ public class InstructorServiceImpl implements InstructorService {
                     throw new ApplicationException("PhoneNumber already exists");
                 newInstructor.setPhoneNumber(instructorUpdateRequest.getPhoneNumber());
             }
+            if (instructorUpdateRequest.getPublicAvtId() != null) {
+                newInstructor.setPublicAvtId(instructorUpdateRequest.getPublicAvtId());
+            }
             if (instructorUpdateRequest.getAvt() != null) {
-                fileAsyncUtil.uploadAvatarAsync(
-                        id,
-                        instructorUpdateRequest.getAvt()
-                );
+                newInstructor.setAvtUrl(instructorUpdateRequest.getAvt());
             }
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {
