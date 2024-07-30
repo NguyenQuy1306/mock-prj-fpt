@@ -108,6 +108,10 @@ public abstract class CourseMapper {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
 
+    @Mapping(source = "course.instructor.name", target = "instructorName")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    public abstract CourseEnrollResponse toCourseEnrollResponse(Course course);
+    
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Instructor has not existed with id " + id));

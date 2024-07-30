@@ -19,6 +19,8 @@ import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -28,6 +30,7 @@ import com.curcus.lms.repository.CartItemsRepository;
 import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
+import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.StudentService;
 
 import jakarta.validation.ConstraintViolationException;
@@ -83,9 +86,9 @@ public class StudentServiceImpl implements StudentService {
     private FileAsyncUtil fileAsyncUtil;
 
     @Override
-    public List<StudentResponse> findAll() {
+    public Page<StudentResponse> findAll(Pageable pageable) {
         try {
-            return userMapper.toResponseList(studentRepository.findAll());
+            return studentRepository.findAll(pageable).map(userMapper::toResponse);
         } catch (ApplicationException ex) {
             throw ex;
         }
@@ -173,19 +176,19 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<EnrollmentResponse> getCoursesByStudentId(Long studentId) {
+    public Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) throw new ApplicationException("Account does not exist");
-            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
-            List<EnrollmentResponse> enrollmentResponses = enrollments.stream().map(enrollment -> new EnrollmentResponse(
+            if (student == null) throw new ApplicationException("Student does not exist");
+            Page<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId, pageable);
+            Page<EnrollmentResponse> enrollmentResponses = enrollments.map(enrollment -> new EnrollmentResponse(
                 enrollment.getEnrollmentId(),
                 enrollment.getStudent().getUserId(),
-                enrollment.getCourse().getCourseId(),
+                courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
                 enrollment.getEnrollmentDate(),
                 enrollment.getIsComplete()
                 )
-            ).collect(Collectors.toList());
+            );
             return enrollmentResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -201,6 +204,25 @@ public class StudentServiceImpl implements StudentService {
             List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
             return courseResponses;
         } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+            if (cart == null) {
+                throw new NotFoundException("Cart not found");
+            }
+            Page<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId(), pageable);
+            Page<CourseResponse> coursePage = cartItems.map(CartItems::getCourse).map(courseMapper::toResponse);
+            return coursePage;
+        } catch (Exception ex) {
             throw ex;
         }
     }
@@ -225,7 +247,7 @@ public class StudentServiceImpl implements StudentService {
             return new EnrollmentResponse(
                     savedEnrollment.getEnrollmentId(),
                     savedEnrollment.getStudent().getUserId(),
-                    savedEnrollment.getCourse().getCourseId(),
+                    courseMapper.toCourseEnrollResponse(savedEnrollment.getCourse()),
                     savedEnrollment.getEnrollmentDate(),
                     savedEnrollment.getIsComplete()
             );

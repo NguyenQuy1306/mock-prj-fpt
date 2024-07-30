@@ -4,6 +4,8 @@ import org.springframework.validation.BindingResult;
 
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.CartItemsResponse;
 import com.curcus.lms.model.response.CartResponse;
@@ -31,8 +33,6 @@ public interface CartService {
     void deleteAllCourseFromCart(Long studentId);
 
     void deleteCart(Long studentId);
-
-    List<CourseResponseForCart> getListCourseFromCart(Long studentId);
 
     void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice);
 

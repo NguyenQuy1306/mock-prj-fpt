@@ -43,7 +43,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
         @Query("SELECT COUNT(c) FROM Course c WHERE c.instructor.userId = :userId")
         Long countCoursesOfInstructor(@Param("userId") Long userId);
 
-        @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate;")
+        @Query(nativeQuery = true, value = "select count(*) from courses c where c.instructor_id = :instructorId and c.created_at <= :endDate and c.created_at >= :startDate")
         Long getTotalCoursesForYears(Long instructorId, LocalDate startDate, LocalDate endDate);
 
         // @Query(value = "SELECT * FROM courses c WHERE c.instructor_id =

@@ -6,6 +6,9 @@ import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,8 +22,10 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import com.curcus.lms.model.response.EnrollmentResponse;
+import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.exception.DuplicatePhoneNumberException;
 import com.curcus.lms.exception.NotFoundException;
@@ -44,10 +49,31 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = { "", "/list" })
-    public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents() {
+    public ResponseEntity<ApiResponse<List<StudentResponse>>> getAllStudents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<StudentResponse> studentPage = studentService.findAll(pageable);
+            if (studentPage.isEmpty()) {
+                throw new NotFoundException("Student not found.");
+            }
+
+            String baseUrlStr = String.format("/api/students/list?");
+
+            MetadataResponse metadata = new MetadataResponse(
+                studentPage.getTotalElements(),
+                studentPage.getTotalPages(),
+                studentPage.getNumber(),
+                studentPage.getSize(),
+                (studentPage.hasNext() ? baseUrlStr + (studentPage.getNumber() + 1) + "&size=" + size : null),
+                (studentPage.hasPrevious() ? baseUrlStr + (studentPage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (studentPage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
+            );
+
             ApiResponse<List<StudentResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(studentService.findAll());
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
+            apiResponse.ok(studentPage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
             throw new ApplicationException();
@@ -181,44 +207,36 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
     @GetMapping("/{id}/courses")
-    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<List<EnrollmentResponse>>> getCoursesByStudentId(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            // List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(id);
-            // ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            // List<CourseResponse> courseResponses = enrollments.stream().map(enrollment -> {return courseMapper.toResponse(enrollment.getCourse());}).collect(Collectors.toList());
-            // apiResponse.ok(courseResponses);
-            // return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-            List<EnrollmentResponse> enrollments = studentService.getCoursesByStudentId(id);
-            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(enrollments);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<EnrollmentResponse> enrollmentPage = studentService.getCoursesByStudentId(id ,pageable);
+            if (enrollmentPage.isEmpty()) {
+                throw new NotFoundException("Enrollment not found.");
+            }
 
-        } catch (Exception ex) {
-            // Map<String, String> error = new HashMap<>();
-            // error.put("message", "An error occurred while get list course");
-            // ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            // apiResponse.error(error);
-            // return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            String baseUrlStr = String.format("/api/students/%d/courses?", id);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id)")
-    @GetMapping("/{id}/cart")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long id) {
-        try {
-            List<CourseResponse> listCourse = studentService.getListCourseFromCart(id);
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(listCourse);
+            MetadataResponse metadata = new MetadataResponse(
+                enrollmentPage.getTotalElements(),
+                enrollmentPage.getTotalPages(),
+                enrollmentPage.getNumber(),
+                enrollmentPage.getSize(),
+                (enrollmentPage.hasNext() ? baseUrlStr + (enrollmentPage.getNumber() + 1) + "&size=" + size : null),
+                (enrollmentPage.hasPrevious() ? baseUrlStr + (enrollmentPage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (enrollmentPage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
+            );
+
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
+            apiResponse.ok(enrollmentPage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception ex) {
             Map<String, String> error = new HashMap<>();
             error.put("message", ex.getMessage());
-            ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
+            ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();
             apiResponse.error(error);
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }

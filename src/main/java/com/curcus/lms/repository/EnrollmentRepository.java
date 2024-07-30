@@ -1,5 +1,7 @@
 package com.curcus.lms.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,8 @@ import com.curcus.lms.model.entity.Student;
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByStudent_UserId(Long userId);
+
+    Page<Enrollment> findByStudent_UserId(Long studentId, Pageable pageable);
 
     @Query("select e from Enrollment e join e.student s join e.course c where s.userId = :userId and c.courseId = :courseId")
     Enrollment findByStudentIdAndCourseId(@Param("userId") Long userId, @Param("courseId") Long courseId);

@@ -14,8 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface StudentService {
-    List<StudentResponse> findAll();
+    Page<StudentResponse> findAll(Pageable pageable);
 
     Optional<StudentResponse> findById(Long studentId);
     
@@ -27,9 +30,11 @@ public interface StudentService {
 
     void deleteStudent(Long studentId);
 
-    List<EnrollmentResponse> getCoursesByStudentId(Long studentId);
+    Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable);
 
     List<CourseResponse> getListCourseFromCart(Long studentId);
+
+    Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable);
 
     EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 

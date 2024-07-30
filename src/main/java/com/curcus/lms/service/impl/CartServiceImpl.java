@@ -8,6 +8,8 @@ import java.util.Map;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -156,36 +158,6 @@ public class CartServiceImpl implements CartService {
             return cartResponse;
         } catch (Exception ex) {
             throw ex;
-        }
-    }
-
-    @Override
-    public List<CourseResponseForCart> getListCourseFromCart(Long studentId) {
-        try {
-            Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) {
-                throw new NotFoundException("Student has not existed with id " + studentId);
-            }
-            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if (cart == null) {
-                throw new NotFoundException("Cart not found");
-            }
-            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            if (cartItems == null) {
-                return List.of();
-            }
-            List<CourseResponseForCart> courseResponseForCarts = cartItems.stream()
-                    .map(CartItems::getCourse)
-                    .map(courseMapper::toResponseCourseCart)
-                    .collect(Collectors.toList());
-
-            return courseResponseForCarts;
-        } catch (NotFoundException ex) {
-            throw ex;
-        } catch (ValidationException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ApplicationException(ex.getMessage());
         }
     }
 
