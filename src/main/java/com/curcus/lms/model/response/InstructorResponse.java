@@ -1,8 +1,10 @@
 package com.curcus.lms.model.response;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Objects;
-
+@Data
 public class InstructorResponse implements Serializable{
     private Long instructorId;
     private String name;
@@ -10,42 +12,7 @@ public class InstructorResponse implements Serializable{
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    public Long getinstructorId() {
-        return instructorId;
-    }
-    public void setinstructorId(Long instructorId) {
-        this.instructorId = instructorId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+    private String avtUrl;
     
     @Override
     public String toString() {

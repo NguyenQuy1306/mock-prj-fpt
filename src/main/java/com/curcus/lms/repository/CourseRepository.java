@@ -51,6 +51,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
         Page<Course> findByInstructorUserId(@Param("instructorId") Long instructorId, Pageable pageable);
 
         @Query(value = "select * from courses a where a.status = :status ", nativeQuery = true)
-        List<Course> getCourseByIsApproved(@Param("status") String status);
+        List<Course> getCourseByIsApproved(@Param("status") String status, Pageable pageable);
 
 }

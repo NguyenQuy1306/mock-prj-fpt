@@ -1,15 +1,20 @@
 package com.curcus.lms.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.curcus.lms.constants.ContentType;
+import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.entity.Enrollment;
 import com.curcus.lms.model.response.InstructorGetCourseResponse;
 import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.service.CloudinaryService;
+import com.curcus.lms.util.FileAsyncUtil;
 import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.UserAddressResponse;
@@ -30,6 +35,7 @@ import com.curcus.lms.repository.InstructorRepository;
 import com.curcus.lms.service.InstructorService;
 
 import jakarta.validation.ValidationException;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class InstructorServiceImpl implements InstructorService {
@@ -44,6 +50,8 @@ public class InstructorServiceImpl implements InstructorService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private FileAsyncUtil fileAsyncUtil;
     @Override
     public List<InstructorResponse> findAll() {
         try {
@@ -108,6 +116,12 @@ public class InstructorServiceImpl implements InstructorService {
                 if (instructorRepository.findByEmail(instructorUpdateRequest.getPhoneNumber()) != null)
                     throw new ApplicationException("PhoneNumber already exists");
                 newInstructor.setPhoneNumber(instructorUpdateRequest.getPhoneNumber());
+            }
+            if (instructorUpdateRequest.getAvt() != null) {
+                fileAsyncUtil.uploadAvatarAsync(
+                        id,
+                        instructorUpdateRequest.getAvt()
+                );
             }
             return userMapper.toInstructorResponse(instructorRepository.save(newInstructor));
         } catch (ApplicationException ex) {

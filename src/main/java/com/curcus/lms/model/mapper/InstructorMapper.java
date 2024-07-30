@@ -18,9 +18,7 @@ public interface InstructorMapper {
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     InstructorResponse toResponse(Instructor instructor);
 
-    @Mapping(source = "userId", target = "instructorId")
+    @Mapping(source = "avtUrl", target = "avtUrl")
     @Mapping(source = "name", target = "name")
-    @Mapping(source = "firstName", target = "firstName")
-    @Mapping(source = "lastName", target = "lastName")
     InstructorPublicResponse toInstructorPublicResponse(Instructor instructor);
 }

@@ -1,5 +1,4 @@
 package com.curcus.lms.model.mapper;
-
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.*;
@@ -54,6 +53,7 @@ public abstract class CourseMapper {
     @Autowired
     protected CourseRepository courseRepository;
 
+
     @Mapping(source = "courseThumbnail", target = "courseThumbnail")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "description", target = "description")
@@ -74,7 +74,6 @@ public abstract class CourseMapper {
 
     protected abstract SectionDetailResponse mapSection(Section section);
 
-
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")
     public abstract CourseResponse toResponse(Course course);
@@ -85,7 +84,16 @@ public abstract class CourseMapper {
 
     public abstract List<CourseResponse> toResponseList(List<Course> courses);
 
-
+    @Mapping(source = "courseId", target = "courseId")
+    @Mapping(source = "courseThumbnail", target = "courseThumbnail")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "price", target = "price")
+    @Mapping(source = "category.categoryId", target = "categoryId")
+    @Mapping(source = "createdAt", target = "createDate", dateFormat = "yyyy-MM-dd")
+    @Mapping(source = "enrollment", target = "studentList")
+    @Mapping(target = "status", constant = "")
+    public abstract List<CourseDetailResponse2> coursesToCourseDetailResponse2List(List<Course> courses);
 
     // @Mapping(target = "instructor", expression =
     // "java(findUserById(courseCreateRequest.getInstructorId()))")
@@ -114,15 +122,12 @@ public abstract class CourseMapper {
                 () -> new NotFoundException("Category has not existed with id " + id));
     }
 
-
-
-
-
     // CourseSearchResponse
     @Mapping(target = "totalReviews", source = "totalRating")
     @Mapping(source = "course.category.categoryName", target = "categoryName")
     @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
     @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
+    @Mapping(target = "instructor", expression = "java(getInstructorPublicResponse(course.getInstructor().getUserId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
 
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
@@ -143,6 +148,14 @@ public abstract class CourseMapper {
             return course.getPrice();
         }
         return null;
+    }
+
+    protected InstructorPublicResponse getInstructorPublicResponse(Long instructorId) {
+        return instructorMapper.toInstructorPublicResponse(
+                instructorRepository.findById(instructorId).orElseThrow(
+                        () -> new NotFoundException("Instructor has not existed with id " + instructorId)
+                )
+        );
     }
 
 }

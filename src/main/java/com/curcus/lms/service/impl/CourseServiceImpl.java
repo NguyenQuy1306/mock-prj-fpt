@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import com.curcus.lms.validation.FileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -26,32 +28,9 @@ import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
-import com.curcus.lms.model.entity.Category;
-import com.curcus.lms.model.entity.Content;
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.model.entity.Section;
-import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.model.mapper.ContentMapper;
-import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.SectionMapper;
-import com.curcus.lms.model.request.ContentUpdatePositionRequest;
-import com.curcus.lms.model.request.ContentUpdateRequest;
-import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.request.CourseRequest;
-import com.curcus.lms.model.request.SectionRequest;
-
-import com.curcus.lms.model.response.ContentCreateResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.SectionCreateResponse;
-import com.curcus.lms.model.response.StudentResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.ContentRepository;
-import com.curcus.lms.repository.CourseRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.SectionRepository;
-
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.specification.CourseSpecifications;
 import com.curcus.lms.service.InstructorService;
@@ -155,15 +134,14 @@ public class CourseServiceImpl implements CourseService {
     // }
 
     @Override
+    @Transactional
     public CourseResponse deleteCourse(Long id) {
-        // TODO Auto-generated method stub
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "Course has not existed with id " + id));
-        System.err.println("LLL" + course.getEnrollment().isEmpty());
         if (!course.getEnrollment().isEmpty())
             throw new ValidationException("The course cannot be deleted because someone is currently enrolled");
-        // courseRepository.deleteById(id);
+        courseRepository.deleteById(id);
 
         return courseMapper.toResponse(course);
     }
@@ -482,7 +460,25 @@ public class CourseServiceImpl implements CourseService {
                 response.setSectionId(section.getSectionId());
                 response.setTitle(section.getSectionName());
                 response.setPosition(section.getPosition());
-                response.setContentIds(section.getContents().stream()
+                List<Content> sortedContents = section.getContents().stream()
+                        .sorted(Comparator.comparing(Content::getPosition))
+                        .collect(Collectors.toList());
+                boolean contentNeedsAdjustment = false;
+                for (int i = 0; i < sortedContents.size(); i++) {
+                    if (sortedContents.get(i).getPosition() != i + 1) {
+                        contentNeedsAdjustment = true;
+                        break;
+                    }
+                }
+
+                if (contentNeedsAdjustment) {
+                    for (int i = 0; i < sortedContents.size(); i++) {
+                        Content content = sortedContents.get(i);
+                        content.setPosition((long) (i + 1));
+                        contentRepository.save(content);
+                    }
+                }
+                response.setContentIds(sortedContents.stream()
                         .map(Content::getId)
                         .collect(Collectors.toList()));
                 responseList.add(response);
@@ -495,15 +491,18 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> unapprovedCourse() {
 
-        List<CourseResponse> courseResponse = courseMapper
-                .toResponseList(courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name()));
-        ;
-        if (courseResponse == null || courseResponse.isEmpty()) {
+    public List<CourseDetailResponse2> unapprovedCourse(Pageable pageable) {
+        List<Page<CourseDetailResponse2>> courseResponsePages = new ArrayList<>();
+
+        List<Course> listCourses = courseRepository.getCourseByIsApproved(CourseStatus.PENDING_APPROVAL.name(),
+                pageable);
+        List<CourseDetailResponse2> courseDetails = courseMapper
+                .coursesToCourseDetailResponse2List(listCourses);
+
+        if (courseDetails.isEmpty() || courseDetails == null) {
             throw new NotFoundException("No course is unapproved");
         }
-        return courseResponse;
+        return courseDetails;
     }
-
 }

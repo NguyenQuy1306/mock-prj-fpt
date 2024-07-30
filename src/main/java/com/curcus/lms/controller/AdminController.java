@@ -1,8 +1,9 @@
 package com.curcus.lms.controller;
 
 
-
+import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
+import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.request.CourseStatusRequest;
 import com.curcus.lms.model.request.CategoryRequest;
 import com.curcus.lms.model.response.*;
@@ -14,11 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admins")
@@ -45,11 +48,7 @@ public class AdminController {
                 return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
             }
         } catch (Exception ex) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            com.curcus.lms.model.response.ApiResponse<AdminResponse> apiResponse = new com.curcus.lms.model.response.ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApplicationException();
         }
     }
 
@@ -59,17 +58,24 @@ public class AdminController {
             @Valid @RequestBody CategoryRequest categoryRequest,
             BindingResult bindingResult
     ) {
-        try {
-            if (bindingResult.hasErrors()) throw new Exception("Request không hợp lệ");
-            CategoryResponse categoryResponse = categorySevice.createCategory(categoryRequest);
-            ApiResponse<CategoryResponse> apiResponse = new ApiResponse<>();
-            apiResponse.ok(categoryResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            ApiResponse<CategoryResponse> apiResponse = new ApiResponse<>();
-            apiResponse.error(ResponseCode.getError(23));
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(
+                    bindingResult.getAllErrors().stream()
+                            .collect(Collectors.toMap(
+                                    error -> ((FieldError) error).getField(),
+                                    error -> error.getDefaultMessage()
+                            )));
         }
+        CategoryResponse categoryResponse = categorySevice.createCategory(categoryRequest);
+        ApiResponse<CategoryResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(categoryResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+
+//        catch (ValidationException ex) {
+//            throw ex;
+//        }
+
     }
 
 
