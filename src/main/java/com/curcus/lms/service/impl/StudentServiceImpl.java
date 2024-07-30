@@ -149,7 +149,7 @@ public class StudentServiceImpl implements StudentService {
             Page<EnrollmentResponse> enrollmentResponses = enrollments.map(enrollment -> new EnrollmentResponse(
                 enrollment.getEnrollmentId(),
                 enrollment.getStudent().getUserId(),
-                enrollment.getCourse().getCourseId(),
+                courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
                 enrollment.getEnrollmentDate(),
                 enrollment.getIsComplete()
                 )
@@ -212,7 +212,7 @@ public class StudentServiceImpl implements StudentService {
             return new EnrollmentResponse(
                     savedEnrollment.getEnrollmentId(),
                     savedEnrollment.getStudent().getUserId(),
-                    savedEnrollment.getCourse().getCourseId(),
+                    courseMapper.toCourseEnrollResponse(savedEnrollment.getCourse()),
                     savedEnrollment.getEnrollmentDate(),
                     savedEnrollment.getIsComplete()
             );

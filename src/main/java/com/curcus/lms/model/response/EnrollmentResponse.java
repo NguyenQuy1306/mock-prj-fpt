@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class EnrollmentResponse implements Serializable {
     private Long enrollmentId;
     private Long studentId;
-    private Long courseId;
+    private CourseEnrollResponse course;
     private Date enrollmentDate;
     private Boolean isComplete;
 
@@ -24,7 +24,7 @@ public class EnrollmentResponse implements Serializable {
         return "EnrollmentResponse{" +
                 "enrollmentId=" + enrollmentId +
                 ", studentId='" + studentId + '\'' +
-                ", courseId='" + courseId + '\'' +
+                ", course='" + course + '\'' +
                 ", enrollmentDate='" + enrollmentDate + '\'' +
                 ", isComplete='" + isComplete + '\'' +
                 '}';
@@ -38,12 +38,12 @@ public class EnrollmentResponse implements Serializable {
             return false;
         EnrollmentResponse that = (EnrollmentResponse) o;
         return Objects.equals(enrollmentId, that.enrollmentId) && Objects.equals(studentId, that.studentId)
-                && Objects.equals(courseId, that.courseId) && Objects.equals(enrollmentDate, that.enrollmentDate)
+                && Objects.equals(course, that.course) && Objects.equals(enrollmentDate, that.enrollmentDate)
                 && Objects.equals(isComplete, that.isComplete);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(enrollmentId, studentId, courseId, enrollmentDate, isComplete);
+        return Objects.hash(enrollmentId, studentId, course, enrollmentDate, isComplete);
     }
 }

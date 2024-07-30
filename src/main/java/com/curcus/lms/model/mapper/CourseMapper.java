@@ -1,11 +1,6 @@
 package com.curcus.lms.model.mapper;
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
-import com.curcus.lms.repository.RatingRepository;
-
-import com.curcus.lms.model.response.CourseSearchResponse;
-import com.curcus.lms.model.response.InstructorPublicResponse;
-import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.repository.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,10 +21,6 @@ import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.request.CourseCreateRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.repository.CategoryRepository;
-import com.curcus.lms.repository.InstructorRepository;
-import com.curcus.lms.repository.UserRepository;
 import com.curcus.lms.service.CloudinaryService;
 
 import java.io.IOException;
@@ -88,6 +79,10 @@ public abstract class CourseMapper {
     @Mapping(target = "courseThumbnail", expression = "java(uploadAndGetUrl(courseCreateRequest.getCourseThumbnail()))")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract Course toEntity(CourseCreateRequest courseCreateRequest);
+
+    @Mapping(source = "course.instructor.name", target = "instructorName")
+    @Mapping(source = "course.category.categoryName", target = "categoryName")
+    public abstract CourseEnrollResponse toCourseEnrollResponse(Course course);
     
     protected Instructor findInstructorById(Long id) {
         return instructorRepository.findById(id).orElseThrow(
