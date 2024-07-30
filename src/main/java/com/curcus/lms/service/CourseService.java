@@ -36,7 +36,7 @@ public interface CourseService {
         // Page<CourseResponse> searchCoursesByName(String name,Pageable pageable);
         // Page<CourseResponse> searchCourses(Long instructorId, Long categoryId, String
         // title, Long minPrice, Long maxPrice, Pageable pageable);
-        Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long price,
+        Page<CourseSearchResponse> searchCourses(Long instructorId, Long categoryId, String title, Long minprice, Long maxprice,
                         Boolean isFree, Pageable pageable);
 
         ContentCreateResponse saveVideoContent(ContentVideoCreateRequest contentCreateRequest);

@@ -185,7 +185,7 @@ public class CourseController {
 
     }
 
-    private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice, Boolean isFree,
+    private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice,Long maxPrice, Boolean isFree,
             String sort, String direction) {
         StringBuilder baseUrl = new StringBuilder("/api/courses/search?");
         if (instructorId != null)
@@ -196,6 +196,8 @@ public class CourseController {
             baseUrl.append("title=").append(title).append("&");
         if (minPrice != null)
             baseUrl.append("minPrice=").append(minPrice).append("&");
+            if (maxPrice != null)
+            baseUrl.append("maxPrice=").append(maxPrice).append("&");
         if (isFree != null)
             baseUrl.append("isFree=").append(isFree).append("&");
         if (sort != null)
@@ -225,6 +227,7 @@ public class CourseController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) Long maxPrice,
             @RequestParam(required = false) Boolean isFree,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -256,7 +259,7 @@ public class CourseController {
         }
 
         // Call service method to search courses
-        Page<CourseSearchResponse> coursePage = courseService.searchCourses(instructorId, categoryId, title, minPrice,
+        Page<CourseSearchResponse> coursePage = courseService.searchCourses(instructorId, categoryId, title, minPrice,maxPrice,
                 isFree, pageable);
 
         // Handle empty result
@@ -265,7 +268,7 @@ public class CourseController {
         }
 
         // Create base URL with query parameters
-        String baseUrlStr = buildBaseUrl(instructorId, categoryId, title, minPrice, isFree, sort, direction);
+        String baseUrlStr = buildBaseUrl(instructorId, categoryId, title, minPrice,maxPrice, isFree, sort, direction);
 
         // Create pagination metadata
         MetadataResponse metadata = createPaginationMetadata(coursePage, baseUrlStr, size);

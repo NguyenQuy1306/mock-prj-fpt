@@ -256,7 +256,8 @@ public class CourseServiceImpl implements CourseService {
             Long instructorId,
             Long categoryId,
             String title,
-            Long price,
+            Long minprice,
+            Long maxprice,
             Boolean isFree,
             Pageable pageable) {
         // TODO Auto-generated method stub
@@ -273,8 +274,11 @@ public class CourseServiceImpl implements CourseService {
             spec = spec.and(CourseSpecifications.hasTitleLike(title));
         }
 
-        if (price != null) {
-            spec = spec.and(CourseSpecifications.hasPriceGreaterThanOrEqualTo(price));
+        if (minprice != null) {
+            spec = spec.and(CourseSpecifications.hasPriceGreaterThanOrEqualTo(minprice));
+        }
+        if (maxprice != null) {
+            spec = spec.and(CourseSpecifications.hasPriceLowerThanOrEqualTo(maxprice));
         }
         if (isFree != null) {
             spec = spec.and(CourseSpecifications.isFree(isFree));

@@ -16,7 +16,8 @@ public class CourseSearchResponse implements Serializable {
     private Long courseId;
     private String courseThumbnail;
     private String title;
-
+    private String avaUrl;
+    private String name;
     private Double avgRating;
 
     private Long totalReviews;
@@ -33,6 +34,8 @@ public class CourseSearchResponse implements Serializable {
     public String toString() {
         return "CourseSearchResponse{" +
                 "courseId=" + courseId +
+                ", avatar=" + avaUrl+
+                ", name=" + name +
                 ", courseThumbnail='" + courseThumbnail + '\'' +
                 ", title='" + title + '\'' +
                 ", avgRating=" + avgRating +
@@ -51,6 +54,8 @@ public class CourseSearchResponse implements Serializable {
             return false;
         CourseSearchResponse that = (CourseSearchResponse) o;
         return Objects.equals(courseId, that.courseId) &&
+                Objects.equals(avaUrl, that.avaUrl) &&
+                Objects.equals(name, that.name) &&
                 Objects.equals(courseThumbnail, that.courseThumbnail) &&
                 Objects.equals(title, that.title) &&
                 Objects.equals(avgRating, that.avgRating) &&
@@ -62,7 +67,7 @@ public class CourseSearchResponse implements Serializable {
 
     @Override
     public int hashCode() {return Objects.hash(
-            courseId, courseThumbnail, title, avgRating,
+            courseId,avaUrl, name, courseThumbnail, title, avgRating,
             totalReviews, categoryName, prePrice, aftPrice
     );}
 }
