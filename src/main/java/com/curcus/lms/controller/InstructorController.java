@@ -6,33 +6,20 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.curcus.lms.model.request.UserAddressRequest;
-import com.curcus.lms.model.response.UserAddressResponse;
-import com.curcus.lms.model.response.InstructorGetCourseResponse;
+import com.curcus.lms.model.response.*;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.request.InstructorUpdateRequest;
-import com.curcus.lms.model.response.ApiResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
 
@@ -137,7 +124,7 @@ public class InstructorController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PutMapping(value = {"/{id}"})
-    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<InstructorResponse>> updateInstructor(@PathVariable Long id, @ModelAttribute @Valid @RequestBody InstructorUpdateRequest instructorUpdateRequest, BindingResult bindingResult) {
         try {
             if(bindingResult.hasErrors()){
                 Map<String, String> errors= new HashMap<>();
@@ -212,13 +199,26 @@ public class InstructorController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @GetMapping(value="/{id}/course")
     public ResponseEntity<ApiResponse<Page<CourseDetailResponse2>>> getCourse(@PathVariable Long id, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "5") int size ){
         try{
             Pageable pageable = PageRequest.of(page, size);
-            Page<CourseDetailResponse2> CDR=courseService.getCoursebyInstructorId(id,pageable);
+            Page<CourseDetailResponse2> coursePage=courseService.getCoursebyInstructorId(id,pageable);
+            MetadataResponse metadata = new MetadataResponse(
+                    coursePage.getTotalElements(),
+                    coursePage.getTotalPages(),
+                    coursePage.getNumber(),
+                    coursePage.getSize(),
+                    (coursePage.hasNext() ? "/api/instructors/" + id + "/course?page=" + (coursePage.getNumber() + 1) : null),
+                    (coursePage.hasPrevious() ? "/api/instructors/" + id + "/course?page=" + (coursePage.getNumber() - 1) : null),
+                    "/api/instructors/" + id + "/course?page=" + (coursePage.getTotalPages() - 1),
+                    "/api/instructors/" + id + "/course?page=0"
+            );
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
             ApiResponse<Page<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(CDR);
+            apiResponse.ok(coursePage, responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }catch (NotFoundException ex) {
             throw ex;
@@ -229,8 +229,7 @@ public class InstructorController {
         }
     }
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and
-    // authentication.principal.getId() == #id)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PostMapping(value = "{id}/update-address")
     public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id,
             @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {

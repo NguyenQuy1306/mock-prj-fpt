@@ -1,5 +1,4 @@
 package com.curcus.lms.model.mapper;
-
 import com.curcus.lms.model.entity.Content;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.*;
@@ -53,6 +52,7 @@ public abstract class CourseMapper {
 
     @Autowired
     protected CourseRepository courseRepository;
+
 
     @Mapping(source = "courseThumbnail", target = "courseThumbnail")
     @Mapping(source = "title", target = "title")
@@ -123,6 +123,7 @@ public abstract class CourseMapper {
     @Mapping(source = "course.category.categoryName", target = "categoryName")
     @Mapping(target = "prePrice", expression = "java(getPrePriceByCourseId(course.getCourseId()))")
     @Mapping(target = "aftPrice", expression = "java(getAftPriceByCourseId(course.getCourseId()))")
+    @Mapping(target = "instructor", expression = "java(getInstructorPublicResponse(course.getInstructor().getUserId()))")
     public abstract CourseSearchResponse toCourseSearchResponse(Course course);
 
     public abstract List<CourseSearchResponse> toCourseSearchResponseList(List<Course> courses);
@@ -143,6 +144,14 @@ public abstract class CourseMapper {
             return course.getPrice();
         }
         return null;
+    }
+
+    protected InstructorPublicResponse getInstructorPublicResponse(Long instructorId) {
+        return instructorMapper.toInstructorPublicResponse(
+                instructorRepository.findById(instructorId).orElseThrow(
+                        () -> new NotFoundException("Instructor has not existed with id " + instructorId)
+                )
+        );
     }
 
 }

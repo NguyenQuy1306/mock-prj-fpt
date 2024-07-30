@@ -29,6 +29,10 @@ public class CourseSpecifications {
                 price == null ? criteriaBuilder.conjunction() : criteriaBuilder.greaterThanOrEqualTo(root.get("price"), price);
     }
 
+    public static Specification<Course> hasPriceLowerThanOrEqualTo(Long price) {
+        return (root, query, criteriaBuilder) ->
+                price == null ? criteriaBuilder.conjunction() : criteriaBuilder.lessThanOrEqualTo(root.get("price"), price);
+    }
     public static Specification<Course> hasStatus(CourseStatus status) {
         return (root, query, criteriaBuilder) ->
                 status == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("status"), status);

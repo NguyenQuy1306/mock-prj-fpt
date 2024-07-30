@@ -1,23 +1,27 @@
 package com.curcus.lms.model.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
-
-@Setter
-@Getter
-public class StudentResponse implements Serializable {
-
-    private int studentId;
+import java.util.Objects;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class LoginResponse implements Serializable {
+    private Long userId;
+    private String userRole;
     private String name;
     private String email;
+    private String avtUrl;
+    private String publicAvtId;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-
-    private String avtUrl;
-    private String publicAvtId;
+    private AuthenticationResponse tokens;
     private String userAddress;
     private String userCity;
     private String userCountry;
@@ -26,7 +30,8 @@ public class StudentResponse implements Serializable {
     @Override
     public String toString() {
         return "StudentResponse{" +
-                "studentId=" + studentId +
+                "studentId=" + userId + '\'' +
+                ", userRole='" + userRole + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
@@ -34,6 +39,7 @@ public class StudentResponse implements Serializable {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", avtUrl='" + avtUrl + '\'' +
                 ", publicAvtId='" + publicAvtId + '\'' +
+                ", tokens=" + tokens + '\'' +
                 ", userAddress='" + userAddress + '\'' +
                 ", userCity='" + userCity + '\'' +
                 ", userCountry='" + userCountry + '\'' +
@@ -47,8 +53,9 @@ public class StudentResponse implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        StudentResponse that = (StudentResponse) o;
-        return Objects.equals(studentId, that.studentId)
+        LoginResponse that = (LoginResponse) o;
+        return Objects.equals(userId, that.userId)
+                && Objects.equals(userRole, that.userRole)
                 && Objects.equals(name, that.name)
                 && Objects.equals(email, that.email)
                 && Objects.equals(firstName, that.firstName)
@@ -56,6 +63,7 @@ public class StudentResponse implements Serializable {
                 && Objects.equals(phoneNumber, that.phoneNumber)
                 && Objects.equals(avtUrl, that.avtUrl)
                 && Objects.equals(publicAvtId, that.publicAvtId)
+                && Objects.equals(tokens, that.tokens)
                 && Objects.equals(userAddress, that.userAddress)
                 && Objects.equals(userCity, that.userCity)
                 && Objects.equals(userCountry, that.userCountry)
@@ -65,7 +73,8 @@ public class StudentResponse implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                studentId,
+                userId,
+                userRole,
                 name,
                 email,
                 firstName,
@@ -73,6 +82,7 @@ public class StudentResponse implements Serializable {
                 phoneNumber,
                 avtUrl,
                 publicAvtId,
+                tokens,
                 userAddress,
                 userCity,
                 userCountry,

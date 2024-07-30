@@ -27,4 +27,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     // @Query("select a from Cart a join a.student b where b.userId = :studentId and a.isPaid = :isPaid")
     // Cart getCartNotPaidByStudentId(@Param("studentId") Long studentId, @Param("isPaid") boolean isPaid);
     Cart findCartByStudent_UserId(Long studentId);
+    Boolean existsByCartIdAndStudent_UserId(Long cartId, Long studentId);
 }

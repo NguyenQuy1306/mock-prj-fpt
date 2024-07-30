@@ -1,5 +1,11 @@
 package com.curcus.lms.service.impl;
 
+import com.curcus.lms.constants.ContentType;
+import com.curcus.lms.exception.InvalidFileTypeException;
+import com.curcus.lms.model.entity.Course;
+import com.curcus.lms.repository.CourseRepository;
+import com.curcus.lms.service.CloudinaryService;
+import com.curcus.lms.util.FileAsyncUtil;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.request.UserAddressRequest;
@@ -41,7 +47,9 @@ import com.curcus.lms.model.response.EnrollmentResponse;
 import com.curcus.lms.model.response.StudentStatisticResponse;
 import com.curcus.lms.model.response.StudentResponse;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.ZoneId;
@@ -70,6 +78,9 @@ public class StudentServiceImpl implements StudentService {
     private UserRepository userRepository;
     @Autowired
     private SectionRepository sectionRepository;
+
+    @Autowired
+    private FileAsyncUtil fileAsyncUtil;
 
     @Override
     public List<StudentResponse> findAll() {
@@ -123,6 +134,10 @@ public class StudentServiceImpl implements StudentService {
                 if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
+
+            newStudent.setAvtUrl(studentRequest.getAvt());
+            newStudent.setPublicAvtId(studentRequest.getPublicAvtId());
+
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
             throw ex;

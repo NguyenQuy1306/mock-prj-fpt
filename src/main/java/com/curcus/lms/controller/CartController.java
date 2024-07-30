@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping(value = "/createCart")
     public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
         try {
@@ -53,6 +55,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping(value = "/addCourse")
     public ResponseEntity<ApiResponse<CartItems>> addCourseToCart(@RequestParam Long studentId,
             @RequestParam Long courseId) {
@@ -70,6 +73,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping(value = "/{studentId}/listCourse")
     public ResponseEntity<ApiResponse<List<CourseResponseForCart>>> getListCourseFromCart(
             @PathVariable Long studentId) {
@@ -88,24 +92,25 @@ public class CartController {
 
     }
 
-    // @PostMapping("/checkout")
-    // public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long
-    // studentId,
-    // @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
-    // try {
-    // cartService.copyCartToOrder(studentId, courseIds, totalPrice);
-    // ApiResponse<Void> apiResponse = new ApiResponse<>();
-    // apiResponse.ok();
-    // return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-    // } catch (Exception ex) {
-    // Map<String, String> error = new HashMap<>();
-    // error.put("message", ex.getMessage());
-    // ApiResponse<Void> apiResponse = new ApiResponse<>();
-    // apiResponse.error(error);
-    // return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+//    @PostMapping("/checkout")
+//    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
+//            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+//        try {
+//            cartService.copyCartToOrder(studentId, courseIds, totalPrice);
+//            ApiResponse<Void> apiResponse = new ApiResponse<>();
+//            apiResponse.ok();
+//            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+//        } catch (Exception ex) {
+//            Map<String, String> error = new HashMap<>();
+//            error.put("message", ex.getMessage());
+//            ApiResponse<Void> apiResponse = new ApiResponse<>();
+//            apiResponse.error(error);
+//            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @DeleteMapping(value = "/deleteCourseFromCart")
     public ResponseEntity<ApiResponse<Void>> deleteCourseFromCart(@RequestParam Long studentId,
             @RequestParam Long courseId) {
@@ -119,6 +124,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @DeleteMapping(value = "/deleteAllCourseFromCart")
     public ResponseEntity<ApiResponse<Void>> deleteAllCourseFromCart(@RequestParam Long studentId) {
         try {
@@ -131,6 +137,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @DeleteMapping(value = "/deleteCart")
     public ResponseEntity<ApiResponse<Void>> deleteCart(@RequestParam Long studentId) {
         try {
@@ -143,6 +150,7 @@ public class CartController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @DeleteMapping(value = "/deleteListCourseFromCart")
     public ResponseEntity<ApiResponse<Void>> deleteListCourse(@RequestParam Long studentId,
             @RequestParam List<Long> listCourseDelete) {

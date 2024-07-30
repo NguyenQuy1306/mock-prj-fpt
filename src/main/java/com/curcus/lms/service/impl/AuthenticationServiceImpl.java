@@ -1,14 +1,12 @@
 package com.curcus.lms.service.impl;
 
-import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InactivatedUserException;
-import com.curcus.lms.exception.IncorrectPasswordException;
-import com.curcus.lms.exception.UserNotFoundException;
+import com.curcus.lms.exception.*;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.AuthenticationRequest;
 import com.curcus.lms.model.request.RegisterRequest;
 import com.curcus.lms.model.response.AuthenticationResponse;
+import com.curcus.lms.model.response.LoginResponse;
 import com.curcus.lms.model.response.ResponseCode;
 import com.curcus.lms.model.response.UserResponse;
 import com.curcus.lms.repository.RefreshTokenRepository;
@@ -50,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private UserMapper userMapper;
     @Autowired
     private CookieService cookieService;
+
     @Override
     public UserResponse register(RegisterRequest request) {
         try {
@@ -61,14 +60,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setName(request.getName());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
+            user.setAvtUrl("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vecteezy.com%2Ffree-vector%2Fuser-icon&psig=AOvVaw2pZJaxsovqmDuBsUPr-0nA&ust=1721966244522000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJCVs5mmwYcDFQAAAAAdAAAAABAE");
 
-            if (user instanceof Instructor) {
-                System.out.println("The user is an Instructor.");
-                return userMapper.toUserResponse((Instructor) repository.save(user));
-            } else {
-                System.out.println("The user is a Student.");
-                return userMapper.toUserResponse((Student) repository.save(user));
-            }
+
+            return userMapper.toUserResponse(repository.save(user));
+
         } catch (ApplicationException e) {
             throw e;
         }
@@ -97,10 +93,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
+    public LoginResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
 
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Account does not exist"));
+                .orElseThrow(() -> new NotFoundException("Account does not exist"));
 //        if (!user.isActivated())
 //            throw new InactivatedUserException("Account has not been activated");
         try {
@@ -114,36 +110,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IncorrectPasswordException("Incorrect password");
         }
 
-        try {
-            var userDetails = UserDetailsImpl.builder()
-                    .user(user)
-                    .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
-                    .build();
-            var jwtToken = jwtServiceImpl.generateToken(userDetails);
-            var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);
-            revokeAllUserTokens(user);
-            revokeAllUserRefreshTokens(user);
-            saveUserToken(user, jwtToken);
-            saveUserRefreshToken(user, refreshToken);
+        var userDetails = UserDetailsImpl.builder()
+                .user(user)
+                .role(switch(user.getDiscriminatorValue()) {
+                            case UserRole.Role.STUDENT -> Role.STUDENT;
+                            case UserRole.Role.INSTRUCTOR -> Role.INSTRUCTOR;
+                            case UserRole.Role.ADMIN -> Role.ADMIN;
+                            default -> throw new ValidationException("Invalid Role");
+                        })
+                .build();
+        var jwtToken = jwtServiceImpl.generateToken(userDetails);
+        var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);
+        revokeAllUserTokens(user);
+        revokeAllUserRefreshTokens(user);
+        saveUserToken(user, jwtToken);
+        saveUserRefreshToken(user, refreshToken);
 
-            if (!(cookieService.addCookie(response,
-                    "accessToken",
-                    jwtToken).orElse(false)
-                    && cookieService.addCookie(response,
-                    "refreshToken",
-                    refreshToken).orElse(false))) {
-                throw new ApplicationException();
-            }
-            if (user instanceof Instructor) {
-//                System.out.println("The user is an Instructor.");
-                return userMapper.toUserResponse((Instructor) repository.save(user));
-            } else {
-//                System.out.println("The user is a Student.");
-                return userMapper.toUserResponse((Student) repository.save(user));
-            }
-        } catch (ApplicationException e) {
-            throw e;
+        if (!(cookieService.addCookie(response,
+                "accessToken",
+                jwtToken).orElse(false)
+                && cookieService.addCookie(response,
+                "refreshToken",
+                refreshToken).orElse(false))) {
+            throw new ApplicationException();
         }
+        return LoginResponse.builder()
+                .userId(user.getUserId())
+                .userRole(user.getDiscriminatorValue())
+                .name(user.getName())
+                .email(user.getEmail())
+                .avtUrl(user.getAvtUrl())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .tokens(AuthenticationResponse.builder()
+                        .accessToken(jwtToken)
+                        .refreshToken(refreshToken)
+                        .build())
+                .userAddress(user.getUserAddress())
+                .userCity(user.getUserCity())
+                .userCountry(user.getUserCountry())
+                .userPostalCode(user.getUserPostalCode())
+                .build();
     }
 
     private void revokeAllUserTokens(User user) {

@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-@Setter
-@Getter
 @Data
 public class StudentRequest {
 
@@ -26,4 +25,6 @@ public class StudentRequest {
 
     @NotBlank(message = "Please enter all required fields")
     private String phoneNumber;
+    private String publicAvtId;
+    private String avt;
 }
