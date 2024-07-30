@@ -88,22 +88,23 @@ public class CartController {
 
     }
 
-    @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
-            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
-        try {
-            cartService.copyCartToOrder(studentId, courseIds, totalPrice);
-            ApiResponse<Void> apiResponse = new ApiResponse<>();
-            apiResponse.ok();
-            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", ex.getMessage());
-            ApiResponse<Void> apiResponse = new ApiResponse<>();
-            apiResponse.error(error);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // @PostMapping("/checkout")
+    // public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long
+    // studentId,
+    // @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+    // try {
+    // cartService.copyCartToOrder(studentId, courseIds, totalPrice);
+    // ApiResponse<Void> apiResponse = new ApiResponse<>();
+    // apiResponse.ok();
+    // return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    // } catch (Exception ex) {
+    // Map<String, String> error = new HashMap<>();
+    // error.put("message", ex.getMessage());
+    // ApiResponse<Void> apiResponse = new ApiResponse<>();
+    // apiResponse.error(error);
+    // return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
     @DeleteMapping(value = "/deleteCourseFromCart")
     public ResponseEntity<ApiResponse<Void>> deleteCourseFromCart(@RequestParam Long studentId,
