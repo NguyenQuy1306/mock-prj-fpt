@@ -8,6 +8,8 @@ import java.util.Map;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -177,6 +179,25 @@ public class CartServiceImpl implements CartService {
             List<CourseResponse> courseResponses = courseMapper
                     .toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
             return courseResponses;
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+            if (cart == null) {
+                throw new NotFoundException("Cart not found");
+            }
+            Page<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId(), pageable);
+            Page<CourseResponse> coursePage = cartItems.map(CartItems::getCourse).map(courseMapper::toResponse);
+            return coursePage;
         } catch (Exception ex) {
             throw ex;
         }

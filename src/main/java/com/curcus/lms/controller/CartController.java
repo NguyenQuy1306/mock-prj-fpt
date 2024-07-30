@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +26,8 @@ import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
+import com.curcus.lms.model.response.CourseSearchResponse;
+import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.service.CartService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -34,6 +40,19 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+
+    private MetadataResponse createPaginationMetadata(Page<CourseResponse> coursePage, String baseUrlStr, int size) {
+        return new MetadataResponse(
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                (coursePage.hasNext() ? baseUrlStr + "page=" + (coursePage.getNumber() + 1) + "&size=" + size : null),
+                (coursePage.hasPrevious() ? baseUrlStr + "page=" + (coursePage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (coursePage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
+        );
+    }
 
     @PostMapping(value = "/createCart")
     public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
@@ -68,12 +87,21 @@ public class CartController {
         }
     }
 
+    // @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
     @GetMapping(value = "/{studentId}/listCourse")
-    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId) {
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId, @RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<CourseResponse> coursePage = cartService.getListCourseFromCart(studentId, pageable);
+            if (coursePage.isEmpty()) {
+                throw new NotFoundException("Course not found.");
+            }
+            String baseUrlStr = String.format("/api/cart/%d/listCourse?", studentId);
+            MetadataResponse metadata = createPaginationMetadata(coursePage, baseUrlStr, size);
             ApiResponse<List<CourseResponse>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(courseResponses);
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
+            apiResponse.ok(coursePage.getContent(), responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (ValidationException ex) {
             Map<String, String> error = new HashMap<>();

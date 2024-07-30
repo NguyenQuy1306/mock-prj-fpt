@@ -3,6 +3,8 @@ package com.curcus.lms.service.impl;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import com.curcus.lms.repository.CartItemsRepository;
 import com.curcus.lms.repository.CartRepository;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.repository.StudentRepository;
+import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.StudentService;
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
@@ -50,11 +53,13 @@ public class StudentServiceImpl implements StudentService {
     private CourseRepository courseRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CartService cartService;
 
     @Override
-    public List<StudentResponse> findAll() {
+    public Page<StudentResponse> findAll(Pageable pageable) {
         try {
-            return userMapper.toResponseList(studentRepository.findAll());
+            return studentRepository.findAll(pageable).map(userMapper::toResponse);
         } catch (ApplicationException ex) {
             throw ex;
         }
@@ -138,33 +143,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<EnrollmentResponse> getCoursesByStudentId(Long studentId) {
+    public Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) throw new ApplicationException("Account does not exist");
-            List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
-            List<EnrollmentResponse> enrollmentResponses = enrollments.stream().map(enrollment -> new EnrollmentResponse(
+            if (student == null) throw new ApplicationException("Student does not exist");
+            Page<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId, pageable);
+            Page<EnrollmentResponse> enrollmentResponses = enrollments.map(enrollment -> new EnrollmentResponse(
                 enrollment.getEnrollmentId(),
                 enrollment.getStudent().getUserId(),
                 enrollment.getCourse().getCourseId(),
                 enrollment.getEnrollmentDate(),
                 enrollment.getIsComplete()
                 )
-            ).collect(Collectors.toList());
+            );
             return enrollmentResponses;
-        } catch (ApplicationException ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public List<CourseResponse> getListCourseFromCart(Long studentId) {
-        try {
-            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if (cart == null) throw new ApplicationException("Cart not found");
-            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
-            return courseResponses;
         } catch (ApplicationException ex) {
             throw ex;
         }
@@ -202,7 +194,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional
     public List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId) {
-        List<CourseResponse> courseResponses = getListCourseFromCart(studentId);
+        List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
         List<Long> courseIds = courseResponses.stream()
                 .map(CourseResponse::getCourseId)
                 .collect(Collectors.toList());
