@@ -334,15 +334,18 @@ public class CartServiceImpl implements CartService {
         }
         for (Long courseId : listCourseDelete) {
             Course course = courseService.findById(courseId);
+
             if (course == null) {
                 throw new NotFoundException("Course has not existed with id " + courseId);
             }
+
             // Check if course is in cart
             if (getById(cart.getCartId(), courseId) == null) {
                 throw new ValidationException("CourseId " + courseId + " not found in cart");
             }
-            CartItemsId cartItemsId = new CartItemsId(studentId, studentId);
+            CartItemsId cartItemsId = new CartItemsId(cart.getCartId(), courseId);
             cartItemRepository.deleteById(cartItemsId);
+
         }
 
     }
