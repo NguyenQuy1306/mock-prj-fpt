@@ -25,8 +25,6 @@ public class StudentRequest {
 
     @NotBlank(message = "Please enter all required fields")
     private String phoneNumber;
-
-    private String address;
-
-    private MultipartFile avt;
+    private String publicAvtId;
+    private String avt;
 }

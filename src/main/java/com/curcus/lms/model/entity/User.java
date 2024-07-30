@@ -34,6 +34,8 @@ public class User {
 
     @Column(nullable = true)
     private String avtUrl;
+    @Column(nullable = true)
+    private String publicAvtId;
 
     private String firstName;
     private String lastName;

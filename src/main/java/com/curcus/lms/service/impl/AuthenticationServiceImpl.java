@@ -129,21 +129,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 refreshToken).orElse(false))) {
             throw new ApplicationException();
         }
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setUserId(user.getUserId());
-        loginResponse.setUserRole(user.getDiscriminatorValue());
-        loginResponse.setName(user.getName());
-        loginResponse.setEmail(user.getEmail());
-        loginResponse.setAvtUrl(user.getAvtUrl());
-        loginResponse.setFirstName(user.getFirstName());
-        loginResponse.setLastName(user.getLastName());
-        loginResponse.setPhoneNumber(user.getPhoneNumber());
-        AuthenticationResponse tokens = AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
+        return LoginResponse.builder()
+                .userId(user.getUserId())
+                .userRole(user.getDiscriminatorValue())
+                .name(user.getName())
+                .email(user.getEmail())
+                .avtUrl(user.getAvtUrl())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .tokens(AuthenticationResponse.builder()
+                        .accessToken(jwtToken)
+                        .refreshToken(refreshToken)
+                        .build())
+                .userAddress(user.getUserAddress())
+                .userCity(user.getUserCity())
+                .userCountry(user.getUserCountry())
+                .userPostalCode(user.getUserPostalCode())
                 .build();
-        loginResponse.setTokens(tokens);
-        return loginResponse;
     }
 
     private void revokeAllUserTokens(User user) {

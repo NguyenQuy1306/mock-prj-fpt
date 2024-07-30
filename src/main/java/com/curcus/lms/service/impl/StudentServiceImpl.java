@@ -135,12 +135,8 @@ public class StudentServiceImpl implements StudentService {
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
 
-            if (studentRequest.getAvt() != null) {
-                fileAsyncUtil.uploadAvatarAsync(
-                        studentId,
-                        studentRequest.getAvt()
-                );
-            }
+            newStudent.setAvtUrl(studentRequest.getAvt());
+            newStudent.setPublicAvtId(studentRequest.getPublicAvtId());
 
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
