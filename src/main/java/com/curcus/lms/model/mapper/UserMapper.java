@@ -66,6 +66,14 @@ public abstract class UserMapper {
     @Mapping(source = "userPostalCode", target = "userPostalCode")
     public abstract UserAddressResponse toUserAddressResponse(Student student);
 
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
+    UserResponse toUserResponse(Admin admin);
+
 
     @Mapping(source = "firstName", target = "firstName")
     @Mapping(source = "lastName", target = "lastName")
