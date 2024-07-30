@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,6 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.Cart;
 import com.curcus.lms.model.entity.CartItems;
-import com.curcus.lms.model.request.CourseRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.CourseSearchResponse;
@@ -43,6 +41,21 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private StudentService studentService;
+
+    private MetadataResponse createPaginationMetadata(Page<CourseResponse> coursePage, String baseUrlStr, int size) {
+        return new MetadataResponse(
+                coursePage.getTotalElements(),
+                coursePage.getTotalPages(),
+                coursePage.getNumber(),
+                coursePage.getSize(),
+                (coursePage.hasNext() ? baseUrlStr + "page=" + (coursePage.getNumber() + 1) + "&size=" + size : null),
+                (coursePage.hasPrevious() ? baseUrlStr + "page=" + (coursePage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (coursePage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
+        );
+    }
 
     @PostMapping(value = "/createCart")
     public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
@@ -78,7 +91,7 @@ public class CartController {
         }
     }
 
-    // @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
     @GetMapping(value = "/{studentId}/listCourse")
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId, @RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
@@ -104,23 +117,23 @@ public class CartController {
 
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
-//    @PostMapping("/checkout")
-//    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
-//            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
-//        try {
-//            cartService.copyCartToOrder(studentId, courseIds, totalPrice);
-//            ApiResponse<Void> apiResponse = new ApiResponse<>();
-//            apiResponse.ok();
-//            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-//        } catch (Exception ex) {
-//            Map<String, String> error = new HashMap<>();
-//            error.put("message", ex.getMessage());
-//            ApiResponse<Void> apiResponse = new ApiResponse<>();
-//            apiResponse.error(error);
-//            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
+    @PostMapping("/checkout")
+    public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
+            @RequestParam List<Long> courseIds, @RequestParam Long totalPrice) {
+        try {
+            cartService.copyCartToOrder(studentId, courseIds, totalPrice);
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.ok();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", ex.getMessage());
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.error(error);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @DeleteMapping(value = "/deleteCourseFromCart")
