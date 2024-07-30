@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.curcus.lms.model.request.UserAddressRequest;
-import com.curcus.lms.model.response.UserAddressResponse;
-import com.curcus.lms.model.response.InstructorGetCourseResponse;
+import com.curcus.lms.model.response.*;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +20,6 @@ import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.request.InstructorRequest;
 import com.curcus.lms.model.request.InstructorUpdateRequest;
-import com.curcus.lms.model.response.ApiResponse;
-import com.curcus.lms.model.response.CourseDetailResponse2;
-import com.curcus.lms.model.response.InstructorResponse;
 import com.curcus.lms.service.CourseService;
 import com.curcus.lms.service.InstructorService;
 
@@ -208,9 +204,21 @@ public class InstructorController {
     public ResponseEntity<ApiResponse<Page<CourseDetailResponse2>>> getCourse(@PathVariable Long id, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "5") int size ){
         try{
             Pageable pageable = PageRequest.of(page, size);
-            Page<CourseDetailResponse2> CDR=courseService.getCoursebyInstructorId(id,pageable);
+            Page<CourseDetailResponse2> coursePage=courseService.getCoursebyInstructorId(id,pageable);
+            MetadataResponse metadata = new MetadataResponse(
+                    coursePage.getTotalElements(),
+                    coursePage.getTotalPages(),
+                    coursePage.getNumber(),
+                    coursePage.getSize(),
+                    (coursePage.hasNext() ? "/api/instructors/" + id + "/course?page=" + (coursePage.getNumber() + 1) : null),
+                    (coursePage.hasPrevious() ? "/api/instructors/" + id + "/course?page=" + (coursePage.getNumber() - 1) : null),
+                    "/api/instructors/" + id + "/course?page=" + (coursePage.getTotalPages() - 1),
+                    "/api/instructors/" + id + "/course?page=0"
+            );
+            Map<String, Object> responseMetadata = new HashMap<>();
+            responseMetadata.put("pagination", metadata);
             ApiResponse<Page<CourseDetailResponse2>> apiResponse = new ApiResponse<>();
-            apiResponse.ok(CDR);
+            apiResponse.ok(coursePage, responseMetadata);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }catch (NotFoundException ex) {
             throw ex;
