@@ -53,8 +53,6 @@ public class StudentServiceImpl implements StudentService {
     private CourseRepository courseRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private CartService cartService;
 
     @Override
     public Page<StudentResponse> findAll(Pageable pageable) {
@@ -162,6 +160,38 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
+    @Override
+    public List<CourseResponse> getListCourseFromCart(Long studentId) {
+        try {
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+            if (cart == null) throw new ApplicationException("Cart not found");
+            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
+            List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
+            return courseResponses;
+        } catch (ApplicationException ex) {
+            throw ex;
+        }
+    }
+
+    @Override
+    public Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student == null) {
+                throw new NotFoundException("Student has not existed with id " + studentId);
+            }
+            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+            if (cart == null) {
+                throw new NotFoundException("Cart not found");
+            }
+            Page<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId(), pageable);
+            Page<CourseResponse> coursePage = cartItems.map(CartItems::getCourse).map(courseMapper::toResponse);
+            return coursePage;
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
     @Transactional
     public EnrollmentResponse addStudentToCourse(Long studentId, Long courseId) {
         try {
@@ -194,7 +224,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Transactional
     public List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId) {
-        List<CourseResponse> courseResponses = cartService.getListCourseFromCart(studentId);
+        List<CourseResponse> courseResponses = getListCourseFromCart(studentId);
         List<Long> courseIds = courseResponses.stream()
                 .map(CourseResponse::getCourseId)
                 .collect(Collectors.toList());

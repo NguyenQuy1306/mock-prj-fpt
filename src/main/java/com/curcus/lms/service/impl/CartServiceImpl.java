@@ -161,48 +161,6 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    @Override
-    public List<CourseResponse> getListCourseFromCart(Long studentId) {
-        try {
-            Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) {
-                throw new NotFoundException("Student has not existed with id " + studentId);
-            }
-            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if (cart == null) {
-                throw new NotFoundException("Cart not found");
-            }
-            List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            if (cartItems == null) {
-                return List.of();
-            }
-            List<CourseResponse> courseResponses = courseMapper
-                    .toResponseList(cartItems.stream().map(CartItems::getCourse).collect(Collectors.toList()));
-            return courseResponses;
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
-
-    @Override
-    public Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable) {
-        try {
-            Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) {
-                throw new NotFoundException("Student has not existed with id " + studentId);
-            }
-            Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if (cart == null) {
-                throw new NotFoundException("Cart not found");
-            }
-            Page<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId(), pageable);
-            Page<CourseResponse> coursePage = cartItems.map(CartItems::getCourse).map(courseMapper::toResponse);
-            return coursePage;
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
-
     @Transactional
     public void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice) {
         try {

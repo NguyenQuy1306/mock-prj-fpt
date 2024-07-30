@@ -28,6 +28,10 @@ public interface StudentService {
 
     Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable);
 
+    List<CourseResponse> getListCourseFromCart(Long studentId);
+
+    Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable);
+
     EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 
     List<EnrollmentResponse> addStudentToCoursesFromCart(Long studentId);

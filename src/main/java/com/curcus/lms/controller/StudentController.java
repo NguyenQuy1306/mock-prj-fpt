@@ -48,15 +48,17 @@ public class StudentController {
                 throw new NotFoundException("Student not found.");
             }
 
+            String baseUrlStr = String.format("/api/students/list?");
+
             MetadataResponse metadata = new MetadataResponse(
                 studentPage.getTotalElements(),
                 studentPage.getTotalPages(),
                 studentPage.getNumber(),
                 studentPage.getSize(),
-                (studentPage.hasNext() ? "/api/students/list?page=" + (studentPage.getNumber() + 1) : null),
-                (studentPage.hasPrevious() ? "/api/students/list?page=" + (studentPage.getNumber() - 1) : null),
-                "/api/students/list?page=" + (studentPage.getTotalPages() - 1),
-                "/api/students/list?page=0"
+                (studentPage.hasNext() ? baseUrlStr + (studentPage.getNumber() + 1) + "&size=" + size : null),
+                (studentPage.hasPrevious() ? baseUrlStr + (studentPage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (studentPage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
             );
 
             ApiResponse<List<StudentResponse>> apiResponse = new ApiResponse<>();
@@ -178,15 +180,17 @@ public class StudentController {
                 throw new NotFoundException("Enrollment not found.");
             }
 
+            String baseUrlStr = String.format("/api/students/%d/courses?", id);
+
             MetadataResponse metadata = new MetadataResponse(
                 enrollmentPage.getTotalElements(),
                 enrollmentPage.getTotalPages(),
                 enrollmentPage.getNumber(),
                 enrollmentPage.getSize(),
-                (enrollmentPage.hasNext() ? "/api/students/list?page=" + (enrollmentPage.getNumber() + 1) : null),
-                (enrollmentPage.hasPrevious() ? "/api/students/list?page=" + (enrollmentPage.getNumber() - 1) : null),
-                "/api/students/list?page=" + (enrollmentPage.getTotalPages() - 1),
-                "/api/students/list?page=0"
+                (enrollmentPage.hasNext() ? baseUrlStr + (enrollmentPage.getNumber() + 1) + "&size=" + size : null),
+                (enrollmentPage.hasPrevious() ? baseUrlStr + (enrollmentPage.getNumber() - 1) + "&size=" + size : null),
+                baseUrlStr + "page=" + (enrollmentPage.getTotalPages() - 1) + "&size=" + size,
+                baseUrlStr + "page=0&size=" + size
             );
 
             ApiResponse<List<EnrollmentResponse>> apiResponse = new ApiResponse<>();

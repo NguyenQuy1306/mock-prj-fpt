@@ -33,9 +33,5 @@ public interface CartService {
 
     void deleteCart(Long studentId);
 
-    List<CourseResponse> getListCourseFromCart(Long studentId);
-
-    Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable);
-
     void copyCartToOrder(Long studentId, List<Long> courseIds, Long totalPrice);
 }

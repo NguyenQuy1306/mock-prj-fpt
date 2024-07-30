@@ -29,6 +29,7 @@ import com.curcus.lms.model.response.CourseResponse;
 import com.curcus.lms.model.response.CourseSearchResponse;
 import com.curcus.lms.model.response.MetadataResponse;
 import com.curcus.lms.service.CartService;
+import com.curcus.lms.service.StudentService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -40,6 +41,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private StudentService studentService;
 
     private MetadataResponse createPaginationMetadata(Page<CourseResponse> coursePage, String baseUrlStr, int size) {
         return new MetadataResponse(
@@ -92,7 +95,7 @@ public class CartController {
     public ResponseEntity<ApiResponse<List<CourseResponse>>> getListCourseFromCart(@PathVariable Long studentId, @RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<CourseResponse> coursePage = cartService.getListCourseFromCart(studentId, pageable);
+            Page<CourseResponse> coursePage = studentService.getListCourseFromCart(studentId, pageable);
             if (coursePage.isEmpty()) {
                 throw new NotFoundException("Course not found.");
             }
