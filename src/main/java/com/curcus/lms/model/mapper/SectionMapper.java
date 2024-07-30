@@ -19,16 +19,16 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public interface SectionMapper {
+public abstract class SectionMapper {
 	@Mapping(source = "course.courseId", target = "courseId")
-    SectionCreateResponse toResponse(Section section);
+    public abstract SectionCreateResponse toResponse(Section section);
 
     @Mapping(source = "sectionName", target = "sectionName")
     @Mapping(source = "position", target = "position")
     @Mapping(target = "contents", expression = "java(mapSortedContents(section))")
     public abstract SectionDetailResponse toDetailResponse(Section section);
 
-    default List<ContentDetailResponse> mapSortedContents(Section section) {
+    protected List<ContentDetailResponse> mapSortedContents(Section section) {
         
         return section.getContents().stream()
                 .sorted(Comparator.comparing(Content::getPosition))
@@ -36,5 +36,5 @@ public interface SectionMapper {
                 .collect(Collectors.toList());
     }
 
-    abstract ContentDetailResponse mapContent(Content content);
+    protected abstract ContentDetailResponse mapContent(Content content);
 }
