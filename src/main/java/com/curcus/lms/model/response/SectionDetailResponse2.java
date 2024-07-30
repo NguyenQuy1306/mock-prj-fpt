@@ -7,8 +7,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SectionDetailResponse {
+public class SectionDetailResponse2 {
     private String sectionName;
     private Long position;
-    // private List<ContentDetailResponse> contents;
+    private List<ContentDetailResponse> contents;
 }
+

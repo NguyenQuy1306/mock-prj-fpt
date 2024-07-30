@@ -279,7 +279,8 @@ public class CourseController {
         apiResponse.ok(coursePage.getContent(), responseMetadata);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-
+    //lấy tới content - student mua rồi mới xem được
+    //viết role nha bro
     @GetMapping("/details/{courseId}")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> getCourseDetails(@PathVariable Long courseId) {
 
@@ -351,13 +352,10 @@ public class CourseController {
     public ResponseEntity<ApiResponse<List<SectionUpdatePositionRes>>> updateSectionPositions(
             @PathVariable Long courseId,
             @RequestBody @Valid SectionPositionUpdateWrapper wrapper) {
-        System.out.println("checkkk23");
         List<SectionUpdatePositionRes> updatedSections = courseService.updateSectionPositions(courseId,
                 wrapper.getUpdates());
-        System.out.println("checkkk");
         ApiResponse<List<SectionUpdatePositionRes>> apiResponse = new ApiResponse<>();
         apiResponse.ok(updatedSections);
-        System.out.println("checkkk");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -380,5 +378,14 @@ public class CourseController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    //lấy trong content - student mua rồi mới xem được
+    //viết role nha bro
+    @GetMapping("section/{sectionID}/contents")
+    public ResponseEntity<ApiResponse<SectionDetailResponse2>> getContentsBySection(@PathVariable Long sectionID) {
+        SectionDetailResponse2 section = courseService.getContentsBySection(sectionID);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(section);
 
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

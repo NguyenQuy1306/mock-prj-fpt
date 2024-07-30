@@ -9,6 +9,8 @@ import com.curcus.lms.model.response.ContentDetailResponse;
 import com.curcus.lms.model.response.SectionCreateResponse;
 import com.curcus.lms.model.response.SectionDetailResponse;
 
+import com.curcus.lms.model.response.SectionDetailResponse2;
+
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,9 +27,12 @@ public abstract class SectionMapper {
 
     @Mapping(source = "sectionName", target = "sectionName")
     @Mapping(source = "position", target = "position")
-    @Mapping(target = "contents", expression = "java(mapSortedContents(section))")
     public abstract SectionDetailResponse toDetailResponse(Section section);
 
+    @Mapping(source = "sectionName", target = "sectionName")
+    @Mapping(source = "position", target = "position")
+    @Mapping(target = "contents", expression = "java(mapSortedContents(section))")
+    public abstract SectionDetailResponse2 toDetailResponse2(Section section);
     protected List<ContentDetailResponse> mapSortedContents(Section section) {
         
         return section.getContents().stream()

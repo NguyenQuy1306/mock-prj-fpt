@@ -509,4 +509,15 @@ public class CourseServiceImpl implements CourseService {
         }
         return courseDetails;
     }
+
+    @Override
+    @Transactional
+    public SectionDetailResponse2 getContentsBySection(Long sectionId){
+        Section section = sectionRepository.findWithContentsBySectionId(sectionId);
+        if (section == null) {
+            throw new NotFoundException("Section not found with id " + sectionId);
+        }
+        SectionDetailResponse2 sectionDetailResponse = sectionMapper.toDetailResponse2(section);
+        return sectionDetailResponse;
+    }
 }
