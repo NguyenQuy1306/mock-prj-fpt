@@ -134,15 +134,14 @@ public class CourseServiceImpl implements CourseService {
     // }
 
     @Override
+    @Transactional
     public CourseResponse deleteCourse(Long id) {
-        // TODO Auto-generated method stub
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "Course has not existed with id " + id));
-        System.err.println("LLL" + course.getEnrollment().isEmpty());
         if (!course.getEnrollment().isEmpty())
             throw new ValidationException("The course cannot be deleted because someone is currently enrolled");
-        // courseRepository.deleteById(id);
+        courseRepository.deleteById(id);
 
         return courseMapper.toResponse(course);
     }
