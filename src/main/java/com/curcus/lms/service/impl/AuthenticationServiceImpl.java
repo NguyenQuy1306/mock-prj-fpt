@@ -112,7 +112,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var userDetails = UserDetailsImpl.builder()
                 .user(user)
-                .role(user.getDiscriminatorValue().equals(UserRole.Role.STUDENT) ? Role.STUDENT : Role.INSTRUCTOR)
+                .role(switch(user.getDiscriminatorValue()) {
+                            case UserRole.Role.STUDENT -> Role.STUDENT;
+                            case UserRole.Role.INSTRUCTOR -> Role.INSTRUCTOR;
+                            case UserRole.Role.ADMIN -> Role.ADMIN;
+                            default -> throw new ValidationException("Invalid Role");
+                        })
                 .build();
         var jwtToken = jwtServiceImpl.generateToken(userDetails);
         var refreshToken = jwtServiceImpl.generateRefreshToken(userDetails);

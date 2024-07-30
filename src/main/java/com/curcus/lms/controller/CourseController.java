@@ -153,10 +153,8 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-    // "and
-    // @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(),
-    // #contentCreateRequest.sectionId))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/document")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createDocumentContent(
             @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
@@ -169,10 +167,8 @@ public class CourseController {
 
     }
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-    // "and
-    // @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(),
-    // #contentCreateRequest.sectionId))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+             "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/addContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> createVideoContent(
             @ModelAttribute @Valid @RequestBody ContentVideoCreateRequest contentCreateRequest) {
@@ -304,6 +300,8 @@ public class CourseController {
     // return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     // }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #sectionId))")
     @PutMapping("/sections/{sectionId}/contents/positions")
     public ResponseEntity<ApiResponse<List<ContentCreateResponse>>> updateContentPositions(
             @PathVariable Long sectionId,
@@ -347,6 +345,8 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @courseRepository.existsByInstructor_UserIdAndCourseId(authentication.principal.getId(), #courseId))")
     @PutMapping("/{courseId}/sections/positions")
     public ResponseEntity<ApiResponse<List<SectionUpdatePositionRes>>> updateSectionPositions(
             @PathVariable Long courseId,

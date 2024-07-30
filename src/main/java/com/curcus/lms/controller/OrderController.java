@@ -3,6 +3,7 @@ package com.curcus.lms.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and @cartRepository.existsByCartIdAndStudent_UserId(" +
+            "#checkoutReq.idCart, authentication.principal.getId()))")
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<CheckoutResponse>> checkoutOrder(@NotNull @RequestBody CheckoutReq checkoutReq) {
         ApiResponse apiResponse = new ApiResponse<>();
@@ -39,6 +42,9 @@ public class OrderController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and @cartRepository.existsByCartIdAndStudent_UserId(" +
+            "#purchaseOrderDTO.checkoutReq.idCart, authentication.principal.getId()))" +
+            "and #purchaseOrderDTO.idUser == authentication.principal.getId()")
     @PostMapping("/processingPurchase")
     public ResponseEntity<ApiResponse<PaymentResponse.VNPayResponse>> postMethodName(
             @Valid @RequestBody PurchaseOrderDTO purchaseOrderDTO, HttpServletRequest request) {

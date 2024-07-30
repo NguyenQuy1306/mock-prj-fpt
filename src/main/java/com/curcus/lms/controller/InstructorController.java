@@ -203,6 +203,7 @@ public class InstructorController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @GetMapping(value="/{id}/course")
     public ResponseEntity<ApiResponse<Page<CourseDetailResponse2>>> getCourse(@PathVariable Long id, @RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "5") int size ){
         try{
@@ -220,8 +221,7 @@ public class InstructorController {
         }
     }
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and
-    // authentication.principal.getId() == #id)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') and authentication.principal.getId() == #id)")
     @PostMapping(value = "{id}/update-address")
     public ResponseEntity<ApiResponse<UserAddressResponse>> updateInstructorAddress(@PathVariable Long id,
             @RequestBody @Valid UserAddressRequest studentAddressRequest, BindingResult bindingResult) {
