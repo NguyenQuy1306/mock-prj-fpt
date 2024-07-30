@@ -10,9 +10,11 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse implements Serializable {
-        private int userId;
+        private Long userId;
+        private String userRole;
         private String name;
         private String email;
+        private String avtUrl;
         private String firstName;
         private String lastName;
         private String phoneNumber;
@@ -20,12 +22,14 @@ public class UserResponse implements Serializable {
         @Override
         public String toString() {
             return "StudentResponse{" +
-                    "studentId=" + userId +
+                    "studentId=" + userId + '\'' +
+                    ", userRole='" + userRole + '\'' +
                     ", name='" + name + '\'' +
                     ", email='" + email + '\'' +
                     ", firstName='" + firstName + '\'' +
                     ", lastName='" + lastName + '\'' +
                     ", phoneNumber='" + phoneNumber + '\'' +
+                    ", avtUrl='" + avtUrl + '\'' +
                     '}';
         }
 
@@ -36,13 +40,14 @@ public class UserResponse implements Serializable {
             if (o == null || getClass() != o.getClass())
                 return false;
             UserResponse that = (UserResponse) o;
-            return Objects.equals(userId, that.userId) && Objects.equals(name, that.name)
+            return Objects.equals(userId, that.userId) && Objects.equals(userRole, that.userRole)
+                    && Objects.equals(name, that.name)
                     && Objects.equals(email, that.email) && Objects.equals(firstName, that.firstName)
                     && Objects.equals(lastName, that.lastName) && Objects.equals(phoneNumber, that.phoneNumber);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(userId, name, email, firstName, lastName, phoneNumber);
+            return Objects.hash(userId, userRole, name, email, firstName, lastName, phoneNumber, avtUrl);
         }
 }

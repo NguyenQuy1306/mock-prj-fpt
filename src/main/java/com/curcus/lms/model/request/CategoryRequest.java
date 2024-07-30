@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class CategoryRequest {
-    @NotEmpty
+    @NotEmpty(message = "CATEGORY IS MANDATORY")
+    @NotNull(message = "CATEGORY IS MANDATORY")
     private String categoryName;
 }

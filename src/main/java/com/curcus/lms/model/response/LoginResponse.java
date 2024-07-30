@@ -1,33 +1,37 @@
 package com.curcus.lms.model.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
-
-@Setter
-@Getter
-public class StudentResponse implements Serializable {
-
-    private int studentId;
+import java.util.Objects;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LoginResponse implements Serializable {
+    private Long userId;
+    private String userRole;
     private String name;
     private String email;
+    private String avtUrl;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-
-    private String avtUrl;
+    private AuthenticationResponse tokens;
 
     @Override
     public String toString() {
         return "StudentResponse{" +
-                "studentId=" + studentId +
+                "studentId=" + userId + '\'' +
+                ", userRole='" + userRole + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", avtUrl='" + avtUrl + '\'' +
+                ", tokens=" + tokens +
                 '}';
     }
 
@@ -37,15 +41,16 @@ public class StudentResponse implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        StudentResponse that = (StudentResponse) o;
-        return Objects.equals(studentId, that.studentId) && Objects.equals(name, that.name)
+        LoginResponse that = (LoginResponse) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(userRole, that.userRole)
+                && Objects.equals(name, that.name)
                 && Objects.equals(email, that.email) && Objects.equals(firstName, that.firstName)
                 && Objects.equals(lastName, that.lastName) && Objects.equals(phoneNumber, that.phoneNumber)
-                && Objects.equals(avtUrl, that.avtUrl);
+                && Objects.equals(avtUrl, that.avtUrl) && Objects.equals(tokens, that.tokens);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId, name, email, firstName, lastName, phoneNumber, avtUrl);
+        return Objects.hash(userId, userRole, name, email, firstName, lastName, phoneNumber, avtUrl, tokens);
     }
 }

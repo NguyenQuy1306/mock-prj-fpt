@@ -67,7 +67,7 @@ public class AuthenticationController {
                 return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
             }
 //            if (userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
-//                errors.put("message", "Email has already been used");
+//                errors.put("message", "Phone number has already been used");
 //                apiResponse.error(errors);
 //                return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
 //            }
@@ -78,7 +78,7 @@ public class AuthenticationController {
             }
             UserResponse userResponse = service.register(request);
             if (userResponse == null) {
-                System.out.println("---------LOI TAO USER--------------------");
+//                System.out.println("---------LOI TAO USER--------------------");
                 apiResponse.error(ResponseCode.getError(23));
                 return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -114,12 +114,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<ApiResponse<UserResponse>> authenticate(
+    public ResponseEntity<ApiResponse<LoginResponse>> authenticate(
             @Valid @RequestBody AuthenticationRequest request,
             BindingResult bindingResult,
             HttpServletResponse response
     ) {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        ApiResponse<LoginResponse> apiResponse = new ApiResponse<>();
         Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
             errors = bindingResult.getAllErrors().stream()
@@ -132,9 +132,9 @@ public class AuthenticationController {
         }
 
         try {
-            UserResponse userResponse = service.authenticate(request, response);
+            LoginResponse loginResponse = service.authenticate(request, response);
 
-            apiResponse.ok(userResponse);
+            apiResponse.ok(loginResponse);
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             apiResponse.error(ResponseCode.getError(8));
