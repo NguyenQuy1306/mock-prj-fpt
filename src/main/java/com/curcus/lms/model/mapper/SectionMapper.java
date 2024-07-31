@@ -29,6 +29,7 @@ public abstract class SectionMapper {
     @Mapping(source = "position", target = "position")
     public abstract SectionDetailResponse toDetailResponse(Section section);
 
+    @Mapping(source = "sectionId", target = "sectionId")
     @Mapping(source = "sectionName", target = "sectionName")
     @Mapping(source = "position", target = "position")
     @Mapping(target = "contents", expression = "java(mapSortedContents(section))")
