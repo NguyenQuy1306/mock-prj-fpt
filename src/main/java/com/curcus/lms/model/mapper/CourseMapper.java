@@ -71,7 +71,7 @@ public abstract class CourseMapper {
                 .map(this::mapSection)
                 .collect(Collectors.toList());
     }
-
+    @Mapping(target = "sectionId", source  = "sectionId")
     protected abstract SectionDetailResponse mapSection(Section section);
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
