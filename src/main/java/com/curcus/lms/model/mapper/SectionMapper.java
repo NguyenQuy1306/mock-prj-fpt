@@ -25,6 +25,7 @@ public abstract class SectionMapper {
 	@Mapping(source = "course.courseId", target = "courseId")
     public abstract SectionCreateResponse toResponse(Section section);
 
+    @Mapping(source = "sectionId", target = "sectionId")
     @Mapping(source = "sectionName", target = "sectionName")
     @Mapping(source = "position", target = "position")
     public abstract SectionDetailResponse toDetailResponse(Section section);
