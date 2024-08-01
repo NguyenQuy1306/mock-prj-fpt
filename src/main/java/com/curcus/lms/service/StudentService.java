@@ -4,11 +4,6 @@ import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.request.UserAddressRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StudentStatisticResponse;
-import com.curcus.lms.model.response.StudentResponse;
-import com.curcus.lms.model.response.UserAddressResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +16,7 @@ public interface StudentService {
     Page<StudentResponse> findAll(Pageable pageable);
 
     Optional<StudentResponse> findById(Long studentId);
-    
+
     StudentResponse createStudent(StudentRequest student);
 
     StudentResponse updateStudent(Long studentId, StudentRequest student);
@@ -34,7 +29,7 @@ public interface StudentService {
 
     List<CourseResponse> getListCourseFromCart(Long studentId);
 
-    Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable);
+    Page<CourseResponseForCart> getListCourseFromCart(Long studentId, Pageable pageable);
 
     EnrollmentResponse addStudentToCourse(Long studentId, Long courseId);
 
@@ -50,8 +45,8 @@ public interface StudentService {
 
     StudentStatisticResponse studentStatistic(Long studentId);
 
-
     UserAddressResponse updateStudentAddress(Long userId, UserAddressRequest addressRequest);
+
     SectionCompleteResponse completeSection(SectionCompleteRequest request);
 
     SectionCompleteResponse getCurrentSection(Long studentId, Long courseId);

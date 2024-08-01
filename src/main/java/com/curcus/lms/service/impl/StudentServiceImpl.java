@@ -2,16 +2,12 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.constants.ContentType;
 import com.curcus.lms.exception.InvalidFileTypeException;
-import com.curcus.lms.model.entity.Course;
-import com.curcus.lms.repository.CourseRepository;
 import com.curcus.lms.service.CloudinaryService;
 import com.curcus.lms.util.FileAsyncUtil;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.model.request.UserAddressRequest;
-import com.curcus.lms.model.response.UserAddressResponse;
 import com.curcus.lms.repository.*;
-
 
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.entity.*;
@@ -27,10 +23,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.stereotype.Service;
 
-import com.curcus.lms.repository.CartItemsRepository;
-import com.curcus.lms.repository.CartRepository;
-import com.curcus.lms.repository.EnrollmentRepository;
-import com.curcus.lms.repository.StudentRepository;
 import com.curcus.lms.service.CartService;
 import com.curcus.lms.service.StudentService;
 
@@ -38,18 +30,11 @@ import jakarta.validation.ConstraintViolationException;
 
 import com.curcus.lms.exception.ApplicationException;
 import com.curcus.lms.exception.NotFoundException;
-import com.curcus.lms.model.entity.Cart;
-import com.curcus.lms.model.entity.CartItems;
-import com.curcus.lms.model.entity.Enrollment;
-import com.curcus.lms.model.entity.Student;
 import com.curcus.lms.exception.DuplicatePhoneNumberException;
 import com.curcus.lms.model.mapper.CourseMapper;
 import com.curcus.lms.model.mapper.UserMapper;
 import com.curcus.lms.model.request.StudentRequest;
-import com.curcus.lms.model.response.CourseResponse;
-import com.curcus.lms.model.response.EnrollmentResponse;
-import com.curcus.lms.model.response.StudentStatisticResponse;
-import com.curcus.lms.model.response.StudentResponse;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -112,8 +97,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse createStudent(StudentRequest studentRequest) {
         try {
-            if (studentRepository.existsByEmail(studentRequest.getEmail())) throw new ApplicationException("This email address already exists");
-            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
+            if (studentRepository.existsByEmail(studentRequest.getEmail()))
+                throw new ApplicationException("This email address already exists");
+            if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber()))
+                throw new ApplicationException("PhoneNumber already exists");
             Student newStudent = new Student();
             newStudent.setName(studentRequest.getName());
             newStudent.setEmail(studentRequest.getEmail());
@@ -131,14 +118,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudent(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Account does not exist");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Account does not exist");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
             newStudent.setName(studentRequest.getName());
             newStudent.setFirstName(studentRequest.getFirstName());
             newStudent.setLastName(studentRequest.getLastName());
 
-            if(!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
-                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber())) throw new ApplicationException("PhoneNumber already exists");
+            if (!newStudent.getPhoneNumber().equals(studentRequest.getPhoneNumber())) {
+                if (studentRepository.existsByPhoneNumber(studentRequest.getPhoneNumber()))
+                    throw new ApplicationException("PhoneNumber already exists");
             }
             newStudent.setPhoneNumber(studentRequest.getPhoneNumber());
 
@@ -155,11 +144,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse updateStudentPassword(Long studentId, StudentRequest studentRequest) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Account does not exist");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Account does not exist");
             Student newStudent = studentRepository.findById(studentId).orElse(null);
 
-            if(studentRequest.getPassword() == "") throw new ApplicationException("Please enter a password");
-            if(passwordEncoder.matches(studentRequest.getPassword(), newStudent.getPassword())) throw new ApplicationException("New password cannot be the same as the old password");
+            if (studentRequest.getPassword() == "")
+                throw new ApplicationException("Please enter a password");
+            if (passwordEncoder.matches(studentRequest.getPassword(), newStudent.getPassword()))
+                throw new ApplicationException("New password cannot be the same as the old password");
             newStudent.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
             return userMapper.toResponse(studentRepository.save(newStudent));
         } catch (ApplicationException ex) {
@@ -171,7 +163,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Long studentId) {
         try {
-            if (!studentRepository.existsById(studentId)) throw new ApplicationException("Accout does not exist");
+            if (!studentRepository.existsById(studentId))
+                throw new ApplicationException("Accout does not exist");
             studentRepository.deleteById(studentId);
         } catch (ApplicationException ex) {
             throw ex;
@@ -183,17 +176,17 @@ public class StudentServiceImpl implements StudentService {
     public Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
-            if (student == null) throw new ApplicationException("Student does not exist");
+            if (student == null)
+                throw new ApplicationException("Student does not exist");
             Page<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId, pageable);
             Page<EnrollmentResponse> enrollmentResponses = enrollments.map(enrollment -> new EnrollmentResponse(
-                enrollment.getEnrollmentId(),
-                enrollment.getStudent().getUserId(),
-                courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
-                enrollment.getEnrollmentDate(),
-                enrollment.getIsComplete(),
-                enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
-                )
-            );
+                    enrollment.getEnrollmentId(),
+                    enrollment.getStudent().getUserId(),
+                    courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
+                    enrollment.getEnrollmentDate(),
+                    enrollment.getIsComplete(),
+                    enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
+                    ));
             return enrollmentResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -204,9 +197,11 @@ public class StudentServiceImpl implements StudentService {
     public List<CourseResponse> getListCourseFromCart(Long studentId) {
         try {
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
-            if (cart == null) throw new ApplicationException("Cart not found");
+            if (cart == null)
+                throw new ApplicationException("Cart not found");
             List<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId());
-            List<CourseResponse> courseResponses = cartItems.stream().map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
+            List<CourseResponse> courseResponses = cartItems.stream()
+                    .map(cartItem -> courseMapper.toResponse(cartItem.getCourse())).collect(Collectors.toList());
             return courseResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -214,7 +209,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<CourseResponse> getListCourseFromCart(Long studentId, Pageable pageable) {
+    public Page<CourseResponseForCart> getListCourseFromCart(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
             if (student == null) {
@@ -225,7 +220,8 @@ public class StudentServiceImpl implements StudentService {
                 throw new NotFoundException("Cart not found");
             }
             Page<CartItems> cartItems = cartItemsRepository.findAllByCart_CartId(cart.getCartId(), pageable);
-            Page<CourseResponse> coursePage = cartItems.map(CartItems::getCourse).map(courseMapper::toResponse);
+            Page<CourseResponseForCart> coursePage = cartItems.map(CartItems::getCourse)
+                    .map(courseMapper::toResponseCourseCart);
             return coursePage;
         } catch (Exception ex) {
             throw ex;
@@ -285,11 +281,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public  HashMap<String, Integer> getCoursesPurchasedLastFiveYears(Long studentId){
+    public HashMap<String, Integer> getCoursesPurchasedLastFiveYears(Long studentId) {
 
         Student student = studentRepository.findById(studentId).orElse(null);
 
-        if (student==null) throw new NotFoundException("Student doesn't exist");
+        if (student == null)
+            throw new NotFoundException("Student doesn't exist");
 
         List<Enrollment> enrollments = enrollmentRepository.findByStudent(student);
 
@@ -302,13 +299,14 @@ public class StudentServiceImpl implements StudentService {
             int count = 0;
             for (int j = 0; j < enrollments.size(); j++) {
                 Enrollment enrollment = enrollments.get(j);
-                LocalDate enrollmentDate = enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate enrollmentDate = enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault())
+                        .toLocalDate();
                 if ((enrollmentDate.isAfter(startOfYear) || enrollmentDate.isEqual(startOfYear)) &&
-                    (enrollmentDate.isBefore(endOfYear) || enrollmentDate.isEqual(endOfYear))) {
+                        (enrollmentDate.isBefore(endOfYear) || enrollmentDate.isEqual(endOfYear))) {
                     count++;
                 }
             }
-            String temp=String.valueOf(year);
+            String temp = String.valueOf(year);
             courseCount.put(temp, count);
         }
 
@@ -316,22 +314,23 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public  Integer getTotalPurchaseCourse(Long studentId){
+    public Integer getTotalPurchaseCourse(Long studentId) {
 
         Student student = studentRepository.findById(studentId).orElse(null);
 
-        if (student==null) throw new NotFoundException("Student doesn't exist");
+        if (student == null)
+            throw new NotFoundException("Student doesn't exist");
 
         return enrollmentRepository.totalPurchaseCourse(studentId);
     }
 
     @Override
-    public Integer totalFinishCourse(Long studentId){
+    public Integer totalFinishCourse(Long studentId) {
         try {
             List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
             int totalFinishCourse = (int) enrollments.stream()
-                   .filter(Enrollment::getIsComplete)
-                   .count();
+                    .filter(Enrollment::getIsComplete)
+                    .count();
             return totalFinishCourse;
         } catch (ApplicationException ex) {
             throw ex;
@@ -339,7 +338,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public HashMap<String, Integer> finishCourseFiveYears(Long studentId){
+    public HashMap<String, Integer> finishCourseFiveYears(Long studentId) {
         try {
             List<Enrollment> enrollments = enrollmentRepository.findByStudent_UserId(studentId);
             Year currentYear = Year.now();
@@ -347,10 +346,11 @@ public class StudentServiceImpl implements StudentService {
             Stream.iterate(currentYear, year -> year.minusYears(1)).limit(5).forEach(year -> {
                 String yearString = year.toString();
                 Integer count = (int) enrollments.stream()
-                       .filter(enrollment -> enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                               .getYear() == year.getValue())
-                       .filter(Enrollment::getIsComplete)
-                       .count();
+                        .filter(enrollment -> enrollment.getEnrollmentDate().toInstant().atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                                .getYear() == year.getValue())
+                        .filter(Enrollment::getIsComplete)
+                        .count();
                 finishCourseFiveYears.put(yearString, count);
             });
             return finishCourseFiveYears;
@@ -360,12 +360,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentStatisticResponse studentStatistic(Long studentId)
-    {
-        StudentStatisticResponse statisticResponse=new StudentStatisticResponse(getTotalPurchaseCourse(studentId),
-                                                                  totalFinishCourse(studentId),
-                                                                  getCoursesPurchasedLastFiveYears(studentId),
-                                                                  finishCourseFiveYears(studentId));
+    public StudentStatisticResponse studentStatistic(Long studentId) {
+        StudentStatisticResponse statisticResponse = new StudentStatisticResponse(getTotalPurchaseCourse(studentId),
+                totalFinishCourse(studentId),
+                getCoursesPurchasedLastFiveYears(studentId),
+                finishCourseFiveYears(studentId));
         return statisticResponse;
     }
 
@@ -407,13 +406,16 @@ public class StudentServiceImpl implements StudentService {
 
         Course course = currentSectionInRequest.getCourse();
 
-        Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(request.getStudentId(), course.getCourseId());
-        if (enrollment==null) throw new NotFoundException("Student has not enrolled the course");
+        Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(request.getStudentId(),
+                course.getCourseId());
+        if (enrollment == null)
+            throw new NotFoundException("Student has not enrolled the course");
         if (enrollment.getIsComplete()) {
             throw new NotFoundException("No more sections to complete");
         }
 
-        Section currentSectionInDB = sectionRepository.findByCourse_CourseIdAndPosition(course.getCourseId(), enrollment.getCurrentSectionPosition())
+        Section currentSectionInDB = sectionRepository
+                .findByCourse_CourseIdAndPosition(course.getCourseId(), enrollment.getCurrentSectionPosition())
                 .orElseThrow(() -> new NotFoundException("No more sections to complete"));
 
         // mismatch between current section in request and current section in database
@@ -422,7 +424,8 @@ public class StudentServiceImpl implements StudentService {
         }
 
         // check if current section is the last section
-        Section lastSection = sectionRepository.findTopByCourse_CourseIdOrderByPositionDesc(enrollment.getCourse().getCourseId())
+        Section lastSection = sectionRepository
+                .findTopByCourse_CourseIdOrderByPositionDesc(enrollment.getCourse().getCourseId())
                 .orElseThrow(() -> new NotFoundException("Last section doesn't exist"));
         if (currentSectionInDB.getPosition() == lastSection.getPosition()) {
             // complete last section -> complete course. current section -> null
@@ -443,7 +446,8 @@ public class StudentServiceImpl implements StudentService {
         SectionCompleteResponse response = new SectionCompleteResponse();
 
         Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, courseId);
-        if (enrollment==null) throw new NotFoundException("Student has not enrolled the course");
+        if (enrollment == null)
+            throw new NotFoundException("Student has not enrolled the course");
         if (enrollment.getIsComplete()) {
             response.setSectionId(null);
             response.setPosition(null);
@@ -451,7 +455,8 @@ public class StudentServiceImpl implements StudentService {
             return response;
         }
 
-        Section currentSection = sectionRepository.findByCourse_CourseIdAndPosition(courseId, enrollment.getCurrentSectionPosition())
+        Section currentSection = sectionRepository
+                .findByCourse_CourseIdAndPosition(courseId, enrollment.getCurrentSectionPosition())
                 .orElseThrow(() -> new NotFoundException("Section doesn't exist"));
 
         response.setSectionId(currentSection.getSectionId());
