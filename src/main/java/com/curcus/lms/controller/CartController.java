@@ -59,6 +59,7 @@ public class CartController {
                 baseUrlStr + "page=0&size=" + size);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping(value = "/createCart")
     public ResponseEntity<ApiResponse<Cart>> createCart(@RequestParam Long studentId) {
         try {

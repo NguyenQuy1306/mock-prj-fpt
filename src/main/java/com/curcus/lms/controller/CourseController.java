@@ -279,8 +279,7 @@ public class CourseController {
         apiResponse.ok(coursePage.getContent(), responseMetadata);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-    //lấy tới content - student mua rồi mới xem được
-    //viết role nha bro
+
     @GetMapping("/details/{courseId}")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> getCourseDetails(@PathVariable Long courseId) {
 
@@ -380,8 +379,12 @@ public class CourseController {
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    //lấy trong content - student mua rồi mới xem được
-    //viết role nha bro
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and " +
+            "@enrollmentRepository.existsByStudent_UserIdAndCourse_CourseId(" +
+            "   authentication.principal.getId()," +
+            "   @sectionRepository.findById(#sectionID).orElseThrow().getCourse().getCourseId()" +
+            "))")
     @GetMapping("section/{sectionID}/contents")
     public ResponseEntity<ApiResponse<SectionDetailResponse2>> getContentsBySection(@PathVariable Long sectionID) {
         SectionDetailResponse2 section = courseService.getContentsBySection(sectionID);
