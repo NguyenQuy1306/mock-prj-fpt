@@ -19,6 +19,7 @@ import com.curcus.lms.model.request.SectionCompleteRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,6 +82,9 @@ public class StudentServiceImpl implements StudentService {
     private UserRepository userRepository;
     @Autowired
     private SectionRepository sectionRepository;
+
+    @Value("${mail.backend_host}")
+    String backendHost;
 
     @Autowired
     private FileAsyncUtil fileAsyncUtil;
@@ -186,7 +190,8 @@ public class StudentServiceImpl implements StudentService {
                 enrollment.getStudent().getUserId(),
                 courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
                 enrollment.getEnrollmentDate(),
-                enrollment.getIsComplete()
+                enrollment.getIsComplete(),
+                enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
                 )
             );
             return enrollmentResponses;
@@ -249,7 +254,8 @@ public class StudentServiceImpl implements StudentService {
                     savedEnrollment.getStudent().getUserId(),
                     courseMapper.toCourseEnrollResponse(savedEnrollment.getCourse()),
                     savedEnrollment.getEnrollmentDate(),
-                    savedEnrollment.getIsComplete()
+                    savedEnrollment.getIsComplete(),
+                    enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
             );
 
         } catch (ApplicationException ex) {
