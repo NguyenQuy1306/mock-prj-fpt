@@ -211,6 +211,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public Long getIdCartFromStudent(Long studentId) {
+        Student student = studentRepository.findById(studentId).orElse(null);
+        if (student == null) {
+            throw new NotFoundException("Student has not existed with id " + studentId);
+        }
+        Cart cart = cartRepository.findCartByStudent_UserId(studentId);
+        if (cart == null) {
+            throw new NotFoundException("Cart not found");
+        }
+        return cart.getCartId();
+    }
+
+    @Override
     public void deleteCourseFromCart(Long studentId, Long courseId) {
         try {
             // check valid courseId

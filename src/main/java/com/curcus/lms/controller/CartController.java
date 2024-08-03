@@ -121,6 +121,24 @@ public class CartController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
+    @GetMapping(value = "/{studentId}/getCartId")
+    public ResponseEntity<ApiResponse<Long>> getIdCartFromStudent(@PathVariable Long studentId) {
+        try {
+            Long cartId = cartService.getIdCartFromStudent(studentId);
+            ApiResponse<Long> apiResponse = new ApiResponse<>();
+            apiResponse.ok(cartId);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } catch (ValidationException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ApplicationException(ex.getMessage());
+        }
+
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<Void>> copyCartToOrder(@RequestParam Long studentId,
