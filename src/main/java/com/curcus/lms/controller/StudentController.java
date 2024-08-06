@@ -5,6 +5,7 @@ import com.curcus.lms.model.request.StudentRequest;
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.impl.UserDetailsServiceImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class StudentController {
     @Autowired
     private StudentService studentService;

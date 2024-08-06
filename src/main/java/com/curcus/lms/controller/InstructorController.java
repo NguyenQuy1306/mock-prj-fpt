@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.curcus.lms.model.request.UserAddressRequest;
 import com.curcus.lms.model.response.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.hibernate.jdbc.Expectations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 @RestController
 @RequestMapping("/api/instructors")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class InstructorController {
     @Autowired
     private InstructorService instructorService;

@@ -5,6 +5,7 @@ import com.curcus.lms.model.request.RatingRequest;
 import com.curcus.lms.model.response.CourseRatingResponse;
 import com.curcus.lms.repository.EnrollmentRepository;
 import com.curcus.lms.service.RatingService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/ratings")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class RatingController {
     @Autowired
     private RatingService ratingService;

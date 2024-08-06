@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,6 +55,7 @@ import com.curcus.lms.model.dto.*;
 @RequestMapping("/api/courses")
 @Validated
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class CourseController {
     @Autowired
     private CourseService courseService;
@@ -182,7 +184,7 @@ public class CourseController {
 
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+            "and @contentRepository.existsBySection_Course_Instructor_UserIdAndId(authentication.principal.getId(), #contentCreateRequest.contentId))")
     @PostMapping(value = "/updateContent/document")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> updateDocumentContent(
             @RequestBody @Valid ContentDocumentUpdateRequest contentCreateRequest) {
@@ -195,8 +197,8 @@ public class CourseController {
 
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @contentRepository.existsBySection_Course_Instructor_UserIdAndId(authentication.principal.getId(), #contentCreateRequest.contentId))")
     @PostMapping(value = "/updateContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> updateVideoContent(
             @ModelAttribute @Valid @RequestBody ContentVideoUpdateRequest contentCreateRequest) {
@@ -422,6 +424,8 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #sectionId))")
     @PutMapping("/section/update-name")
     public ResponseEntity<ApiResponse<SectionCreateResponse>> updateSectionName(
             @RequestParam Long sectionId,
@@ -433,6 +437,9 @@ public class CourseController {
         apiResponse.ok(section);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @contentRepository.existsBySection_Course_Instructor_UserIdAndId(authentication.principal.getId(), #contentId))")
     @DeleteMapping("deleteContent/{contentId}")
     public ResponseEntity<ApiResponse<Void>> deleteContent(@PathVariable Long contentId) {
         ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -442,6 +449,8 @@ public class CourseController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #sectionId))")
     @DeleteMapping("deleteSection/{sectionId}")
     public ResponseEntity<ApiResponse<Void>> deleteSection(@PathVariable Long sectionId) {
         ApiResponse<Void> apiResponse = new ApiResponse<>();

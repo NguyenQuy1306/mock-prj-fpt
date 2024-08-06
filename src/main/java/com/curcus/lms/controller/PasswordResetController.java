@@ -4,6 +4,7 @@ import com.curcus.lms.model.request.PasswordResetRequest;
 import com.curcus.lms.model.response.ApiResponse;
 import com.curcus.lms.model.response.ResponseCode;
 import com.curcus.lms.service.impl.PasswordResetImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/password-reset")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class PasswordResetController {
     @Autowired
     PasswordResetImpl passwordReset;
