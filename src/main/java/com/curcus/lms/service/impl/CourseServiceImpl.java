@@ -5,27 +5,22 @@ import com.curcus.lms.model.response.*;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import com.curcus.lms.service.CategorySevice;
-import java.io.Console;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.curcus.lms.validation.FileValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.curcus.lms.exception.ApplicationException;
-import com.curcus.lms.exception.InvalidFileTypeException;
 import com.curcus.lms.exception.NotFoundException;
 import com.curcus.lms.exception.ValidationException;
 import com.curcus.lms.model.mapper.ContentMapper;
@@ -185,15 +180,15 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public ContentCreateResponse updateVideoContent(ContentVideoCreateRequest contentCreateRequest) {
+    public ContentCreateResponse updateVideoContent(ContentVideoUpdateRequest contentVideoUpdateRequest) {
         // TODO Auto-generated method stub
-        Content content = contentRepository.findById(contentCreateRequest.getSectionId())
-                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentCreateRequest.getSectionId()));
+        Content content = contentRepository.findById(contentVideoUpdateRequest.getContentId())
+                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentVideoUpdateRequest.getContentId()));
 
-        FileValidation.validateVideoType(contentCreateRequest.getFile().getOriginalFilename());
+        FileValidation.validateVideoType(contentVideoUpdateRequest.getFile().getOriginalFilename());
         byte[] fileBytes = null;
         try {
-            fileBytes = contentCreateRequest.getFile().getBytes();
+            fileBytes = contentVideoUpdateRequest.getFile().getBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -203,11 +198,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public ContentCreateResponse updateDocumentContent(ContentDocumentCreateRequest contentCreateRequest) {
+    public ContentCreateResponse updateDocumentContent(ContentDocumentUpdateRequest contentDocumentUpdateRequest) {
         // TODO Auto-generated method stub
-        Content content = contentRepository.findById(contentCreateRequest.getSectionId())
-                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentCreateRequest.getSectionId()));
-        content.setContent(contentCreateRequest.getContent());
+        Content content = contentRepository.findById(contentDocumentUpdateRequest.getContentId())
+                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentDocumentUpdateRequest.getContentId()));
+        content.setContent(contentDocumentUpdateRequest.getContent());
         content = contentRepository.save(content);
         return contentMapper.toResponse(content);
 

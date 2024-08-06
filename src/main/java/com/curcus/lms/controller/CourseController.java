@@ -185,7 +185,7 @@ public class CourseController {
             "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/updateContent/document")
     public ResponseEntity<ApiResponse<ContentCreateResponse>> updateDocumentContent(
-            @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
+            @RequestBody @Valid ContentDocumentUpdateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
                 .updateDocumentContent(contentCreateRequest);
 
@@ -195,11 +195,11 @@ public class CourseController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
-            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+//            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
     @PostMapping(value = "/updateContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ContentCreateResponse>> updateVideoContent(
-            @ModelAttribute @Valid @RequestBody ContentVideoCreateRequest contentCreateRequest) {
+            @ModelAttribute @Valid @RequestBody ContentVideoUpdateRequest contentCreateRequest) {
         ContentCreateResponse contentCreateResponse = courseService
                 .updateVideoContent(contentCreateRequest);
 

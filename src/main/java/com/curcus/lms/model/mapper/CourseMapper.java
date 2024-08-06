@@ -33,25 +33,25 @@ import java.util.stream.Collectors;
 
 import java.util.Comparator;
 
-@Mapper(componentModel = "spring")
-public abstract class CourseMapper {
-    @Autowired
-    protected CloudinaryService cloudinaryService;
+    @Mapper(componentModel = "spring", uses = InstructorMapper.class)
+    public abstract class CourseMapper {
+        @Autowired
+        protected CloudinaryService cloudinaryService;
 
-    @Autowired
-    protected InstructorRepository instructorRepository;
+        @Autowired
+        protected InstructorRepository instructorRepository;
 
-    @Autowired
-    protected CategoryRepository categoryRepository;
+        @Autowired
+        protected CategoryRepository categoryRepository;
 
-    @Autowired
-    protected RatingRepository ratingRepository;
+        @Autowired
+        protected RatingRepository ratingRepository;
 
-    @Autowired
-    protected InstructorMapper instructorMapper;
+        @Autowired
+        protected InstructorMapper instructorMapper;
 
-    @Autowired
-    protected CourseRepository courseRepository;
+        @Autowired
+        protected CourseRepository courseRepository;
 
 
     @Mapping(source = "courseThumbnail", target = "courseThumbnail")
@@ -60,7 +60,7 @@ public abstract class CourseMapper {
     @Mapping(source = "price", target = "price")
     @Mapping(source = "createdAt", target = "createdAt")
     @Mapping(source = "avgRating", target = "avgRating")
-    @Mapping(source = "instructor", target = "instructor")
+    @Mapping(source = "instructor", target = "instructor", qualifiedByName = "toDetailResponse")
     @Mapping(source = "category", target = "category")
     @Mapping(target = "sections", expression = "java(mapSortedSections(course))")
     public abstract CourseDetailResponse toDetailResponse(Course course);

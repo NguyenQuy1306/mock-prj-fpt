@@ -7,6 +7,7 @@ import com.curcus.lms.model.entity.User;
 import com.curcus.lms.model.response.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -57,5 +58,6 @@ public abstract class UserMapper {
     @Mapping(source = "userCountry", target = "userCountry")
     @Mapping(source = "userPostalCode", target = "userPostalCode")
     public abstract UserAddressResponse toUserAddressResponse(Instructor instructor);
+
 
 }

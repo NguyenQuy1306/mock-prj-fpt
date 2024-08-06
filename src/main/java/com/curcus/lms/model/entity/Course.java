@@ -51,7 +51,7 @@ public class Course {
     @ColumnDefault("'CREATED'")
     private CourseStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", referencedColumnName = "userId")
     private User instructor;
 
