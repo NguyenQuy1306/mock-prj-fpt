@@ -6,19 +6,14 @@ import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
 
 import org.springframework.validation.BindingResult;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
-import com.curcus.lms.model.entity.Section;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.validation.BindingResult;
 
 public interface CourseService {
         // List<CourseResponse> findByCategory(Long categoryId);
@@ -73,4 +68,5 @@ public interface CourseService {
         List<CourseDetailResponse3> unapprovedCourse(Pageable pageable);
 
         SectionDetailResponse2 getContentsBySection(Long id);
+        void deleteContentById(Long contentId);
 }

@@ -526,4 +526,13 @@ public class CourseServiceImpl implements CourseService {
         SectionDetailResponse2 sectionDetailResponse = sectionMapper.toDetailResponse2(section);
         return sectionDetailResponse;
     }
+
+    @Override
+    @Transactional
+    public void deleteContentById(Long contentId) {
+        Content content = contentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("content are deleted"));
+        contentRepository.delete(content);
+    }
+
+
 }

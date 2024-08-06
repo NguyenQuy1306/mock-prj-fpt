@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -392,5 +393,13 @@ public class CourseController {
         apiResponse.ok(section);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+    @DeleteMapping("deleteContent/{contentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteContent(@PathVariable Long contentId) {
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+            courseService.deleteContentById(contentId);
+            apiResponse.ok(null);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
     }
 }
