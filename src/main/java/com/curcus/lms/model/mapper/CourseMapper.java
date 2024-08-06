@@ -72,7 +72,7 @@ public abstract class CourseMapper {
                 .collect(Collectors.toList());
     }
     @Mapping(target = "sectionId", source  = "sectionId")
-    protected abstract SectionDetailResponse mapSection(Section section);
+    public abstract SectionDetailResponse mapSection(Section section);
 
     @Mapping(source = "course.instructor.userId", target = "instructorId")
     @Mapping(source = "course.category.categoryId", target = "categoryId")

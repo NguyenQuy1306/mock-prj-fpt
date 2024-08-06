@@ -181,6 +181,33 @@ public class CourseController {
         return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
 
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PostMapping(value = "/updateContent/document")
+    public ResponseEntity<ApiResponse<ContentCreateResponse>> updateDocumentContent(
+            @RequestBody @Valid ContentDocumentCreateRequest contentCreateRequest) {
+        ContentCreateResponse contentCreateResponse = courseService
+                .updateDocumentContent(contentCreateRequest);
+
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(contentCreateResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_INSTRUCTOR') " +
+            "and @sectionRepository.existsByCourse_Instructor_UserIdAndSectionId(authentication.principal.getId(), #contentCreateRequest.sectionId))")
+    @PostMapping(value = "/updateContent/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ContentCreateResponse>> updateVideoContent(
+            @ModelAttribute @Valid @RequestBody ContentVideoCreateRequest contentCreateRequest) {
+        ContentCreateResponse contentCreateResponse = courseService
+                .updateVideoContent(contentCreateRequest);
+
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.ok(contentCreateResponse);
+        return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+
+    }
 
     private String buildBaseUrl(Long instructorId, Long categoryId, String title, Long minPrice,Long maxPrice, Boolean isFree,
             String sort, String direction) {
@@ -394,6 +421,18 @@ public class CourseController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PutMapping("/section/update-name")
+    public ResponseEntity<ApiResponse<SectionCreateResponse>> updateSectionName(
+            @RequestParam Long sectionId,
+            @Valid @RequestBody SectionRequest updateRequest
+    )
+    {
+        SectionCreateResponse section = courseService.updateSection(sectionId, updateRequest);
+        ApiResponse<SectionCreateResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(section);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
     @DeleteMapping("deleteContent/{contentId}")
     public ResponseEntity<ApiResponse<Void>> deleteContent(@PathVariable Long contentId) {
         ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -402,4 +441,5 @@ public class CourseController {
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     }
+
 }

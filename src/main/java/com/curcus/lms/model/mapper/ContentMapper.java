@@ -41,6 +41,7 @@ public abstract class ContentMapper {
     @Mapping(source = "type", target = "type")
     @Mapping(source = "content", target = "content")
     @Mapping(source = "position", target = "position")
+    @Mapping(source = "id", target = "id")
     public abstract ContentDetailResponse toDetailResponse(Content content);
 
     @Mapping(expression = "java(content.getSection().getSectionId())", target = "sectionId")

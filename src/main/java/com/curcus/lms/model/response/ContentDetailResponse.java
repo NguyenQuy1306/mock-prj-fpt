@@ -10,4 +10,5 @@ public class ContentDetailResponse {
     private ContentType type;
     private String content;
     private Long position;
+    private Long id;
 }

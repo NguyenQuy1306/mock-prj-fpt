@@ -47,12 +47,13 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         return deleteResult.get("result").toString();
     }
 
-    public String updateFile(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
-        FileValidation.validateFileType(file.getOriginalFilename());
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+    public void updateFile(String publicId, byte[] file) throws IOException, InvalidFileTypeException {
+
+        Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.asMap(
+                "resource_type", "video",
                 "public_id", publicId
         ));
-        return uploadResult.get("url").toString();
+        uploadResult.get("url").toString();
     }
 
     public String updateImage(String publicId, MultipartFile file) throws IOException, InvalidFileTypeException {
