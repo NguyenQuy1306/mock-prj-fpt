@@ -28,5 +28,5 @@ public class VerificationToken {
     public boolean revoked;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 }

@@ -9,12 +9,14 @@ import com.curcus.lms.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class VerificationTokenServiceImpl implements VerificationTokenService {
     @Autowired
     private UserRepository userRepository;
