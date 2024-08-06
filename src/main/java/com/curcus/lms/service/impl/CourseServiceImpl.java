@@ -530,8 +530,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void deleteContentById(Long contentId) {
-        Content content = contentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("content are deleted"));
-        contentRepository.delete(content);
+        //Content content = contentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("content are deleted"));
+        contentRepository.deleteContentById(contentId);
     }
 
 
