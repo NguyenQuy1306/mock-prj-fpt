@@ -23,4 +23,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     @Transactional
     @Query("DELETE FROM Content c WHERE c.section.sectionId = :sectionId")
     void deleteAllContentBySectionId(@Param("sectionId") Long sectionId);
+
+    Boolean existsBySection_Course_Instructor_UserIdAndId(Long instructorId, Long contentId);
 }
