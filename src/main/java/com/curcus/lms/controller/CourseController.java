@@ -442,4 +442,13 @@ public class CourseController {
 
     }
 
+    @DeleteMapping("deleteSection/{sectionId}")
+    public ResponseEntity<ApiResponse<Void>> deleteSection(@PathVariable Long sectionId) {
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+        courseService.deleteSectionById(sectionId);
+        apiResponse.ok(null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    }
+
 }

@@ -18,4 +18,9 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     @Query("DELETE FROM Content c WHERE c.id = :contentId")
     void deleteContentById(@Param("contentId") Long contentId);
     List<Content> findBySectionOrderByPosition(Section section);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Content c WHERE c.section.sectionId = :sectionId")
+    void deleteAllContentBySectionId(@Param("sectionId") Long sectionId);
 }

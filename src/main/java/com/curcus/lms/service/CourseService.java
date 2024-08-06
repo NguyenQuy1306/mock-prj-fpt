@@ -73,4 +73,5 @@ public interface CourseService {
 
         ContentCreateResponse updateDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
         void deleteContentById(Long contentId);
+        void deleteSectionById(Long contentId);
 }
