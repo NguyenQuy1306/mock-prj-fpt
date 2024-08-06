@@ -73,4 +73,8 @@ public interface CourseService {
         List<CourseDetailResponse3> unapprovedCourse(Pageable pageable);
 
         SectionDetailResponse2 getContentsBySection(Long id);
+
+    ContentCreateResponse updateVideoContent(ContentVideoCreateRequest contentCreateRequest);
+
+        ContentCreateResponse updateDocumentContent(ContentDocumentCreateRequest contentCreateRequest);
 }
