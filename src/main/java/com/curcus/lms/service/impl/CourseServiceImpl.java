@@ -530,8 +530,24 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void deleteContentById(Long contentId) {
-        //Content content = contentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("content are deleted"));
+        Content content = contentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("content are deleted"));
+        Section section = content.getSection();
+        Long deletedPosition = content.getPosition();
+
         contentRepository.deleteContentById(contentId);
+        List<Content> remainingContents = contentRepository.findBySectionOrderByPosition(section);
+
+        // Reorder the remaining contents
+        long position = 1;
+        for (Content remainingContent : remainingContents) {
+            // Skip the deleted content's position
+            if (remainingContent.getPosition() > deletedPosition) {
+                remainingContent.setPosition(position++);
+                contentRepository.save(remainingContent); // Update the position
+            } else {
+                position++;
+            }
+        }
     }
 
 
