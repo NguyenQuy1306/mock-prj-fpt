@@ -393,4 +393,17 @@ public class CourseController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PutMapping("/section/update-name")
+    public ResponseEntity<ApiResponse<SectionCreateResponse>> updateSectionName(
+            @RequestParam Long sectionId,
+            @Valid @RequestBody SectionRequest updateRequest
+    )
+    {
+        SectionCreateResponse section = courseService.updateSection(sectionId, updateRequest);
+        ApiResponse<SectionCreateResponse> apiResponse = new ApiResponse<>();
+        apiResponse.ok(section);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
 }
