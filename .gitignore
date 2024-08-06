@@ -36,3 +36,4 @@ src/main/resources/application.properties
 ### enviroment ###
 .env
 logger/
+.env1

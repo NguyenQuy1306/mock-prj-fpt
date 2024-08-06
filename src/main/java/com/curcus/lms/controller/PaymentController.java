@@ -28,7 +28,7 @@ public class PaymentController {
     private final PaymentServiceImpl paymentService;
     private final OrderServiceImpl orderService;
 
-    @Value("${frontend_host:http://localhost:3000}")
+    @Value("${frontend_host:http://localhost:5173}")
     private String frontend_host;
 
     // @GetMapping("/vn-pay")
