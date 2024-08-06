@@ -46,6 +46,16 @@ public class FileAsyncUtil {
 	    updateContentUrl(contentId, url);
 	}
 	@Async
+	public void updateFileAsync(Long contentId, byte[] file, String publicId) {
+		try {
+			cloudinaryService.updateFile(publicId, file);
+		} catch (IOException e) {
+			// Handle the exception
+			System.out.println("cloudinary server error");
+			throw new RuntimeException(e);
+		}
+	}
+	@Async
 	public void uploadImageAsync(Long courseId, MultipartFile file) {
 		ContentType contentType = getContentType(file);
 		String url = null;

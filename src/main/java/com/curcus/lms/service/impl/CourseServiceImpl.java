@@ -183,6 +183,36 @@ public class CourseServiceImpl implements CourseService {
 
     }
 
+
+    @Override
+    public ContentCreateResponse updateVideoContent(ContentVideoCreateRequest contentCreateRequest) {
+        // TODO Auto-generated method stub
+        Content content = contentRepository.findById(contentCreateRequest.getSectionId())
+                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentCreateRequest.getSectionId()));
+
+        FileValidation.validateVideoType(contentCreateRequest.getFile().getOriginalFilename());
+        byte[] fileBytes = null;
+        try {
+            fileBytes = contentCreateRequest.getFile().getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        fileAsyncUtil.updateFileAsync(content.getId(), fileBytes, content.getContent());
+        return contentMapper.toResponse(content);
+
+    }
+
+    @Override
+    public ContentCreateResponse updateDocumentContent(ContentDocumentCreateRequest contentCreateRequest) {
+        // TODO Auto-generated method stub
+        Content content = contentRepository.findById(contentCreateRequest.getSectionId())
+                .orElseThrow(() -> new NotFoundException("Content not found for section ID: " + contentCreateRequest.getSectionId()));
+        content.setContent(contentCreateRequest.getContent());
+        content = contentRepository.save(content);
+        return contentMapper.toResponse(content);
+
+    }
+
     @Override
     public SectionCreateResponse createSection(SectionRequest sectionRequest) {
         Section section = new Section();
