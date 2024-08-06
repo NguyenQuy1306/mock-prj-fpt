@@ -3,6 +3,7 @@ package com.curcus.lms.controller;
 import java.util.Map;
 
 import com.curcus.lms.model.response.InstructorStatisticResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/statisticInstructor")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class InstructorStatisticController {
     private final InstructorStatisticService instructorStatisticService;
 

@@ -2,6 +2,7 @@ package com.curcus.lms.controller;
 
 import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,6 +55,7 @@ import com.curcus.lms.model.dto.*;
 @RequestMapping("/api/courses")
 @Validated
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class CourseController {
     @Autowired
     private CourseService courseService;

@@ -15,6 +15,7 @@ import com.curcus.lms.service.AuthenticationService;
 import com.curcus.lms.service.EmailService;
 import com.curcus.lms.service.VerificationTokenService;
 import com.curcus.lms.service.impl.CookieServiceImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class AuthenticationController {
     private final AuthenticationService service;
     private final EmailService emailService;

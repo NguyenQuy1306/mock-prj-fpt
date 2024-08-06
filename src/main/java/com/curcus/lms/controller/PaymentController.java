@@ -3,6 +3,7 @@ package com.curcus.lms.controller;
 import com.curcus.lms.model.response.PaymentResponse;
 import com.curcus.lms.service.impl.OrderServiceImpl;
 import com.curcus.lms.service.impl.PaymentServiceImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/payment")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class PaymentController {
     private final PaymentServiceImpl paymentService;
     private final OrderServiceImpl orderService;

@@ -9,6 +9,7 @@ import com.curcus.lms.model.request.CategoryRequest;
 import com.curcus.lms.model.response.*;
 import com.curcus.lms.service.AdminService;
 import com.curcus.lms.service.CategorySevice;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admins")
 @CrossOrigin(origins = "*")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController {
     @Autowired
     private AdminService adminService;
