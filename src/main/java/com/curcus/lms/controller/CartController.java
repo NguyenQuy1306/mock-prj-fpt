@@ -94,7 +94,7 @@ public class CartController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping(value = "/{studentId}/listCourse")
     public ResponseEntity<ApiResponse<List<CourseResponseForCart>>> getListCourseFromCart(@PathVariable Long studentId,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -121,7 +121,7 @@ public class CartController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_STUDENT') and authentication.principal.getId() == #id")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_STUDENT') and authentication.principal.getId() == #studentId)")
     @GetMapping(value = "/{studentId}/getCartId")
     public ResponseEntity<ApiResponse<Long>> getIdCartFromStudent(@PathVariable Long studentId) {
         try {
