@@ -195,6 +195,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public List<CourseResponse> getListCourseFromCart(Long studentId) {
         try {
             Cart cart = cartRepository.findCartByStudent_UserId(studentId);
@@ -210,6 +211,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public Page<CourseResponseForCart> getListCourseFromCart(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
