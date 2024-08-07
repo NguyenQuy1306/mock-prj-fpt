@@ -28,6 +28,7 @@ public class Content {
     @Column(nullable = false)
     private ContentType type;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)

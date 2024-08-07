@@ -173,6 +173,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public Page<EnrollmentResponse> getCoursesByStudentId(Long studentId, Pageable pageable) {
         try {
             Student student = studentRepository.findById(studentId).orElse(null);
