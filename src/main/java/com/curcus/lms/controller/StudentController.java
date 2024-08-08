@@ -213,9 +213,9 @@ public class StudentController {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<EnrollmentResponse> enrollmentPage = studentService.getCoursesByStudentId(id ,pageable);
-            if (enrollmentPage.isEmpty()) {
-                throw new NotFoundException("Enrollment not found.");
-            }
+            // if (enrollmentPage.isEmpty()) {
+            //     throw new NotFoundException("Enrollment not found.");
+            // }
 
             String baseUrlStr = String.format("/api/students/%d/courses?", id);
 
