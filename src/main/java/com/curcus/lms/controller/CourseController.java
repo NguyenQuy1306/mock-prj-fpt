@@ -460,4 +460,12 @@ public class CourseController {
 
     }
 
+    @DeleteMapping("delete/listContent")
+    public ResponseEntity<ApiResponse<Void>> deleteListContent(
+            @RequestBody @Valid ContentDeleteWrapper wrapper) {
+        courseService.deleteListContent(wrapper);
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+        apiResponse.ok(null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
 }

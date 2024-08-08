@@ -2,6 +2,7 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.dto.ContentDeleteWrapper;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import com.curcus.lms.service.CategorySevice;
@@ -599,5 +600,13 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteListContent(ContentDeleteWrapper wrapper){
+        List<ContentDeleteRequest> updates = wrapper.getUpdates();
+        for (ContentDeleteRequest update : updates) {
+            contentRepository.deleteContentById(update.getId());
+        }
+    }
 
 }
