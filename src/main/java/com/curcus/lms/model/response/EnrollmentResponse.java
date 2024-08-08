@@ -19,6 +19,7 @@ public class EnrollmentResponse implements Serializable {
     private Date enrollmentDate;
     private Boolean isComplete;
     private String certificateLink;
+    private Date completionDate;
 
     @Override
     public String toString() {

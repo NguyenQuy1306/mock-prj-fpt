@@ -36,4 +36,6 @@ public class Enrollment {
     private Boolean isComplete;
     @ColumnDefault("1")
     private Long currentSectionPosition;
+
+    private Date completionDate;
 }

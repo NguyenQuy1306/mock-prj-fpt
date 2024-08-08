@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Service
 public class CertificateServiceImpl implements CertificateService {
     @Autowired
@@ -23,10 +27,11 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public void updateModel(Model model, Long studentId, Long courseId) {
-        if (!enrollmentRepository.existsByStudent_UserIdAndCourse_CourseId(studentId, courseId)) {
+        Enrollment enrollment = enrollmentRepository.findByStudent_UserIdAndCourse_CourseId(studentId, courseId);
+        if (enrollment == null) {
             throw new NotFoundException("Student has not enrolled this course");
         }
-        if (!enrollmentRepository.existsByStudent_UserIdAndCourse_CourseIdAndIsComplete(studentId, courseId, true)) {
+        if (!enrollment.getIsComplete()) {
             throw new NotFoundException("Student has not completed this course");
         }
 
@@ -36,5 +41,9 @@ public class CertificateServiceImpl implements CertificateService {
                 .orElseThrow(() -> new NotFoundException("Course not found"));
         model.addAttribute("studentName", student.getName());
         model.addAttribute("courseName", course.getTitle());
+
+        Format formatter = new SimpleDateFormat("dd-MM-yyyy");
+        String formattedDate = formatter.format(new Date());
+        model.addAttribute("completionDate", formattedDate);
     }
 }
