@@ -604,8 +604,9 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void deleteListContent(Long sectionId,ContentDeleteWrapper wrapper){
         List<ContentDeleteRequest> updates = wrapper.getUpdates();
+        Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new NotFoundException("section is deleted or doesn't exist"));
         for (ContentDeleteRequest update : updates) {
-            contentRepository.findById(update.getId()).orElseThrow(() -> new NotFoundException("content is deleted or doesn't exist"));
+            Content content = contentRepository.findById(update.getId()).orElseThrow(() -> new NotFoundException("content is deleted or doesn't exist"));
             contentRepository.deleteContentById(update.getId());
             // try {
             //     cloudinaryService.deleteFile(content.getUrl());
@@ -614,26 +615,20 @@ public class CourseServiceImpl implements CourseService {
             // }
     
             // contentRepository.deleteById(update.getId());
-        }
-        Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new NotFoundException("section is deleted or doesn't exist"));
-        // List<Content> remainingContents = contentRepository.findBySectionOrderByPosition(section);
-        List<Content> sortedContents = section.getContents().stream()
-                        .sorted(Comparator.comparing(Content::getPosition))
-                        .collect(Collectors.toList());
-                boolean contentNeedsAdjustment = false;
-                for (int i = 0; i < sortedContents.size(); i++) {
-                    if (sortedContents.get(i).getPosition() != i + 1) {
-                        contentNeedsAdjustment = true;
-                        break;
-                    }
-                }
+            Long deletedPosition = content.getPosition();
+            List<Content> remainingContents = contentRepository.findBySectionOrderByPosition(section);
 
-                if (contentNeedsAdjustment) {
-                    for (int i = 0; i < sortedContents.size(); i++) {
-                        Content content = sortedContents.get(i);
-                        content.setPosition((long) (i + 1));
-                        contentRepository.save(content);
-                    }
+            // Reorder the remaining contents
+            long position = 1;
+            for (Content remainingContent : remainingContents) {
+                // Skip the deleted content's position
+                if (remainingContent.getPosition() > deletedPosition) {
+                    remainingContent.setPosition(position++);
+                    contentRepository.save(remainingContent); // Update the position
+                } else {
+                    position++;
                 }
+            }
+        }
     }
 }
