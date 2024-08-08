@@ -43,7 +43,7 @@ public class CertificateServiceImpl implements CertificateService {
         model.addAttribute("courseName", course.getTitle());
 
         Format formatter = new SimpleDateFormat("dd-MM-yyyy");
-        String formattedDate = formatter.format(new Date());
+        String formattedDate = formatter.format(enrollment.getCompletionDate());
         model.addAttribute("completionDate", formattedDate);
     }
 }
