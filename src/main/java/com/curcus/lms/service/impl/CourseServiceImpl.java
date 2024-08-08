@@ -602,11 +602,38 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public void deleteListContent(ContentDeleteWrapper wrapper){
+    public void deleteListContent(Long sectionId,ContentDeleteWrapper wrapper){
         List<ContentDeleteRequest> updates = wrapper.getUpdates();
         for (ContentDeleteRequest update : updates) {
+            contentRepository.findById(update.getId()).orElseThrow(() -> new NotFoundException("content is deleted or doesn't exist"));
             contentRepository.deleteContentById(update.getId());
+            // try {
+            //     cloudinaryService.deleteFile(content.getUrl());
+            // } catch (IOException e) {
+            //     log.error("Error deleting file from Cloudinary for content ID: " + content.getContentId(), e);
+            // }
+    
+            // contentRepository.deleteById(update.getId());
         }
-    }
+        Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new NotFoundException("section is deleted or doesn't exist"));
+        // List<Content> remainingContents = contentRepository.findBySectionOrderByPosition(section);
+        List<Content> sortedContents = section.getContents().stream()
+                        .sorted(Comparator.comparing(Content::getPosition))
+                        .collect(Collectors.toList());
+                boolean contentNeedsAdjustment = false;
+                for (int i = 0; i < sortedContents.size(); i++) {
+                    if (sortedContents.get(i).getPosition() != i + 1) {
+                        contentNeedsAdjustment = true;
+                        break;
+                    }
+                }
 
+                if (contentNeedsAdjustment) {
+                    for (int i = 0; i < sortedContents.size(); i++) {
+                        Content content = sortedContents.get(i);
+                        content.setPosition((long) (i + 1));
+                        contentRepository.save(content);
+                    }
+                }
+    }
 }

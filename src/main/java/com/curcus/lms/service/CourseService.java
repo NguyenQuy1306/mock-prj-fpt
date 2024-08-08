@@ -83,5 +83,5 @@ public interface CourseService {
 
         void deleteContentById(Long contentId);
         void deleteSectionById(Long contentId);
-        void deleteListContent(@Valid ContentDeleteWrapper wrapper);
+        void deleteListContent(Long sectionId, @Valid ContentDeleteWrapper wrapper);
 }
