@@ -68,7 +68,7 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private SectionRepository sectionRepository;
 
-    @Value("${mail.backend_host}")
+    // @Value("${mail.backend_host}")
     String backendHost;
 
     @Autowired
@@ -186,8 +186,10 @@ public class StudentServiceImpl implements StudentService {
                     courseMapper.toCourseEnrollResponse(enrollment.getCourse()),
                     enrollment.getEnrollmentDate(),
                     enrollment.getIsComplete(),
-                    enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
-                    ));
+                    enrollment.getIsComplete()
+                            ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId="
+                                    + enrollment.getCourse().getCourseId()
+                            : null));
             return enrollmentResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -254,8 +256,10 @@ public class StudentServiceImpl implements StudentService {
                     courseMapper.toCourseEnrollResponse(savedEnrollment.getCourse()),
                     savedEnrollment.getEnrollmentDate(),
                     savedEnrollment.getIsComplete(),
-                    enrollment.getIsComplete() ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId=" + enrollment.getCourse().getCourseId() : null
-            );
+                    enrollment.getIsComplete()
+                            ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId="
+                                    + enrollment.getCourse().getCourseId()
+                            : null);
 
         } catch (ApplicationException ex) {
             throw ex;

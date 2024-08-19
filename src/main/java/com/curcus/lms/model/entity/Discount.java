@@ -23,7 +23,7 @@ import com.curcus.lms.util.CodeDicsountUtil;
 @Table(name = "discounts")
 public class Discount {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long discountId;
 
     @Column(unique = true, nullable = false, updatable = false)

@@ -25,7 +25,7 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${mail.backend_host}")
+    // @Value("${mail.backend_host}")
     private String PREFIX;
 
     private class MailSenderRunnable implements Runnable {
