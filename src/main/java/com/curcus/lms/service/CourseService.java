@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.curcus.lms.model.dto.ContentDeleteWrapper;
 import com.curcus.lms.model.entity.Course;
 import com.curcus.lms.model.entity.Instructor;
 import com.curcus.lms.model.entity.Section;
@@ -82,4 +83,5 @@ public interface CourseService {
 
         void deleteContentById(Long contentId);
         void deleteSectionById(Long contentId);
+        void deleteListContent(Long sectionId, @Valid ContentDeleteWrapper wrapper);
 }

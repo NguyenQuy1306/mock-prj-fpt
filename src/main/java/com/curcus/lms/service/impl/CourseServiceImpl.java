@@ -2,6 +2,7 @@ package com.curcus.lms.service.impl;
 
 import com.curcus.lms.model.request.*;
 import com.curcus.lms.model.response.*;
+import com.curcus.lms.model.dto.ContentDeleteWrapper;
 import com.curcus.lms.model.entity.*;
 import com.curcus.lms.repository.*;
 import com.curcus.lms.service.CategorySevice;
@@ -599,5 +600,35 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteListContent(Long sectionId,ContentDeleteWrapper wrapper){
+        List<ContentDeleteRequest> updates = wrapper.getUpdates();
+        Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new NotFoundException("section is deleted or doesn't exist"));
+        for (ContentDeleteRequest update : updates) {
+            Content content = contentRepository.findById(update.getId()).orElseThrow(() -> new NotFoundException("content is deleted or doesn't exist"));
+            contentRepository.deleteContentById(update.getId());
+            // try {
+            //     cloudinaryService.deleteFile(content.getUrl());
+            // } catch (IOException e) {
+            //     log.error("Error deleting file from Cloudinary for content ID: " + content.getContentId(), e);
+            // }
+    
+            // contentRepository.deleteById(update.getId());
+            Long deletedPosition = content.getPosition();
+            List<Content> remainingContents = contentRepository.findBySectionOrderByPosition(section);
 
+            // Reorder the remaining contents
+            long position = 1;
+            for (Content remainingContent : remainingContents) {
+                // Skip the deleted content's position
+                if (remainingContent.getPosition() > deletedPosition) {
+                    remainingContent.setPosition(position++);
+                    contentRepository.save(remainingContent); // Update the position
+                } else {
+                    position++;
+                }
+            }
+        }
+    }
 }

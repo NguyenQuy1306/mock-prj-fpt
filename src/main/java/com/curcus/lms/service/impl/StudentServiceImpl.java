@@ -189,7 +189,8 @@ public class StudentServiceImpl implements StudentService {
                     enrollment.getIsComplete()
                             ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId="
                                     + enrollment.getCourse().getCourseId()
-                            : null));
+                            : null,
+                    enrollment.getCompletionDate()));
             return enrollmentResponses;
         } catch (ApplicationException ex) {
             throw ex;
@@ -256,10 +257,11 @@ public class StudentServiceImpl implements StudentService {
                     courseMapper.toCourseEnrollResponse(savedEnrollment.getCourse()),
                     savedEnrollment.getEnrollmentDate(),
                     savedEnrollment.getIsComplete(),
-                    enrollment.getIsComplete()
+                    savedEnrollment.getIsComplete()
                             ? backendHost + "/api/certificate?studentId=" + studentId + "&courseId="
                                     + enrollment.getCourse().getCourseId()
-                            : null);
+                            : null,
+                    savedEnrollment.getCompletionDate());
 
         } catch (ApplicationException ex) {
             throw ex;
@@ -438,6 +440,7 @@ public class StudentServiceImpl implements StudentService {
             // complete last section -> complete course. current section -> null
             enrollment.setCurrentSectionPosition(null);
             enrollment.setIsComplete(true);
+            enrollment.setCompletionDate(new Date());
         } else {
             // +1 to current section
             enrollment.setCurrentSectionPosition(enrollment.getCurrentSectionPosition() + 1);
